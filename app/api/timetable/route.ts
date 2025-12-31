@@ -1,0 +1,47 @@
+import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/db";
+import Timetable from "@/models/Timetable";
+import { verifyToken } from "@/lib/auth";
+
+export async function GET(req: Request) {
+  await connectDB();
+  
+  const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+  const user = verifyToken(token);
+
+  if (!user) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+
+  // Admin + Teacher can fetch all
+  if (!["admin", "teacher"].includes(user.role))
+    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+
+  const timetable = await Timetable.find()
+    .populate("classId")
+    .populate("teacherId")
+    .lean();
+
+  return NextResponse.json({ success: true, timetable });
+}
+
+
+import { TimetableCreateZ } from "@/lib/validations/timetableSchema";
+
+export async function POST(req: Request) {
+  await connectDB();
+
+  const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+  const user = verifyToken(token);
+
+  if (!user || user.role !== "admin")
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+
+  try {
+    const body = await req.json();
+    const parsed = TimetableCreateZ.parse(body);
+
+    const created = await Timetable.create(parsed);
+    return NextResponse.json({ success: true, timetable: created }, { status: 201 });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+  }
+}
