@@ -11,6 +11,7 @@ import Badge from "@/components/common/Badge";
 import Alert from "@/components/common/Alert";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import { showToast } from "@/lib/toast";
+import { exportToCSV } from "@/utils/exportData";
 import {
   FileText,
   Calendar,
@@ -399,11 +400,7 @@ export default function ExamManagement() {
             <p className="text-gray-600 mt-1">Schedule and manage examinations</p>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
-              <Upload className="w-4 h-4" />
-              <span className="text-sm font-medium">Import</span>
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+            <button onClick={() => exportToCSV(exams, "exams.csv")} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
               <Download className="w-4 h-4" />
               <span className="text-sm font-medium">Export</span>
             </button>

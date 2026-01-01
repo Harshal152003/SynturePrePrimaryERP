@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { PERMISSIONS } from "@/utils/permissions";
 import { useState, ComponentType } from "react";
 import {
@@ -23,6 +23,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeft,
+  Clock,
 } from "lucide-react";
 
 interface User {
@@ -45,7 +46,8 @@ export default function Sidebar({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   // Keep sidebar visible on all dashboard routes so it stays present
@@ -109,11 +111,21 @@ export default function Sidebar({
       icon: FileText,
       color: "indigo",
     },
+    /* Previously Notifications. Kept as comment so original implementation remains available */
+    /*
     {
       name: "Notifications",
       path: "/dashboard/notifications",
       module: "notifications",
       icon: Bell,
+      color: "red",
+    },
+    */
+    {
+      name: "Log Activity",
+      path: "/dashboard/log-activity",
+      module: "log-activity",
+      icon: Clock,
       color: "red",
     },
     {
@@ -184,12 +196,14 @@ export default function Sidebar({
   className={`
     fixed lg:static z-50
     h-screen bg-white border-r border-gray-200
+    flex flex-col
     transition-transform duration-300
     ${visible ? "translate-x-0" : "-translate-x-full"}
     lg:translate-x-0
     ${isCollapsed ? "w-20" : "w-64"}
   `}
 >
+
 
       {/* Header */}
       <div
@@ -250,64 +264,65 @@ export default function Sidebar({
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className={isCollapsed ? "space-y-2" : "space-y-1 px-3"}>
-          {filteredMenu.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.path || pathname?.startsWith(item.path + "/");
+<nav className="flex-1 overflow-y-auto no-scrollbar">
+  <ul className={isCollapsed ? "space-y-2 py-4" : "space-y-1 px-3 py-4"}>
+    {filteredMenu.map((item) => {
+      const Icon = item.icon;
+      const isActive =
+        pathname === item.path || pathname?.startsWith(item.path + "/");
 
-            return (
-              <li key={item.path}>
-                <Link
-                  href={item.path}
-                  className={`
-                    group relative flex items-center transition-all duration-150
-                    ${
-                      isCollapsed
-                        ? "justify-center py-3 px-0"
-                        : "px-3 py-2.5 rounded-lg mx-0"
-                    }
-                    ${
-                      isActive
-                        ? isCollapsed
-                          ? "bg-gradient-to-r from-orange-50 to-pink-50 border-l-3 border-orange-500"
-                          : "bg-gradient-to-r from-orange-50 to-pink-50 shadow-sm"
-                        : "hover:bg-gray-50"
-                    }
-                  `}
-                  title={isCollapsed ? item.name : undefined}
-                >
-                  <div
-                    className={`
-                    flex items-center justify-center rounded-lg transition-all
-                    ${isCollapsed ? "w-10 h-10" : "w-9 h-9 mr-3"}
-                    ${getColorClasses(item.color, isActive)}
-                  `}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
+      return (
+        <li key={item.path}>
+          <Link
+            href={item.path}
+            className={`
+              group relative flex items-center transition-all duration-150
+              ${
+                isCollapsed
+                  ? "justify-center py-3"
+                  : "px-3 py-2.5 rounded-lg"
+              }
+              ${
+                isActive
+                  ? "bg-gradient-to-r from-orange-50 to-pink-50 shadow-sm"
+                  : "hover:bg-gray-50"
+              }
+            `}
+            title={isCollapsed ? item.name : undefined}
+          >
+            <div
+              className={`
+                flex items-center justify-center rounded-lg
+                ${isCollapsed ? "w-10 h-10" : "w-9 h-9 mr-3"}
+                ${getColorClasses(item.color, isActive)}
+              `}
+            >
+              <Icon className="w-5 h-5" />
+            </div>
 
-                  {!isCollapsed && (
-                    <span className={`text-sm font-medium ${isActive ? "text-gray-800" : "text-gray-700"}`}>
-                      {item.name}
-                    </span>
-                  )}
+            {!isCollapsed && (
+              <span className="text-sm font-medium text-gray-700">
+                {item.name}
+              </span>
+            )}
 
-                  {/* Tooltip for collapsed state */}
-                  {isCollapsed && (
-                    <div className="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                      {item.name}
-                      <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900"></div>
-                    </div>
-                  )}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+            {/* Tooltip when collapsed */}
+            {isCollapsed && (
+              <div className="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg">
+                {item.name}
+              </div>
+            )}
+          </Link>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
 
-      {/* Expand button when collapsed */}
+
+                  
+
+   {/* Expand button when collapsed */}
       {isCollapsed && (
         <div className="py-3 border-t border-gray-200">
           <button
@@ -325,8 +340,13 @@ export default function Sidebar({
       {/* Logout Button */}
       <div className={`border-t border-gray-200 ${isCollapsed ? "py-3" : "py-3 px-3"}`}>
         <button
-          onClick={() => {
-            console.log("Logout clicked");
+          onClick={async () => {
+            try {
+              await logout();
+              router.push("/login");
+            } catch (err) {
+              console.error("Logout failed", err);
+            }
           }}
           className={`
             w-full flex items-center text-gray-700 hover:bg-red-50 transition-all group rounded-lg

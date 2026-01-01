@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import Teacher from "@/models/Teacher";
 import Student from "@/models/Student";
+import LogActivity from "@/models/LogActivity";
 
 export async function POST(req: Request) {
   try {
@@ -76,8 +77,22 @@ export async function POST(req: Request) {
     }
 
     // If still not found in any model, return error
-    if (!user)
+    if (!user) {
+      try {
+        await LogActivity.create({
+          actorEmail: email,
+          actorRole: role || "unknown",
+          action: "login",
+          result: "failure",
+          message: "Invalid email",
+          ip: req.headers.get("x-forwarded-for") || undefined,
+          userAgent: req.headers.get("user-agent") || undefined,
+        });
+      } catch (e) {
+        console.error("Failed to save log activity (invalid email):", e);
+      }
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    }
   
     // Check if password field exists
     if (!user.password) {
@@ -89,8 +104,23 @@ export async function POST(req: Request) {
 
     // Verify password
     const match = await bcrypt.compare(password, user.password);
-    if (!match)
+    if (!match) {
+      try {
+        await LogActivity.create({
+          actorId: user._id,
+          actorEmail: user.email,
+          actorRole: detectedRole,
+          action: "login",
+          result: "failure",
+          message: "Invalid password",
+          ip: req.headers.get("x-forwarded-for") || undefined,
+          userAgent: req.headers.get("user-agent") || undefined,
+        });
+      } catch (e) {
+        console.error("Failed to save log activity (invalid password):", e);
+      }
       return NextResponse.json({ error: "Invalid password" }, { status: 400 });
+    }
 
     // Ensure JWT_SECRET is defined
     const jwtSecret = process.env.JWT_SECRET;
@@ -141,6 +171,21 @@ export async function POST(req: Request) {
     const secureFlag = process.env.NODE_ENV === "production" ? "; Secure" : "";
     const cookieString = `token=${token}; Path=/; HttpOnly${secureFlag}; SameSite=Lax; Max-Age=${maxAge}`;
     res.headers.set("Set-Cookie", cookieString);
+
+    try {
+      await LogActivity.create({
+        actorId: user._id,
+        actorEmail: user.email,
+        actorRole: detectedRole,
+        action: "login",
+        result: "success",
+        message: "Login successful",
+        ip: req.headers.get("x-forwarded-for") || undefined,
+        userAgent: req.headers.get("user-agent") || undefined,
+      });
+    } catch (e) {
+      console.error("Failed to save log activity (success):", e);
+    }
 
     return res;
   } catch (error) {

@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { 
   Bell, 
   Search, 
@@ -20,8 +20,103 @@ export default function Navbar({
 }) {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  // Check if search should be visible (only on admin dashboard)
+  const isAdminDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
+  
+  // Only show search on main dashboard, not in specific modules
+  const showSearch = pathname === "/dashboard";
+
+  // Handle click outside dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearchResults(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setNotificationOpen(false);
+      }
+    };
+
+    if (showSearchResults || dropdownOpen || notificationOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showSearchResults, dropdownOpen, notificationOpen]);
+
+  const handleSearch = async (value: string) => {
+    setSearchTerm(value);
+    
+    if (!value.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    try {
+      // Fetch students
+      const studentsRes = await fetch(`/api/students?q=${encodeURIComponent(value)}&limit=3`);
+      const studentsData = studentsRes.ok ? await studentsRes.json() : { data: [] };
+      
+      // Fetch teachers
+      const teachersRes = await fetch(`/api/teachers?q=${encodeURIComponent(value)}&limit=3`);
+      const teachersData = teachersRes.ok ? await teachersRes.json() : { data: [] };
+      
+      // Fetch classes
+      const classesRes = await fetch(`/api/classes?q=${encodeURIComponent(value)}&limit=3`);
+      const classesData = classesRes.ok ? await classesRes.json() : { data: [] };
+
+      const combined = [
+        ...(studentsData.data || []).map((student: any) => ({
+          ...student,
+          type: "student",
+          displayName: `${student.firstName} ${student.lastName || ""}`,
+        })),
+        ...(teachersData.data || []).map((teacher: any) => ({
+          ...teacher,
+          type: "teacher",
+          displayName: teacher.name,
+        })),
+        ...(classesData.data || []).map((cls: any) => ({
+          ...cls,
+          type: "class",
+          displayName: `${cls.name} - ${cls.section}`,
+        })),
+      ];
+
+      setSearchResults(combined);
+      setShowSearchResults(combined.length > 0);
+    } catch (error) {
+      console.error("Search error:", error);
+      setSearchResults([]);
+    }
+  };
+
+  const handleSearchResultClick = (result: any) => {
+    setSearchTerm("");
+    setShowSearchResults(false);
+    setSearchResults([]);
+
+    if (result.type === "student") {
+      router.push(`/dashboard/students/${result._id}`);
+    } else if (result.type === "teacher") {
+      router.push(`/dashboard/teachers/${result._id}`);
+    } else if (result.type === "class") {
+      router.push(`/dashboard/classes/${result._id}`);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -40,23 +135,103 @@ export default function Navbar({
   <Menu className="w-5 h-5 text-gray-600" />
 </button>
 
-          
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search students, teachers, classes..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-            />
-          </div>
+          {showSearch && (
+            <div className="relative flex-1" ref={searchRef}>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search students, teachers, classes..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                onFocus={() => searchTerm && setShowSearchResults(true)}
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+              />
+
+              {/* Search Results Dropdown */}
+              {showSearchResults && searchResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
+                  {/* Students Section */}
+                  {searchResults.some((r) => r.type === "student") && (
+                    <>
+                      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-600">
+                        Students
+                      </div>
+                      {searchResults
+                        .filter((r) => r.type === "student")
+                        .map((result) => (
+                          <button
+                            key={result._id}
+                            onClick={() => handleSearchResultClick(result)}
+                            className="w-full text-left px-4 py-2.5 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                          >
+                            <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              {result.admissionNo && `Admission: ${result.admissionNo}`}
+                            </p>
+                          </button>
+                        ))}
+                    </>
+                  )}
+
+                  {/* Teachers Section */}
+                  {searchResults.some((r) => r.type === "teacher") && (
+                    <>
+                      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-600">
+                        Teachers
+                      </div>
+                      {searchResults
+                        .filter((r) => r.type === "teacher")
+                        .map((result) => (
+                          <button
+                            key={result._id}
+                            onClick={() => handleSearchResultClick(result)}
+                            className="w-full text-left px-4 py-2.5 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                          >
+                            <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{result.email}</p>
+                          </button>
+                        ))}
+                    </>
+                  )}
+
+                  {/* Classes Section */}
+                  {searchResults.some((r) => r.type === "class") && (
+                    <>
+                      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-600">
+                        Classes
+                      </div>
+                      {searchResults
+                        .filter((r) => r.type === "class")
+                        .map((result) => (
+                          <button
+                            key={result._id}
+                            onClick={() => handleSearchResultClick(result)}
+                            className="w-full text-left px-4 py-2.5 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                          >
+                            <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              Room: {result.roomNumber || "N/A"}
+                            </p>
+                          </button>
+                        ))}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Section - Actions & Profile */}
         <div className="flex items-center gap-3">
           {/* Notifications */}
-          <div className="relative">
+          <div className="relative" ref={notificationRef}>
             <button
-              onClick={() => setNotificationOpen(!notificationOpen)}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setNotificationOpen(!notificationOpen);
+              }}
               className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors group"
             >
               <Bell className="w-5 h-5 text-gray-600 group-hover:text-orange-500 transition-colors" />
@@ -107,9 +282,13 @@ export default function Navbar({
           <div className="w-px h-8 bg-gray-200"></div>
 
           {/* User Profile Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={profileRef}>
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDropdownOpen(!dropdownOpen);
+              }}
               className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-lg transition-all group"
             >
               <div className="w-9 h-9 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-sm border-2 border-white">

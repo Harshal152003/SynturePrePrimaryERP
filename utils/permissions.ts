@@ -13,7 +13,8 @@ export const PERMISSIONS: any = {
     "transport",
     "meal-plan",
     "gallery",
-    "settings"
+    "settings",
+    "log-activity"
   ],
 
   teacher: [

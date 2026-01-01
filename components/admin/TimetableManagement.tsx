@@ -10,6 +10,7 @@ import Card from "@/components/common/Card";
 import Badge from "@/components/common/Badge";
 import Alert from "@/components/common/Alert";
 import { showToast } from "@/lib/toast";
+import { exportToCSV } from "@/utils/exportData";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import {
   Calendar,
@@ -93,8 +94,15 @@ export default function TimetableManagement() {
       setLoading(true);
       const res = await fetch("/api/timetable");
       const data = await res.json();
-      setTimetables(data.timetable || []);
+      console.log("[TimetableManagement] Fetched timetables:", data);
+      if (data.success || data.timetable) {
+        setTimetables(data.timetable || data.data || []);
+      } else {
+        console.error("[TimetableManagement] API error:", data.error);
+        showToast.error(data.error || "Failed to fetch timetables");
+      }
     } catch (error) {
+      console.error("[TimetableManagement] Fetch error:", error);
       showToast.error("Failed to fetch timetables");
     } finally {
       setLoading(false);
@@ -105,9 +113,10 @@ export default function TimetableManagement() {
     try {
       const res = await fetch("/api/classes");
       const data = await res.json();
-      setClasses(data.classes || []);
-      if (data.classes && data.classes.length > 0) {
-        setSelectedClass(data.classes[0]._id);
+      const classesData = data.classes || data.data || [];
+      setClasses(classesData);
+      if (classesData.length > 0 && !selectedClass) {
+        setSelectedClass(classesData[0]._id);
       }
     } catch (error) {
       console.error("Failed to fetch classes:", error);
@@ -118,7 +127,7 @@ export default function TimetableManagement() {
     try {
       const res = await fetch("/api/teachers");
       const data = await res.json();
-      setTeachers(data.teachers || []);
+      setTeachers(data.teachers || data.data || []);
     } catch (error) {
       console.error("Failed to fetch teachers:", error);
     }
@@ -172,10 +181,10 @@ export default function TimetableManagement() {
   const handleEditEntry = (entry: Timetable) => {
     setEditingEntry(entry);
     setFormData({
-      classId: entry.classId._id,
+      classId: typeof entry.classId === "string" ? entry.classId : (entry.classId as any)?._id || "",
       day: entry.day,
       subject: entry.subject,
-      teacherId: entry.teacherId._id,
+      teacherId: typeof entry.teacherId === "string" ? entry.teacherId : (entry.teacherId as any)?._id || "",
       startTime: entry.startTime,
       endTime: entry.endTime,
       roomNumber: entry.roomNumber || "",
@@ -198,16 +207,26 @@ export default function TimetableManagement() {
   };
 
   const filteredTimetables = selectedClass
-    ? timetables.filter((t) => t.classId._id === selectedClass)
+    ? timetables.filter((t) =>
+        typeof (t.classId as any) === "string"
+          ? (t.classId as any) === selectedClass
+          : (t.classId as any)?._id === selectedClass
+      )
     : timetables;
 
   const totalEntries = timetables.length;
   const uniqueSubjects = new Set(timetables.map((t) => t.subject)).size;
-  const uniqueTeachers = new Set(timetables.map((t) => t.teacherId._id)).size;
+  const teacherIds = timetables
+    .map((t) => (typeof (t.teacherId as any) === "string" ? (t.teacherId as any) : (t.teacherId as any)?._id))
+    .filter(Boolean);
+  const uniqueTeachers = new Set(teacherIds).size;
 
   const getEntriesForDayAndClass = (day: string, classId: string) => {
     return timetables
-      .filter((t) => t.day === day && t.classId._id === classId)
+      .filter((t) =>
+        t.day === day &&
+        (typeof (t.classId as any) === "string" ? (t.classId as any) === classId : (t.classId as any)?._id === classId)
+      )
       .sort((a, b) => a.startTime.localeCompare(b.startTime));
   };
 
@@ -236,8 +255,8 @@ export default function TimetableManagement() {
       key: "teacherId",
       label: "Teacher",
       render: (value: unknown) => {
-        const teacher = value as Teacher;
-        return teacher.name;
+        const teacher = value as any as Teacher | null;
+        return (teacher && (teacher.name || (teacher.firstName ? `${(teacher as any).firstName} ${(teacher as any).lastName || ''}` : ''))) || "-";
       },
     },
     {
@@ -272,11 +291,7 @@ export default function TimetableManagement() {
             <p className="text-gray-600 mt-1">Manage class schedules and time slots</p>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
-              <Upload className="w-4 h-4" />
-              <span className="text-sm font-medium">Import</span>
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+            <button onClick={() => exportToCSV([], "timetables.csv")} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
               <Download className="w-4 h-4" />
               <span className="text-sm font-medium">Export</span>
             </button>
@@ -438,7 +453,15 @@ export default function TimetableManagement() {
                             </div>
                             <div className="flex items-center gap-1">
                               <GraduationCap className="w-3 h-3" />
-                              <span className="truncate">{entry.teacherId.name}</span>
+                              <span className="truncate">
+                                {(() => {
+                                  const t = entry.teacherId as any;
+                                  if (!t) return "-";
+                                  if (typeof t === "string") return "(Assigned)";
+                                  // prefer full name fields
+                                  return t.name || (t.firstName ? `${t.firstName} ${t.lastName || ""}` : "-");
+                                })()}
+                              </span>
                             </div>
                             {entry.roomNumber && (
                               <div className="flex items-center gap-1">

@@ -17,7 +17,24 @@ export async function GET(req: Request) {
   if (!["admin", "teacher"].includes(user.role))
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
-  const classes = await ClassModel.find().populate("teachers").populate("students").lean();
+  const url = new URL(req.url);
+  const q = url.searchParams.get("q") || "";
+  const limit = Math.min(100, parseInt(url.searchParams.get("limit") || "10"));
+  
+  const filter: any = {};
+  if (q) {
+    filter.$or = [
+      { name: { $regex: q, $options: "i" } },
+      { section: { $regex: q, $options: "i" } },
+      { roomNumber: { $regex: q, $options: "i" } },
+    ];
+  }
+
+  const classes = await ClassModel.find(filter)
+    .populate("teachers")
+    .populate("students")
+    .limit(limit)
+    .lean();
 
   return NextResponse.json({ success: true, classes });
 }

@@ -15,9 +15,12 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
     const limit = Math.max(1, Math.min(100, parseInt(url.searchParams.get("limit") || "10")));
-    const status = url.searchParams.get("status") || "active";
+    const status = url.searchParams.get("status");
 
-    const filter: Record<string, unknown> = { status };
+    const filter: Record<string, unknown> = {};
+    if (status) {
+      filter.status = status;
+    }
 
     const skip = (page - 1) * limit;
 

@@ -72,7 +72,8 @@ export default function TimetableView() {
 
         // Auto-select first class if available
         if (allTimetables.length > 0 && !selectedClass) {
-          setSelectedClass(allTimetables[0].classId._id);
+          const firstClassId = typeof allTimetables[0].classId === "string" ? allTimetables[0].classId : (allTimetables[0].classId as any)?._id;
+          if (firstClassId) setSelectedClass(firstClassId);
         }
       }
 
@@ -85,7 +86,9 @@ export default function TimetableView() {
   };
 
   const filteredTimetables = selectedClass
-    ? timetables.filter((t) => t.classId._id === selectedClass)
+    ? timetables.filter((t) =>
+        typeof (t.classId as any) === "string" ? (t.classId as any) === selectedClass : (t.classId as any)?._id === selectedClass
+      )
     : timetables;
 
   // Group by day
@@ -99,7 +102,7 @@ export default function TimetableView() {
   const classStats = {
     totalSessions: filteredTimetables.length,
     uniqueSubjects: new Set(filteredTimetables.map((t) => t.subject)).size,
-    uniqueTeachers: new Set(filteredTimetables.map((t) => t.teacherId._id)).size,
+    uniqueTeachers: new Set(filteredTimetables.map((t) => (typeof (t.teacherId as any) === "string" ? (t.teacherId as any) : (t.teacherId as any)?._id)).filter(Boolean)).size,
     daysActive: new Set(filteredTimetables.map((t) => t.day)).size,
   };
 
@@ -196,7 +199,7 @@ export default function TimetableView() {
                           <div className="flex items-center text-sm">
                             <span className="text-gray-600">👨‍🏫</span>
                             <span className="ml-2 font-medium">
-                              {session.teacherId.firstName} {session.teacherId.lastName}
+                              {((session.teacherId as any)?.firstName || (session.teacherId as any)?.name) ?? "-"} {((session.teacherId as any)?.lastName) || ""}
                             </span>
                           </div>
                           {session.roomNumber && (

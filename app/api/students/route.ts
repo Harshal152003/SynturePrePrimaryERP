@@ -49,6 +49,7 @@ export async function GET(req: Request) {
 
   return NextResponse.json({
     success: true,
+    data: students,
     students,
     pagination: { page, limit, total, pages: Math.ceil(total / limit) },
   });

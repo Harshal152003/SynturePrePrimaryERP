@@ -31,6 +31,7 @@ export function middleware(req: NextRequest) {
     "/dashboard/meal-plan", 
     "/dashboard/settings", 
     "/dashboard/gallery", 
+    "/dashboard/log-activity",
     "/students",
     "/teachers",
     "/attendance",
