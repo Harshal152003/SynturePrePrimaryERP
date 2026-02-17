@@ -197,7 +197,7 @@ export default function AdmissionManagement() {
           data={filteredAdmissions}
           loading={loading}
           onRowClick={(row) => {
-            setViewingAdmission(row as Admission);
+            setEditingAdmission(row as Admission);
             setModalOpen(true);
           }}
           actions={(row) => (
@@ -220,7 +220,7 @@ export default function AdmissionManagement() {
               )}
               <button
                 onClick={() => {
-                  setViewingAdmission(row as Admission);
+                  setEditingAdmission(row as Admission);
                   setModalOpen(true);
                 }}
                 className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
@@ -235,39 +235,39 @@ export default function AdmissionManagement() {
         isOpen={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setViewingAdmission(null);
+          setEditingAdmission(null);
         }}
         title="Application Details"
         size="lg"
       >
-        {viewingAdmission && (
+        {editingAdmission && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">First Name</p>
-                <p className="text-lg font-semibold">{viewingAdmission.childFirstName}</p>
+                <p className="text-lg font-semibold">{editingAdmission.childFirstName}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Last Name</p>
-                <p className="text-lg font-semibold">{viewingAdmission.childLastName || "-"}</p>
+                <p className="text-lg font-semibold">{editingAdmission.childLastName || "-"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Gender</p>
-                <p className="text-lg font-semibold">{viewingAdmission.gender || "-"}</p>
+                <p className="text-lg font-semibold">{editingAdmission.gender || "-"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Date of Birth</p>
                 <p className="text-lg font-semibold">
-                  {viewingAdmission.dob
-                    ? new Date(viewingAdmission.dob).toLocaleDateString()
+                  {editingAdmission.dob
+                    ? new Date(editingAdmission.dob).toLocaleDateString()
                     : "-"}
                 </p>
               </div>
             </div>
             <div>
               <p className="text-sm text-gray-600">Status</p>
-              <Badge variant={getStatusColor(viewingAdmission.status)}>
-                {viewingAdmission.status.toUpperCase()}
+              <Badge variant={getStatusColor(editingAdmission.status)}>
+                {editingAdmission.status.toUpperCase()}
               </Badge>
             </div>
           </div>

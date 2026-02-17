@@ -4,6 +4,7 @@ import Teacher from "@/models/Teacher";
 import { TeacherCreateZ } from "@/lib/validations/teacherSchema";
 import { verifyToken } from "@/lib/auth";
 import bcryptjs from "bcryptjs";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 
 // ---------------------- GET ----------------------
@@ -72,6 +73,22 @@ export async function PUT(
       return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
     }
 
+    // Log admin activity only if admin is updating
+    if (user.role === "admin") {
+      await logAdminActivity({
+        actorId: String(user.id),
+        actorRole: user.role,
+        action: "update:teacher",
+        message: `Teacher updated: ${updated.name}`,
+        metadata: {
+          teacherId: updated._id,
+          name: updated.name,
+          email: updated.email,
+          department: updated.department,
+        }
+      });
+    }
+
     return NextResponse.json({ success: true, teacher: updated });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message || "Invalid" }, { status: 400 });
@@ -101,6 +118,20 @@ export async function DELETE(
   if (!deleted) {
     return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
   }
+
+  // Log admin activity
+  await logAdminActivity({
+    actorId: String(user.id),
+    actorRole: user.role,
+    action: "delete:teacher",
+    message: `Teacher deleted: ${deleted.name}`,
+    metadata: {
+      teacherId: deleted._id,
+      name: deleted.name,
+      email: deleted.email,
+      department: deleted.department,
+    }
+  });
 
   return NextResponse.json({ success: true, deletedId: id });
 }

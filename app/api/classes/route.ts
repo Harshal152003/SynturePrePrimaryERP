@@ -5,6 +5,7 @@ import { verifyToken } from "@/lib/auth";
 import { ClassCreateZ } from "@/lib/validations/classSchema";
 import Teacher from "@/models/Teacher";
 import Student from "@/models/Student";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 export async function GET(req: Request) {
   await connectDB();
 
@@ -53,6 +54,20 @@ export async function POST(req: Request) {
     const parsed = ClassCreateZ.parse(body);
 
     const created = await ClassModel.create(parsed);
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "create:class",
+      message: `Class created: ${created.name} - ${created.section}`,
+      metadata: {
+        classId: created._id,
+        name: created.name,
+        section: created.section,
+        roomNumber: created.roomNumber,
+      }
+    });
 
     return NextResponse.json({ success: true, class: created }, { status: 201 });
   } catch (err: any) {

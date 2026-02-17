@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import Attendance from "@/models/Attendance";
 import Student from "@/models/Student";
 import Class from "@/models/Class";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 // GET - List all attendance records with filters
 export async function GET(req: Request) {
@@ -119,6 +120,26 @@ export async function POST(req: Request) {
       { path: "classId", select: "name section" },
       { path: "markedBy", select: "firstName lastName" },
     ]);
+
+    // Log admin activity - only if markedBy is an admin
+    if (markedBy) {
+      // Try to get the user info from the marked by field
+      const marked = await Student.findById(markedBy).select("email role").catch(() => null);
+      if (marked && marked.role === "admin") {
+        await logAdminActivity({
+          actorId: String(marked._id),
+          actorEmail: marked.email,
+          actorRole: "admin",
+          action: "create:attendance",
+          message: `Attendance marked for student`,
+          metadata: {
+            attendanceId: attendanceRecord._id,
+            studentId: studentId,
+            status: status,
+          }
+        });
+      }
+    }
 
     return NextResponse.json(
       { success: true, data: populated },

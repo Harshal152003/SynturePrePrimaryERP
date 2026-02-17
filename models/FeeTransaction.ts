@@ -13,8 +13,9 @@ const FeeTransactionSchema = new mongoose.Schema({
   amountDue: { type: Number, required: true },
   amountPaid: { type: Number, default: 0 },
   fineAmount: { type: Number, default: 0 },
-  status: { type: String, enum: ["due","partial","paid"], default: "due" },
-  paymentMethod: { type: String, enum: ["cash","razorpay","online","offline"], default: "cash" },
+  status: { type: String, enum: ["due", "partial", "paid"], default: "due" },
+  dueDate: Date,
+  paymentMethod: { type: String, enum: ["cash", "razorpay", "online", "offline"], default: "cash" },
   paymentMeta: mongoose.Schema.Types.Mixed, // store Razorpay order/payment info
   receipts: [{ url: String, createdAt: Date }],
   note: String,

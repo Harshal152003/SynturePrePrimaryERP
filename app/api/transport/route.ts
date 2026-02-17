@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import TransportRoute from "@/models/TransportRoute";
 import { verifyToken } from "@/lib/auth";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 export async function GET(req: Request) {
   try {
@@ -85,6 +86,19 @@ export async function POST(req: Request) {
 
     await route.save();
     await route.populate("driverId", "name phone email");
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "create:transport",
+      message: `Transport route created: ${route.routeName}`,
+      metadata: {
+        routeId: route._id,
+        routeName: route.routeName,
+        routeCode: route.routeCode,
+      },
+    });
 
     return NextResponse.json({ success: true, route }, { status: 201 });
   } catch (error) {

@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import Student from "@/models/Student";
 import { StudentCreateZ } from "@/lib/validations/studentSchema";
 import { verifyToken } from "@/lib/auth";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 import bcryptjs from "bcryptjs";
 
 export async function GET(req: Request) {
@@ -104,10 +105,10 @@ export async function POST(req: Request) {
         return p;
       });
     }
-    
+
     const parsed = StudentCreateZ.parse(cleanBody);
     console.log("Parsed student data:", parsed);
-    
+
     // Hash password if provided
     let hashedPassword = undefined;
     if (parsed.password) {
@@ -121,13 +122,60 @@ export async function POST(req: Request) {
       admissionDate: parsed.admissionDate ? new Date(parsed.admissionDate) : undefined,
     });
     console.log("Student created with ID:", created._id);
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: user?.id,
+      actorRole: user?.role || "unknown",
+      action: "create:student",
+      message: `Created student: ${parsed.firstName} ${parsed.lastName || ""} (Admission No: ${parsed.admissionNo || "N/A"})`,
+      metadata: { studentId: created._id, firstName: parsed.firstName, lastName: parsed.lastName, admissionNo: parsed.admissionNo },
+    });
+
+    // Automatic Fee Assignment
+    if (parsed.classId) {
+      try {
+        const FeeStructure = await import("@/models/FeeStructure").then(mod => mod.default);
+        const FeeTransaction = await import("@/models/FeeTransaction").then(mod => mod.default);
+
+        const feeStructure = await FeeStructure.findOne({
+          classId: parsed.classId,
+          active: true
+        });
+
+        if (feeStructure) {
+          const items = feeStructure.heads.map((head: any) => ({
+            head: head.title,
+            amount: head.amount
+          }));
+
+          const totalAmount = items.reduce((sum: number, item: any) => sum + item.amount, 0);
+
+          await FeeTransaction.create({
+            studentId: created._id,
+            amountDue: totalAmount,
+            amountPaid: 0,
+            fineAmount: 0,
+            status: "due",
+            items: items,
+            dueDate: new Date(new Date().setMonth(new Date().getMonth() + 1)), // Default due date next month
+          });
+
+          console.log(`Automatically assigned fee structure '${feeStructure.name}' to student ${created._id}`);
+        }
+      } catch (feeError) {
+        console.error("Error creating initial fee transaction:", feeError);
+        // Don't fail the student creation if fee assignment fails, just log it
+      }
+    }
+
     return NextResponse.json({ success: true, student: created }, { status: 201 });
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error(String(err));
     console.error("Error creating student:", error);
-    
+
     let errorMessage = error.message || "Invalid data";
-    
+
     // Handle MongoDB duplicate key errors
     if (error.message?.includes("duplicate key")) {
       const match = error.message.match(/key:\s*\{([^}]+)\}/);
@@ -138,7 +186,7 @@ export async function POST(req: Request) {
         errorMessage = "Duplicate entry found";
       }
     }
-    
+
     // Handle validation errors
     if (err instanceof Error && 'errors' in err) {
       const validationErrors = (err as any).errors;
@@ -146,9 +194,9 @@ export async function POST(req: Request) {
         .map((e: any) => e.message || String(e))
         .join(", ");
     }
-    
-    return NextResponse.json({ 
-      success: false, 
+
+    return NextResponse.json({
+      success: false,
       error: errorMessage,
     }, { status: 400 });
   }

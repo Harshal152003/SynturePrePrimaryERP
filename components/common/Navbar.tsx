@@ -3,11 +3,11 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
-import { 
-  Bell, 
-  Search, 
-  Settings, 
-  LogOut, 
+import {
+  Bell,
+  Search,
+  Settings,
+  LogOut,
   User,
   ChevronDown,
   Menu
@@ -32,7 +32,7 @@ export default function Navbar({
 
   // Check if search should be visible (only on admin dashboard)
   const isAdminDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
-  
+
   // Only show search on main dashboard, not in specific modules
   const showSearch = pathname === "/dashboard";
 
@@ -58,7 +58,7 @@ export default function Navbar({
 
   const handleSearch = async (value: string) => {
     setSearchTerm(value);
-    
+
     if (!value.trim()) {
       setSearchResults([]);
       setShowSearchResults(false);
@@ -69,11 +69,11 @@ export default function Navbar({
       // Fetch students
       const studentsRes = await fetch(`/api/students?q=${encodeURIComponent(value)}&limit=3`);
       const studentsData = studentsRes.ok ? await studentsRes.json() : { data: [] };
-      
+
       // Fetch teachers
       const teachersRes = await fetch(`/api/teachers?q=${encodeURIComponent(value)}&limit=3`);
       const teachersData = teachersRes.ok ? await teachersRes.json() : { data: [] };
-      
+
       // Fetch classes
       const classesRes = await fetch(`/api/classes?q=${encodeURIComponent(value)}&limit=3`);
       const classesData = classesRes.ok ? await classesRes.json() : { data: [] };
@@ -128,12 +128,12 @@ export default function Navbar({
       <div className="px-6 py-3.5 flex justify-between items-center">
         {/* Left Section - Search */}
         <div className="flex items-center gap-4 flex-1 max-w-xl">
-        <button
-  onClick={onMenuClick}
-  className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
->
-  <Menu className="w-5 h-5 text-gray-600" />
-</button>
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <Menu className="w-5 h-5 text-gray-600" />
+          </button>
 
           {showSearch && (
             <div className="relative flex-1" ref={searchRef}>
@@ -291,7 +291,7 @@ export default function Navbar({
               }}
               className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-lg transition-all group"
             >
-              <div className="w-9 h-9 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-sm border-2 border-white">
+              <div className="w-9 h-9 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-sm border-2 border-white">
                 {user?.name?.charAt(0).toUpperCase() || "U"}
               </div>
               <div className="hidden md:block text-left">
@@ -306,7 +306,7 @@ export default function Navbar({
                 {/* Profile Header */}
                 <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-pink-50 border-b border-gray-200">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                    <div className="w-10 h-10 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-full flex items-center justify-center text-white text-sm font-semibold">
                       {user?.name?.charAt(0).toUpperCase() || "U"}
                     </div>
                     <div>
@@ -331,7 +331,7 @@ export default function Navbar({
                     </div>
                     <span className="font-medium">My Profile</span>
                   </Link>
-                  
+
                   <Link
                     href="/dashboard/settings"
                     className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"

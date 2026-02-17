@@ -4,6 +4,7 @@ import Teacher from "@/models/Teacher";
 import { TeacherCreateZ } from "@/lib/validations/teacherSchema";
 import { verifyToken } from "@/lib/auth";
 import bcryptjs from "bcryptjs";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 export async function GET(req: Request) {
   await connectDB();
@@ -52,6 +53,21 @@ export async function POST(req: Request) {
       ...parsed,
       password: hashedPassword,
     });
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "create:teacher",
+      message: `Teacher created: ${teacher.name}`,
+      metadata: {
+        teacherId: teacher._id,
+        name: teacher.name,
+        email: teacher.email,
+        department: teacher.department,
+      }
+    });
+
     return NextResponse.json({ success: true, teacher }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message || "Invalid" }, { status: 400 });

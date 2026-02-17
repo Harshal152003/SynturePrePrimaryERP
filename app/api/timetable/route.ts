@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Timetable from "@/models/Timetable";
 import { verifyToken } from "@/lib/auth";
+import { TimetableCreateZ } from "@/lib/validations/timetableSchema";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 export async function GET(req: Request) {
   await connectDB();
@@ -23,9 +25,6 @@ export async function GET(req: Request) {
   return NextResponse.json({ success: true, timetable });
 }
 
-
-import { TimetableCreateZ } from "@/lib/validations/timetableSchema";
-
 export async function POST(req: Request) {
   await connectDB();
 
@@ -40,6 +39,18 @@ export async function POST(req: Request) {
     const parsed = TimetableCreateZ.parse(body);
 
     const created = await Timetable.create(parsed);
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "create:timetable",
+      message: `Timetable created`,
+      metadata: {
+        timetableId: created._id,
+      },
+    });
+
     return NextResponse.json({ success: true, timetable: created }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 400 });

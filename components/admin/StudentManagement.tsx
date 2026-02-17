@@ -11,6 +11,7 @@ import Badge from "@/components/common/Badge";
 import Alert from "@/components/common/Alert";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import { showToast } from "@/lib/toast";
+import { useRouter } from "next/navigation";
 import { exportToCSV } from "@/utils/exportData";
 import {
   Users,
@@ -25,6 +26,7 @@ import {
   Filter,
   AlertCircle,
   X,
+  Eye,
 } from "lucide-react";
 
 interface Parent {
@@ -74,6 +76,7 @@ interface Column {
 }
 
 export default function StudentManagement() {
+  const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
@@ -472,6 +475,14 @@ export default function StudentManagement() {
           actions={(row) => (
             <div className="flex gap-2">
               <button
+                onClick={() => router.push(`/dashboard/fees/${(row as Student)._id}`)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 rounded-lg hover:bg-green-100 transition-all text-sm font-medium"
+                title="View Fee Details"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                Details
+              </button>
+              <button
                 onClick={() => handleEditStudent(row as Student)}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-all text-sm font-medium"
               >
@@ -617,11 +628,10 @@ export default function StudentManagement() {
                       key={option.value}
                       type="button"
                       onClick={() => setFormData((prev) => ({ ...prev, gender: option.value }))}
-                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                        formData.gender === option.value
-                          ? "border-pink-500 bg-pink-50 text-pink-700"
-                          : "border-gray-200 bg-white text-gray-700 hover:border-pink-300"
-                      }`}
+                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${formData.gender === option.value
+                        ? "border-pink-500 bg-pink-50 text-pink-700"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-pink-300"
+                        }`}
                     >
                       <span className="text-lg">{option.emoji}</span>
                       <span className="font-medium text-sm">{option.label}</span>

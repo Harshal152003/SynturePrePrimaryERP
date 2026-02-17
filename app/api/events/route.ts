@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Event from "@/models/Event";
 import { verifyToken } from "@/lib/auth";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 export async function GET(req: Request) {
   try {
@@ -85,6 +86,20 @@ export async function POST(req: Request) {
 
     await event.save();
     await event.populate("classIds", "name section");
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "create:event",
+      message: `Event created: ${event.title}`,
+      metadata: {
+        eventId: event._id,
+        title: event.title,
+        eventType: event.eventType,
+        status: event.status,
+      },
+    });
 
     return NextResponse.json({ success: true, event }, { status: 201 });
   } catch (error) {

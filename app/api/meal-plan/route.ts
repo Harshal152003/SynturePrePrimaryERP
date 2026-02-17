@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import MealPlan from "@/models/MealPlan";
 import { verifyToken } from "@/lib/auth";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 export async function GET(req: Request) {
   try {
@@ -87,6 +88,19 @@ export async function POST(req: Request) {
 
     await plan.save();
     await plan.populate("classIds", "name section");
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "create:mealplan",
+      message: `Meal plan created: ${plan.name}`,
+      metadata: {
+        mealPlanId: plan._id,
+        name: plan.name,
+        mealType: plan.mealType,
+      },
+    });
 
     return NextResponse.json({ success: true, plan }, { status: 201 });
   } catch (error) {

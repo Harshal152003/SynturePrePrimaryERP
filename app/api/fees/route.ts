@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import FeeStructure from "@/models/FeeStructure";
 import { verifyToken } from "@/lib/auth";
 import { FeeStructureCreateZ } from "@/lib/validations/feeSchema";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 export async function GET(req: Request) {
   await connectDB();
@@ -36,6 +37,19 @@ export async function POST(req: Request) {
     const body = await req.json();
     const parsed = FeeStructureCreateZ.parse(body);
     const created = await FeeStructure.create(parsed);
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "create:fee",
+      message: `Fee structure created: ${created.name}`,
+      metadata: {
+        feeId: created._id,
+        name: created.name,
+      },
+    });
+
     return NextResponse.json({ success: true, item: created }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 400 });

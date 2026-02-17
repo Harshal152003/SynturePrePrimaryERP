@@ -192,8 +192,8 @@ export default function Sidebar({
   );
 
   return (
- <aside
-  className={`
+    <aside
+      className={`
     fixed lg:static z-50
     h-screen bg-white border-r border-gray-200
     flex flex-col
@@ -202,18 +202,17 @@ export default function Sidebar({
     lg:translate-x-0
     ${isCollapsed ? "w-20" : "w-64"}
   `}
->
+    >
 
 
       {/* Header */}
       <div
-        className={`border-b border-gray-200 flex items-center ${
-          isCollapsed ? "justify-center py-5" : "justify-between px-5 py-5"
-        }`}
+        className={`border-b border-gray-200 flex items-center ${isCollapsed ? "justify-center py-5" : "justify-between px-5 py-5"
+          }`}
       >
         {!isCollapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 via-pink-400 to-pink-500 rounded-xl flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-xl flex items-center justify-center shadow-sm">
               <Baby className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -223,16 +222,16 @@ export default function Sidebar({
           </div>
         )}
         {isCollapsed && (
-          <div className="w-10 h-10 bg-gradient-to-br from-orange-400 via-pink-400 to-pink-500 rounded-xl flex items-center justify-center shadow-sm">
+          <div className="w-10 h-10 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-xl flex items-center justify-center shadow-sm">
             <Baby className="w-6 h-6 text-white" />
           </div>
         )}
-      <button
-  onClick={onClose}
-  className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
->
-  <PanelLeftClose className="w-5 h-5" />
-</button>
+        <button
+          onClick={onClose}
+          className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+        >
+          <PanelLeftClose className="w-5 h-5" />
+        </button>
 
       </div>
 
@@ -240,7 +239,7 @@ export default function Sidebar({
       {user && !isCollapsed && (
         <div className="px-4 py-4 bg-gradient-to-r from-orange-50 via-pink-50 to-orange-50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm border-2 border-white">
+            <div className="w-10 h-10 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm border-2 border-white">
               {user.name?.charAt(0).toUpperCase() || "U"}
             </div>
             <div className="flex-1 min-w-0">
@@ -257,72 +256,70 @@ export default function Sidebar({
 
       {user && isCollapsed && (
         <div className="py-4 flex justify-center bg-gradient-to-r from-orange-50 via-pink-50 to-orange-50">
-          <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm border-2 border-white">
+          <div className="w-10 h-10 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm border-2 border-white">
             {user.name?.charAt(0).toUpperCase() || "U"}
           </div>
         </div>
       )}
 
       {/* Navigation */}
-<nav className="flex-1 overflow-y-auto no-scrollbar">
-  <ul className={isCollapsed ? "space-y-2 py-4" : "space-y-1 px-3 py-4"}>
-    {filteredMenu.map((item) => {
-      const Icon = item.icon;
-      const isActive =
-        pathname === item.path || pathname?.startsWith(item.path + "/");
+      <nav className="flex-1 overflow-y-auto no-scrollbar">
+        <ul className={isCollapsed ? "space-y-2 py-4" : "space-y-1 px-3 py-4"}>
+          {filteredMenu.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              pathname === item.path || pathname?.startsWith(item.path + "/");
 
-      return (
-        <li key={item.path}>
-          <Link
-            href={item.path}
-            className={`
+            return (
+              <li key={item.path}>
+                <Link
+                  href={item.path}
+                  className={`
               group relative flex items-center transition-all duration-150
-              ${
-                isCollapsed
-                  ? "justify-center py-3"
-                  : "px-3 py-2.5 rounded-lg"
-              }
-              ${
-                isActive
-                  ? "bg-gradient-to-r from-orange-50 to-pink-50 shadow-sm"
-                  : "hover:bg-gray-50"
-              }
+              ${isCollapsed
+                      ? "justify-center py-3"
+                      : "px-3 py-2.5 rounded-lg"
+                    }
+              ${isActive
+                      ? "bg-gradient-to-r from-orange-50 to-pink-50 shadow-sm"
+                      : "hover:bg-gray-50"
+                    }
             `}
-            title={isCollapsed ? item.name : undefined}
-          >
-            <div
-              className={`
+                  title={isCollapsed ? item.name : undefined}
+                >
+                  <div
+                    className={`
                 flex items-center justify-center rounded-lg
                 ${isCollapsed ? "w-10 h-10" : "w-9 h-9 mr-3"}
                 ${getColorClasses(item.color, isActive)}
               `}
-            >
-              <Icon className="w-5 h-5" />
-            </div>
+                  >
+                    <Icon className="w-5 h-5" />
+                  </div>
 
-            {!isCollapsed && (
-              <span className="text-sm font-medium text-gray-700">
-                {item.name}
-              </span>
-            )}
+                  {!isCollapsed && (
+                    <span className="text-sm font-medium text-gray-700">
+                      {item.name}
+                    </span>
+                  )}
 
-            {/* Tooltip when collapsed */}
-            {isCollapsed && (
-              <div className="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                {item.name}
-              </div>
-            )}
-          </Link>
-        </li>
-      );
-    })}
-  </ul>
-</nav>
+                  {/* Tooltip when collapsed */}
+                  {isCollapsed && (
+                    <div className="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg">
+                      {item.name}
+                    </div>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
 
 
-                  
 
-   {/* Expand button when collapsed */}
+
+      {/* Expand button when collapsed */}
       {isCollapsed && (
         <div className="py-3 border-t border-gray-200">
           <button

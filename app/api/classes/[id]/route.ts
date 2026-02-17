@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import ClassModel from "@/models/Class";
 import { verifyToken } from "@/lib/auth";
 import { ClassCreateZ } from "@/lib/validations/classSchema";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 export async function GET(req: Request, { params }: any) {
   await connectDB();
@@ -31,6 +32,20 @@ export async function PUT(req: Request, { params }: any) {
 
     const updated = await ClassModel.findByIdAndUpdate(params.id, parsed, { new: true });
 
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "update:class",
+      message: `Class updated: ${updated.name} - ${updated.section}`,
+      metadata: {
+        classId: updated._id,
+        name: updated.name,
+        section: updated.section,
+        roomNumber: updated.roomNumber,
+      }
+    });
+
     return NextResponse.json({ success: true, class: updated });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 400 });
@@ -49,6 +64,20 @@ export async function DELETE(req: Request, { params }: any) {
   const deleted = await ClassModel.findByIdAndDelete(params.id);
 
   if (!deleted) return NextResponse.json({ success: false, error: "Not found" });
+
+  // Log admin activity
+  await logAdminActivity({
+    actorId: String(user.id),
+    actorRole: user.role,
+    action: "delete:class",
+    message: `Class deleted: ${deleted.name} - ${deleted.section}`,
+    metadata: {
+      classId: deleted._id,
+      name: deleted.name,
+      section: deleted.section,
+      roomNumber: deleted.roomNumber,
+    }
+  });
 
   return NextResponse.json({ success: true, deletedId: params.id });
 }

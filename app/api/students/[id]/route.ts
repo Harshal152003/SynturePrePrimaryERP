@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import Student from "@/models/Student";
 import { StudentCreateZ } from "@/lib/validations/studentSchema";
 import { verifyToken } from "@/lib/auth";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 import bcryptjs from "bcryptjs";
 
 // ---- FIX: Define Student type ----
@@ -119,6 +120,15 @@ export async function PUT(
     if (!updated)
       return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user?.id),
+      actorRole: user?.role || "unknown",
+      action: "update:student",
+      message: `Updated student: ${updated.firstName} ${updated.lastName || ""} (ID: ${id})`,
+      metadata: { studentId: id, firstName: updated.firstName, lastName: updated.lastName, admissionNo: updated.admissionNo },
+    });
+
     return NextResponse.json({ success: true, student: updated });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message || "Update failed" }, { status: 400 });
@@ -143,6 +153,15 @@ export async function DELETE(
   const deleted = await Student.findByIdAndDelete(id);
   if (!deleted)
     return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+
+  // Log admin activity
+  await logAdminActivity({
+    actorId: String(user?.id),
+    actorRole: user?.role || "unknown",
+    action: "delete:student",
+    message: `Deleted student: ${deleted.firstName} ${deleted.lastName || ""} (ID: ${id})`,
+    metadata: { studentId: id, firstName: deleted.firstName, lastName: deleted.lastName, admissionNo: deleted.admissionNo },
+  });
 
   return NextResponse.json({ success: true, deletedId: id });
 }

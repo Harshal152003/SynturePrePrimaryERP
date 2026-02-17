@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Exam from "@/models/Exam";
 import { verifyToken } from "@/lib/auth";
+import { logAdminActivity } from "@/lib/logAdminActivity";
 
 export async function GET(req: Request) {
   try {
@@ -87,6 +88,20 @@ export async function POST(req: Request) {
 
     await exam.save();
     await exam.populate("classId", "name section");
+
+    // Log admin activity
+    await logAdminActivity({
+      actorId: String(user.id),
+      actorRole: user.role,
+      action: "create:exam",
+      message: `Exam created: ${exam.name}`,
+      metadata: {
+        examId: exam._id,
+        name: exam.name,
+        examType: exam.examType,
+        totalMarks: exam.totalMarks,
+      },
+    });
 
     return NextResponse.json({ success: true, exam }, { status: 201 });
   } catch (error) {

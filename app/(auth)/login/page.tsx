@@ -105,7 +105,7 @@ export default function LoginPage() {
 
       const redirectTo = rolePathMap[userRole] || "/dashboard";
       console.log("Redirecting to:", redirectTo);
-      
+
       try {
         await router.push(redirectTo);
       } finally {
@@ -134,14 +134,14 @@ export default function LoginPage() {
           {/* Logo and Heading */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-xl flex items-center justify-center">
                 <Baby className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">Pre-Primary <span className="text-orange-500">ERP</span></h1>
+                <h1 className="text-2xl font-bold text-gray-800">Pre-Primary <span className="text-primary">ERP</span></h1>
               </div>
             </div>
-            
+
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back!</h2>
             <p className="text-gray-600">Use your credentials to access your account</p>
           </div>
@@ -168,7 +168,7 @@ export default function LoginPage() {
                   name="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 >
                   <option value="admin">Admin</option>
                   <option value="teacher">Teacher</option>
@@ -192,7 +192,7 @@ export default function LoginPage() {
                   type="email"
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Enter your email"
                 />
               </div>
@@ -212,7 +212,7 @@ export default function LoginPage() {
                   type="password"
                   value={form.password}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Enter password"
                 />
               </div>
@@ -225,13 +225,13 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-400"
+                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                 />
                 <span className="text-sm text-gray-700">Remember me</span>
               </label>
-              <a 
-                href="/auth/forgot-password" 
-                className="text-sm text-orange-500 hover:text-orange-600 transition-colors"
+              <a
+                href="/auth/forgot-password"
+                className="text-sm text-primary hover:text-primary-dark transition-colors"
               >
                 Forgot password?
               </a>
@@ -241,7 +241,7 @@ export default function LoginPage() {
             <button
               onClick={handleLogin}
               disabled={loading}
-              className="w-full bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-medium py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary-dark text-white font-medium py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Logging in..." : "Log In"}
             </button>
@@ -251,7 +251,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm">
               No account?{" "}
-              <a href="/auth/signup" className="text-orange-500 hover:text-orange-600 font-medium transition-colors">
+              <a href="/auth/signup" className="text-primary hover:text-primary-dark font-medium transition-colors">
                 Sign up
               </a>
             </p>
@@ -260,11 +260,11 @@ export default function LoginPage() {
       </div>
 
       {/* Right Section - Illustration & Info */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-orange-100 via-orange-50 to-pink-50 items-center justify-center p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-50 items-center justify-center p-12 relative overflow-hidden">
         {/* Decorative Elements */}
-        <div className="absolute top-10 right-10 w-20 h-20 bg-yellow-200 rounded-full opacity-50"></div>
-        <div className="absolute bottom-20 left-10 w-16 h-16 bg-pink-200 rounded-full opacity-50"></div>
-        <div className="absolute top-1/2 left-10 w-12 h-12 bg-orange-200 rounded-full opacity-50"></div>
+        <div className="absolute top-10 right-10 w-20 h-20 bg-secondary-light rounded-full opacity-50"></div>
+        <div className="absolute bottom-20 left-10 w-16 h-16 bg-accent rounded-full opacity-50"></div>
+        <div className="absolute top-1/2 left-10 w-12 h-12 bg-primary-light rounded-full opacity-50"></div>
 
         <div className="max-w-lg text-center relative z-10">
           {/* Illustration */}
@@ -288,11 +288,10 @@ export default function LoginPage() {
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  index === currentSlide 
-                    ? 'bg-orange-500 w-8' 
-                    : 'bg-orange-300 hover:bg-orange-400'
-                }`}
+                className={`w-3 h-3 rounded-full transition-all ${index === currentSlide
+                  ? 'bg-primary w-8'
+                  : 'bg-primary-light hover:bg-primary'
+                  }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}

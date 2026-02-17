@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #4F46E5; /* Indigo 600 */
+  --color-primary-light: #818CF8; /* Indigo 400 */
+  --color-primary-dark: #3730A3; /* Indigo 800 */
+  
+  --color-secondary: #0EA5E9; /* Sky 500 */
+  --color-secondary-light: #38BDF8; /* Sky 400 */
+  
+  --color-accent: #EC4899; /* Pink 500 (kept for vibrancy) */
+  
+  --color-surface: #F8FAFC; /* Slate 50 */
+  --color-surface-dark: #F1F5F9; /* Slate 100 */
+}
+
 /* Hide native scrollbars while preserving scroll functionality */
 .no-scrollbar {
 	-ms-overflow-style: none; /* IE and Edge */

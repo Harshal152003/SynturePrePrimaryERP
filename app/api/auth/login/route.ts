@@ -12,8 +12,13 @@ export async function POST(req: Request) {
     await connectDB();
     const { email, password, role } = await req.json();
     console.log("[api/auth/login] Login attempt for email:", email, "role:", role);
+    console.log("[api/auth/login] Password length received:", password ? password.length : "N/A");
+    // Trim inputs
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
     // Validate input
-    if (!email || !password) {
+    if (!trimmedEmail || !trimmedPassword) {
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
@@ -32,20 +37,22 @@ export async function POST(req: Request) {
     let user = null;
     let detectedRole = role || "admin";
 
+    console.log(`[api/auth/login] Searching for user: ${trimmedEmail} with role hint: ${role}`);
+
     // Search based on the role provided
     if (role === "teacher") {
-      user = await Teacher.findOne({ email });
+      user = await Teacher.findOne({ email: trimmedEmail });
       if (user) {
         detectedRole = "teacher";
       }
     } else if (role === "student") {
-      user = await Student.findOne({ email });
+      user = await Student.findOne({ email: trimmedEmail });
       if (user) {
         detectedRole = "student";
       }
     } else if (role === "admin" || !role) {
       // Try User model first (admin/parent)
-      user = await User.findOne({ email });
+      user = await User.findOne({ email: trimmedEmail });
       if (user) {
         detectedRole = user.role || "admin";
       }
@@ -53,8 +60,9 @@ export async function POST(req: Request) {
 
     // If user not found with specified role, try other models as fallback
     if (!user) {
+      console.log("[api/auth/login] User not found with primary role search, trying fallbacks...");
       // Try User model
-      user = await User.findOne({ email });
+      user = await User.findOne({ email: trimmedEmail });
       if (user) {
         detectedRole = user.role || "admin";
       }
@@ -62,7 +70,7 @@ export async function POST(req: Request) {
 
     if (!user) {
       // Try Teacher model
-      user = await Teacher.findOne({ email });
+      user = await Teacher.findOne({ email: trimmedEmail });
       if (user) {
         detectedRole = "teacher";
       }
@@ -70,7 +78,7 @@ export async function POST(req: Request) {
 
     if (!user) {
       // Try Student model
-      user = await Student.findOne({ email });
+      user = await Student.findOne({ email: trimmedEmail });
       if (user) {
         detectedRole = "student";
       }
@@ -78,9 +86,10 @@ export async function POST(req: Request) {
 
     // If still not found in any model, return error
     if (!user) {
+      console.log(`[api/auth/login] User not found: ${trimmedEmail}`);
       try {
         await LogActivity.create({
-          actorEmail: email,
+          actorEmail: trimmedEmail,
           actorRole: role || "unknown",
           action: "login",
           result: "failure",
@@ -93,9 +102,12 @@ export async function POST(req: Request) {
       }
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
-  
+
+    console.log(`[api/auth/login] User found: ${user.email} (${user._id}), Role: ${detectedRole}`);
+
     // Check if password field exists
     if (!user.password) {
+      console.error("[api/auth/login] User has no password set");
       return NextResponse.json(
         { error: "User password not set" },
         { status: 400 }
@@ -103,7 +115,19 @@ export async function POST(req: Request) {
     }
 
     // Verify password
-    const match = await bcrypt.compare(password, user.password);
+    console.log("[api/auth/login] Verifying password...");
+    // const match = await bcrypt.compare(trimmedPassword, user.password); // Use trimmed password
+
+    // DEBUG: Direct comparison for diagnosis if bcrypt fails confusingly
+    let match = false;
+    try {
+      match = await bcrypt.compare(trimmedPassword, user.password);
+    } catch (err) {
+      console.error("[api/auth/login] bcrypt error:", err);
+    }
+
+    console.log(`[api/auth/login] Password match result: ${match}`);
+
     if (!match) {
       try {
         await LogActivity.create({
