@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
 
-  if (!user || user.role !== "admin")
+  if (!user || !["admin", "teacher"].includes(user.role))
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
 
   try {
@@ -46,19 +46,21 @@ export async function POST(req: Request) {
 
     const created = await Timetable.create(parsed);
 
-    // Log admin activity
-    await logAdminActivity({
-      actorId: String(user.id),
-      actorRole: user.role,
-      action: "create:timetable",
-      message: `Timetable created: ${parsed.subject} on ${parsed.day}`,
-      metadata: {
-        timetableId: created._id,
-        classId: parsed.classId,
-        teacherId: parsed.teacherId,
-        subject: parsed.subject,
-      },
-    });
+    // Log activity only for admin
+    if (user.role === "admin") {
+      await logAdminActivity({
+        actorId: String(user.id),
+        actorRole: user.role,
+        action: "create:timetable",
+        message: `Timetable created: ${parsed.subject} on ${parsed.day}`,
+        metadata: {
+          timetableId: created._id,
+          classId: parsed.classId,
+          teacherId: parsed.teacherId,
+          subject: parsed.subject,
+        },
+      });
+    }
 
     return NextResponse.json({ success: true, timetable: created }, { status: 201 });
   } catch (err: any) {

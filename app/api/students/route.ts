@@ -19,6 +19,10 @@ export async function GET(req: Request) {
   // optional filter by classId, name, etc.
   const filter: any = {};
   if (url.searchParams.get("classId")) filter.classId = url.searchParams.get("classId");
+  if (url.searchParams.get("classIds")) {
+    const ids = url.searchParams.get("classIds")!.split(",").filter(Boolean);
+    if (ids.length > 0) filter.classId = { $in: ids };
+  }
   if (url.searchParams.get("q")) {
     const q = url.searchParams.get("q");
     filter.$or = [

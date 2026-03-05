@@ -33,8 +33,8 @@ export default function Navbar({
   // Check if search should be visible (only on admin dashboard)
   const isAdminDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
 
-  // Only show search on main dashboard, not in specific modules
-  const showSearch = pathname === "/dashboard";
+  // Only show search on the main dashboard screens, not inside specific modules
+  const showSearch = pathname === "/dashboard" || pathname === "/teacher-dashboard" || pathname === "/student-dashboard" || pathname === "/parent-dashboard";
 
   // Handle click outside dropdowns
   useEffect(() => {
@@ -109,12 +109,20 @@ export default function Navbar({
     setShowSearchResults(false);
     setSearchResults([]);
 
+    const basePath = pathname?.startsWith("/teacher-dashboard")
+      ? "/teacher-dashboard"
+      : pathname?.startsWith("/student-dashboard")
+        ? "/student-dashboard"
+        : pathname?.startsWith("/parent-dashboard")
+          ? "/parent-dashboard"
+          : "/dashboard";
+
     if (result.type === "student") {
-      router.push(`/dashboard/students/${result._id}`);
+      router.push(`${basePath}/students/${result._id}`);
     } else if (result.type === "teacher") {
-      router.push(`/dashboard/teachers/${result._id}`);
+      router.push(`${basePath}/teachers/${result._id}`);
     } else if (result.type === "class") {
-      router.push(`/dashboard/classes/${result._id}`);
+      router.push(`${basePath}/classes/${result._id}`);
     }
   };
 
@@ -140,7 +148,7 @@ export default function Navbar({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search students, teachers, classes..."
+                placeholder="Search students..."
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
                 onFocus={() => searchTerm && setShowSearchResults(true)}

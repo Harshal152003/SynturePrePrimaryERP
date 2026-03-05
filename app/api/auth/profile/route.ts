@@ -29,6 +29,9 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
+        user.id = user._id.toString();
+        user.role = decoded.role;
+
         return NextResponse.json({ success: true, user });
     } catch (error) {
         console.error("[api/auth/profile] GET error:", error);

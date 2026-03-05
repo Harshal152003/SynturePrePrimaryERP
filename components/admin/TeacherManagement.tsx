@@ -63,6 +63,7 @@ export default function TeacherManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [selectedClass, setSelectedClass] = useState("");
+  const [saving, setSaving] = useState(false);
 
 
   const [formData, setFormData] = useState<{
@@ -103,7 +104,7 @@ export default function TeacherManagement() {
 
   const fetchClasses = async () => {
     try {
-      const res = await fetch("/api/classes");
+      const res = await fetch("/api/classes?limit=100");
       const data = await res.json();
       setClasses(data.classes || []);
     } catch (error) {
@@ -190,13 +191,25 @@ export default function TeacherManagement() {
     }
 
     try {
+      setSaving(true);
       const method = editingTeacher ? "PUT" : "POST";
       const url = editingTeacher ? `/api/teachers/${editingTeacher._id}` : "/api/teachers";
+
+      // Clean up classes mapping: filter out entries with empty classId
+      const cleanedClasses = formData.classes.filter(c => c.classId && c.classId.trim() !== "");
+      const sanitizedData = { ...formData, classes: cleanedClasses };
+
+      // Remove password if it's empty string for editing
+      if (editingTeacher && !sanitizedData.password) {
+        delete (sanitizedData as any).password;
+      }
+
+      console.log(`[TeacherManagement] ${method} to ${url}`, sanitizedData);
 
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(sanitizedData),
       });
 
       if (res.ok) {
@@ -213,9 +226,16 @@ export default function TeacherManagement() {
           qualifications: [],
         });
         fetchTeachers();
+      } else {
+        const errorData = await res.json();
+        console.error("[TeacherManagement] Error response:", errorData);
+        showToast.error(errorData.error || "Failed to save teacher");
       }
     } catch (error) {
+      console.error("[TeacherManagement] Fetch error:", error);
       showToast.error("Failed to save teacher");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -240,9 +260,12 @@ export default function TeacherManagement() {
       if (res.ok) {
         showToast.success("Teacher deleted successfully");
         fetchTeachers();
+      } else {
+        const errorData = await res.json();
+        showToast.error(errorData.error || "Failed to delete teacher");
       }
     } catch (error) {
-      showToast.error("Failed to delete teacher");
+      showToast.error("An unexpected error occurred");
     }
   };
 
@@ -482,7 +505,7 @@ export default function TeacherManagement() {
             >
               Cancel
             </Button>
-            <Button onClick={handleAddTeacher} variant="primary">
+            <Button onClick={handleAddTeacher} variant="primary" loading={saving}>
               {editingTeacher ? "Update" : "Add"} Teacher
             </Button>
           </>

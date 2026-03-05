@@ -936,14 +936,14 @@ export default function StudentManagement() {
                       className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
                     />
                     <input
-                      type="tel"
+                      type="text"
+                      inputMode="numeric"
                       placeholder="10-digit Phone Number"
                       value={parent.phone}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^\d]/g, '');
+                        const value = e.target.value.replace(/[^\d]/g, '').slice(0, 10);
                         handleParentChange(index, "phone", value);
                       }}
-                      maxLength={10}
                       className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
                     />
                     <input
@@ -1049,17 +1049,17 @@ export default function StudentManagement() {
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
               />
               <input
-                type="tel"
+                type="text"
+                inputMode="numeric"
                 placeholder="10-digit Pickup Person Phone"
                 value={formData?.pickupInfo?.pickupPhone}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/[^\d]/g, '');
+                  const value = e.target.value.replace(/[^\d]/g, '').slice(0, 10);
                   setFormData((prev) => ({
                     ...prev,
                     pickupInfo: { ...prev.pickupInfo, pickupPhone: value },
                   }));
                 }}
-                maxLength={10}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
               />
             </div>

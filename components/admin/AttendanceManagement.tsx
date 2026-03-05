@@ -500,90 +500,102 @@ export default function AttendanceManagement() {
                   ) : (
                     <>
                       {/* Register Stats Bar */}
-                      <div className="flex flex-col sm:flex-row gap-3 mb-5 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm justify-between items-center">
-                        <span className="font-bold text-gray-700 flex items-center gap-2">
-                          <div className="w-1.5 h-6 bg-orange-500 rounded-full"></div>
-                          Class Summary
-                        </span>
-                        <div className="flex flex-wrap justify-center lg:justify-end gap-3 md:gap-4 flex-1">
-                          <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-lg border border-green-100">
-                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            <span className="text-green-700 font-bold text-sm">{currentRegisterStats.present} Pre</span>
+                      <div className="mb-6 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+                          <span className="font-bold text-gray-800 flex items-center gap-2 text-sm">
+                            <div className="w-1.5 h-5 bg-orange-500 rounded-full"></div>
+                            Class Summary
+                          </span>
+                          <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
+                            {currentRegisterStats.total} Students Total
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-gray-100">
+                          <div className="flex flex-col items-center justify-center gap-1 py-4 px-3 bg-green-50/50">
+                            <span className="text-2xl font-extrabold text-green-700">{currentRegisterStats.present}</span>
+                            <span className="text-xs font-semibold text-green-600 uppercase tracking-wide">Present</span>
                           </div>
-                          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 rounded-lg border border-red-100">
-                            <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                            <span className="text-red-700 font-bold text-sm">{currentRegisterStats.absent} Abs</span>
+                          <div className="flex flex-col items-center justify-center gap-1 py-4 px-3 bg-red-50/50">
+                            <span className="text-2xl font-extrabold text-red-700">{currentRegisterStats.absent}</span>
+                            <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">Absent</span>
                           </div>
-                          <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 rounded-lg border border-amber-100">
-                            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                            <span className="text-amber-700 font-bold text-sm">{currentRegisterStats.late} Late</span>
+                          <div className="flex flex-col items-center justify-center gap-1 py-4 px-3 bg-amber-50/50">
+                            <span className="text-2xl font-extrabold text-amber-700">{currentRegisterStats.late}</span>
+                            <span className="text-xs font-semibold text-amber-600 uppercase tracking-wide">Late</span>
                           </div>
-                          <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-lg border border-blue-100">
-                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                            <span className="text-blue-700 font-bold text-sm">{currentRegisterStats.excused} Exc</span>
+                          <div className="flex flex-col items-center justify-center gap-1 py-4 px-3 bg-blue-50/50">
+                            <span className="text-2xl font-extrabold text-blue-700">{currentRegisterStats.excused}</span>
+                            <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Excused</span>
                           </div>
                         </div>
-                        <span className="text-gray-400 font-medium hidden sm:inline border-l border-gray-200 pl-4">{currentRegisterStats.total} Students</span>
                       </div>
 
                       {/* Student Register Grid */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-                        {classStudents.map((student) => (
-                          <div key={student._id} className="flex flex-row items-center justify-between p-4 border border-gray-200 rounded-2xl hover:border-orange-300 hover:shadow-md transition-all duration-200 bg-white group relative overflow-hidden">
-                            {/* Status Indicator Bar */}
-                            <div className={`absolute left-0 top-0 bottom-0 w-1.5 
-                          ${studentStatus[student._id] === "present" ? "bg-green-500" :
-                                studentStatus[student._id] === "absent" ? "bg-red-500" :
-                                  studentStatus[student._id] === "late" ? "bg-amber-500" :
-                                    "bg-blue-500"
-                              } transition-colors duration-300`}></div>
-
-                            {/* Student Info */}
-                            <div className="flex items-center gap-3 overflow-hidden">
-                              <div className="flex-shrink-0 w-10.5 h-10.5 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-base font-bold text-gray-700 border border-gray-200 group-hover:from-orange-50 group-hover:to-orange-100 group-hover:border-orange-200 transition-colors">
-                                {student.firstName.charAt(0)}
-                              </div>
-                              <div className="overflow-hidden">
-                                <h3 className="font-bold text-gray-800 truncate text-base group-hover:text-orange-900 transition-colors">
-                                  {student.firstName} {student.lastName}
-                                </h3>
-                                <p className="text-xs text-gray-500 font-medium tracking-tight">Reg: {student.admissionNo || "N/A"}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        {classStudents.map((student, index) => {
+                          const status = studentStatus[student._id] || "present";
+                          const statusConfig: Record<string, { bg: string; lightBg: string; border: string; text: string; label: string }> = {
+                            present: { bg: "bg-green-500", lightBg: "bg-green-50", border: "border-green-400", text: "text-green-700", label: "Present" },
+                            absent: { bg: "bg-red-500", lightBg: "bg-red-50", border: "border-red-400", text: "text-red-700", label: "Absent" },
+                            late: { bg: "bg-amber-500", lightBg: "bg-amber-50", border: "border-amber-400", text: "text-amber-700", label: "Late" },
+                            excused: { bg: "bg-blue-500", lightBg: "bg-blue-50", border: "border-blue-400", text: "text-blue-700", label: "Excused" },
+                          };
+                          const current = statusConfig[status] || statusConfig.present;
+                          const avatarColors = [
+                            "from-orange-400 to-red-400",
+                            "from-purple-400 to-indigo-400",
+                            "from-teal-400 to-green-400",
+                            "from-pink-400 to-rose-400",
+                            "from-blue-400 to-cyan-400",
+                            "from-amber-400 to-orange-400",
+                          ];
+                          const avatarColor = avatarColors[index % avatarColors.length];
+                          const buttons: { key: "present" | "absent" | "late" | "excused"; icon: React.ReactNode; shortLabel: string; color: string; activeColor: string }[] = [
+                            { key: "present", icon: <CheckCircle2 className="w-4 h-4" />, shortLabel: "P", color: "text-green-600 hover:bg-green-50 hover:border-green-400", activeColor: "bg-green-500 text-white border-green-500 shadow-md" },
+                            { key: "absent", icon: <XCircle className="w-4 h-4" />, shortLabel: "A", color: "text-red-500   hover:bg-red-50   hover:border-red-400", activeColor: "bg-red-500   text-white border-red-500   shadow-md" },
+                            { key: "late", icon: <Clock className="w-4 h-4" />, shortLabel: "L", color: "text-amber-600 hover:bg-amber-50 hover:border-amber-400", activeColor: "bg-amber-500 text-white border-amber-500 shadow-md" },
+                            { key: "excused", icon: <ShieldCheck className="w-4 h-4" />, shortLabel: "E", color: "text-blue-600  hover:bg-blue-50  hover:border-blue-400", activeColor: "bg-blue-500  text-white border-blue-500  shadow-md" },
+                          ];
+                          return (
+                            <div key={student._id} className={`relative bg-white rounded-2xl border-2 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-lg ${current.border}`}>
+                              {/* Top accent bar */}
+                              <div className={`h-2 w-full ${current.bg}`} />
+                              <div className="p-4">
+                                {/* Student info */}
+                                <div className="flex items-center gap-3 mb-4">
+                                  <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white text-xl font-extrabold shadow-sm`}>
+                                    {student.firstName.charAt(0).toUpperCase()}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-gray-900 text-sm leading-tight truncate">
+                                      {student.firstName} {student.lastName || ""}
+                                    </h3>
+                                    <p className="text-xs text-gray-500 mt-0.5">
+                                      Reg No: <span className="text-gray-700 font-semibold">{student.admissionNo || "N/A"}</span>
+                                    </p>
+                                  </div>
+                                  <span className={`flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${current.lightBg} ${current.text} border ${current.border}`}>
+                                    {current.label}
+                                  </span>
+                                </div>
+                                {/* Toggle Buttons */}
+                                <div className="grid grid-cols-4 gap-2">
+                                  {buttons.map(btn => (
+                                    <button
+                                      key={btn.key}
+                                      onClick={() => toggleStatus(student._id, btn.key)}
+                                      title={btn.key.charAt(0).toUpperCase() + btn.key.slice(1)}
+                                      className={`flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl border-2 text-xs font-bold transition-all duration-200 active:scale-95 ${status === btn.key ? btn.activeColor : `bg-gray-50 border-gray-200 ${btn.color}`}`}
+                                    >
+                                      {btn.icon}
+                                      <span className="text-[10px] leading-none">{btn.shortLabel}</span>
+                                    </button>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-
-                            {/* Status Toggles - Icon Only */}
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => toggleStatus(student._id, "present")}
-                                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${studentStatus[student._id] === "present" ? "bg-green-500 text-white shadow-sm scale-105" : "bg-white border border-gray-200 text-gray-300 hover:border-green-300 hover:text-green-500"}`}
-                                title="Present"
-                              >
-                                <CheckCircle2 className="w-5 h-5" />
-                              </button>
-                              <button
-                                onClick={() => toggleStatus(student._id, "absent")}
-                                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${studentStatus[student._id] === "absent" ? "bg-red-500 text-white shadow-sm scale-105" : "bg-white border border-gray-200 text-gray-300 hover:border-red-300 hover:text-red-500"}`}
-                                title="Absent"
-                              >
-                                <XCircle className="w-5 h-5" />
-                              </button>
-                              <button
-                                onClick={() => toggleStatus(student._id, "late")}
-                                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${studentStatus[student._id] === "late" ? "bg-amber-500 text-white shadow-sm scale-105" : "bg-white border border-gray-200 text-gray-300 hover:border-amber-300 hover:text-amber-500"}`}
-                                title="Late"
-                              >
-                                <Clock className="w-5 h-5" />
-                              </button>
-                              <button
-                                onClick={() => toggleStatus(student._id, "excused")}
-                                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${studentStatus[student._id] === "excused" ? "bg-blue-500 text-white shadow-sm scale-105" : "bg-white border border-gray-200 text-gray-300 hover:border-blue-300 hover:text-blue-500"}`}
-                                title="Excused"
-                              >
-                                <ShieldCheck className="w-5 h-5" />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </>
                   )}

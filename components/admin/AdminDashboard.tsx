@@ -254,7 +254,7 @@ export default function AdminDashboard() {
 
           <div className="space-y-2">
             <Link
-              href="/students"
+              href="/dashboard/students"
               className="flex items-center gap-3 px-4 py-3 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-lg text-pink-700 font-medium transition-all group"
             >
               <Users className="w-5 h-5" />
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
               <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
             <Link
-              href="/teachers"
+              href="/dashboard/teachers"
               className="flex items-center gap-3 px-4 py-3 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg text-purple-700 font-medium transition-all group"
             >
               <GraduationCap className="w-5 h-5" />
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
               <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
             <Link
-              href="/classes"
+              href="/dashboard/classes"
               className="flex items-center gap-3 px-4 py-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg text-orange-700 font-medium transition-all group"
             >
               <School className="w-5 h-5" />
@@ -278,7 +278,7 @@ export default function AdminDashboard() {
               <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
             <Link
-              href="/attendance"
+              href="/dashboard/attendance"
               className="flex items-center gap-3 px-4 py-3 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-lg text-cyan-700 font-medium transition-all group"
             >
               <ClipboardCheck className="w-5 h-5" />
