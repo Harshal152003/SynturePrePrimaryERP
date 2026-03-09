@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import Student from "@/models/Student";
+import User from "@/models/User";
 import { StudentCreateZ } from "@/lib/validations/studentSchema";
 import { verifyToken } from "@/lib/auth";
 import { logAdminActivity } from "@/lib/logAdminActivity";
@@ -119,6 +120,25 @@ export async function PUT(
 
     if (!updated)
       return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+
+    // Sync Parent Email and Password in the User collection
+    if (updated.email) {
+      // Find existing parent user for this student
+      const parentUser = await User.findOne({ studentId: id, role: "parent" });
+      if (parentUser) {
+        // Update the email
+        parentUser.email = updated.email;
+        // Optionally update the name while we are here
+        if (updated.parents && updated.parents.length > 0 && updated.parents[0].name) {
+          parentUser.name = updated.parents[0].name;
+        }
+        // Sync password if changed
+        if (parsed.password) {
+          parentUser.password = parsed.password;
+        }
+        await parentUser.save();
+      }
+    }
 
     // Log admin activity
     await logAdminActivity({

@@ -20,9 +20,10 @@ export async function GET(req: Request) {
 
   const classIds = students.map((s) => s.classId);
 
-  // return notifications for class + global
+  // return notifications for class + global + individual
   const notifications = await Notification.find({
     $or: [
+      { recipientId: parent.id },
       { type: "global" },
       { classId: { $in: classIds } },
       { studentId: { $in: students.map((s) => s._id) } }

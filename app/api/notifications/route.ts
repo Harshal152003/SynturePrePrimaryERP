@@ -110,7 +110,13 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, isRead } = body;
+    const { id, isRead, markAllRead } = body;
+
+    // "Mark All Read" logic
+    if (markAllRead) {
+      await Notification.updateMany({ recipientId: user.id, isRead: false }, { isRead: true, readAt: new Date() });
+      return NextResponse.json({ success: true, message: "Marked all as read" });
+    }
 
     if (!id) {
       return NextResponse.json(
@@ -162,6 +168,12 @@ export async function DELETE(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    const clearAll = searchParams.get("clearAll") === "true";
+
+    if (clearAll) {
+      await Notification.deleteMany({ recipientId: user.id });
+      return NextResponse.json({ success: true, message: "All notifications cleared" });
+    }
 
     if (!id) {
       return NextResponse.json(
@@ -170,7 +182,7 @@ export async function DELETE(req: Request) {
       );
     }
 
-    const notification = await Notification.findByIdAndDelete(id);
+    const notification = await Notification.findOneAndDelete({ _id: id, recipientId: user.id });
 
     if (!notification) {
       return NextResponse.json(

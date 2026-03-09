@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import Exam from "@/models/Exam";
 import { verifyToken } from "@/lib/auth";
 import { logAdminActivity } from "@/lib/logAdminActivity";
+import { notifyClass } from "@/lib/notifications";
 
 export async function GET(req: Request) {
   try {
@@ -110,6 +111,25 @@ export async function POST(req: Request) {
       });
     }
 
+    // Notify all students/parents in the class about the new exam
+    try {
+      await notifyClass(String(classId), {
+        type: "exam",
+        title: "New Exam: " + exam.name,
+        message: exam.description || `A new exam '${exam.name}' has been scheduled.`,
+        metadata: {
+          date: new Date(startDate).toLocaleDateString(),
+          subjects: exam.subjects.join(", "),
+          marks: exam.totalMarks
+        },
+        relatedId: exam._id,
+        relatedModel: "Exam",
+        icon: "clipboard-list",
+      });
+    } catch (notifyError) {
+      console.error("Failed to send class notifications for exam:", notifyError);
+    }
+
     return NextResponse.json({ success: true, exam }, { status: 201 });
   } catch (error) {
     console.error("[POST /api/exams]", error);
@@ -144,6 +164,7 @@ export async function PUT(req: Request) {
       );
     }
 
+    const oldExam = await Exam.findById(id);
     const exam = await Exam.findByIdAndUpdate(id, updateData, { new: true }).populate(
       "classId",
       "name section"
@@ -154,6 +175,26 @@ export async function PUT(req: Request) {
         { success: false, error: "Exam not found" },
         { status: 404 }
       );
+    }
+
+    // Trigger notification if isPublished changed from false to true
+    if (updateData.isPublished === true && !oldExam.isPublished) {
+      try {
+        await notifyClass(String(exam.classId._id || exam.classId), {
+          type: "exam",
+          title: "Exam Published: " + exam.name,
+          message: `The schedule for '${exam.name}' has been published.`,
+          metadata: {
+            date: new Date(exam.startDate).toLocaleDateString(),
+            subjects: exam.subjects.join(", "),
+          },
+          relatedId: exam._id,
+          relatedModel: "Exam",
+          icon: "clipboard-list",
+        });
+      } catch (notifyError) {
+        console.error("Failed to send exam publication notification:", notifyError);
+      }
     }
 
     return NextResponse.json({ success: true, exam });

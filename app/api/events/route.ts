@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import Event from "@/models/Event";
 import { verifyToken } from "@/lib/auth";
 import { logAdminActivity } from "@/lib/logAdminActivity";
+import { broadcastNotification, notifyClass } from "@/lib/notifications";
 
 export async function GET(req: Request) {
   try {
@@ -16,9 +17,12 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
     const limit = Math.max(1, Math.min(100, parseInt(url.searchParams.get("limit") || "10")));
-    const status = url.searchParams.get("status") || "published";
+    const status = url.searchParams.get("status");
 
-    const filter: Record<string, unknown> = { status };
+    const filter: Record<string, unknown> = {};
+    if (status && status !== "all") {
+      filter.status = status;
+    }
 
     const skip = (page - 1) * limit;
 
@@ -103,6 +107,36 @@ export async function POST(req: Request) {
       });
     }
 
+    // Trigger notifications if published
+    if (event.status === "published") {
+      try {
+        const notifOptions = {
+          type: "event",
+          title: "New Event: " + event.title,
+          message: event.description || `A new ${event.eventType} has been scheduled.`,
+          metadata: {
+            date: new Date(startDate).toLocaleDateString(),
+            time: body.startTime,
+            location: event.location,
+            audience: event.targetAudience === 'all' ? 'All' : event.targetAudience.charAt(0).toUpperCase() + event.targetAudience.slice(1)
+          },
+          relatedId: event._id,
+          relatedModel: "Event",
+          icon: "calendar",
+        };
+
+        if (event.targetAudience === "all" || !event.classIds || event.classIds.length === 0) {
+          await broadcastNotification("all", notifOptions);
+        } else if (event.classIds && event.classIds.length > 0) {
+          for (const cid of event.classIds) {
+            await notifyClass(String(cid._id || cid), notifOptions);
+          }
+        }
+      } catch (notifyError) {
+        console.error("Failed to send event notifications:", notifyError);
+      }
+    }
+
     return NextResponse.json({ success: true, event }, { status: 201 });
   } catch (error) {
     console.error("[POST /api/events]", error);
@@ -137,6 +171,7 @@ export async function PUT(req: Request) {
       );
     }
 
+    const oldEvent = await Event.findById(id);
     const event = await Event.findByIdAndUpdate(id, updateData, { new: true }).populate(
       "classIds",
       "name section"
@@ -147,6 +182,36 @@ export async function PUT(req: Request) {
         { success: false, error: "Event not found" },
         { status: 404 }
       );
+    }
+
+    // Trigger notifications if status changed to published
+    if (updateData.status === "published" && oldEvent.status !== "published") {
+      try {
+        const notifOptions = {
+          type: "event" as any,
+          title: "Event Update: " + event.title,
+          message: event.description || `The event '${event.title}' has been updated.`,
+          metadata: {
+            date: new Date(event.startDate).toLocaleDateString(),
+            time: event.startTime,
+            location: event.location,
+            audience: event.targetAudience === 'all' ? 'All' : event.targetAudience.charAt(0).toUpperCase() + event.targetAudience.slice(1)
+          },
+          relatedId: event._id,
+          relatedModel: "Event",
+          icon: "calendar",
+        };
+
+        if (event.targetAudience === "all" || !event.classIds || event.classIds.length === 0) {
+          await broadcastNotification("all", notifOptions);
+        } else if (event.classIds && event.classIds.length > 0) {
+          for (const cid of event.classIds) {
+            await notifyClass(String((cid as any)._id || cid), notifOptions);
+          }
+        }
+      } catch (notifyError) {
+        console.error("Failed to send event notifications on update:", notifyError);
+      }
     }
 
     return NextResponse.json({ success: true, event });

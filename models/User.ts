@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema({
   studentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
   // Link to Parent record if role is parent
   parentId: { type: mongoose.Schema.Types.ObjectId, ref: "Parent" },
+  resetOTP: String,
+  resetOTPExpires: Date,
 });
 
 export default mongoose.models.User || mongoose.model("User", userSchema);

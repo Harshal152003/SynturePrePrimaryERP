@@ -124,8 +124,6 @@ export default function Sidebar({
       icon: FileText,
       color: "indigo",
     },
-    /* Previously Notifications. Kept as comment so original implementation remains available */
-    /*
     {
       name: "Notifications",
       path: `${basePath}/notifications`,
@@ -133,7 +131,6 @@ export default function Sidebar({
       icon: Bell,
       color: "red",
     },
-    */
     /* Log Activity hidden for small school client 
     {
       name: "Log Activity",

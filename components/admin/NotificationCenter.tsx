@@ -19,6 +19,10 @@ import {
   Clock,
   Search,
   X,
+  MapPin,
+  Calendar as CalendarIcon,
+  Users as UsersIcon,
+  BookOpen,
 } from "lucide-react";
 
 interface Notification {
@@ -29,7 +33,8 @@ interface Notification {
   priority: string;
   isRead: boolean;
   createdAt: string;
-  [key: string]: unknown; // Added index signature
+  metadata?: any;
+  [key: string]: any;
 }
 
 const NOTIFICATION_TYPES = [
@@ -329,11 +334,11 @@ export default function NotificationCenter() {
             filteredNotifications.map((notif) => (
               <div
                 key={notif._id}
-                className={`border rounded-lg p-4 transition-all ${
-                  !notif.isRead
-                    ? "border-l-4 border-l-orange-500 bg-orange-50 hover:bg-orange-100"
-                    : "border-gray-200 hover:bg-gray-50"
-                }`}
+                className={`border rounded-xl p-4 transition-all cursor-pointer group ${!notif.isRead
+                    ? "border-l-4 border-l-orange-500 bg-orange-50/50 hover:bg-orange-100/70"
+                    : "border-gray-200 hover:bg-gray-50 bg-white"
+                  }`}
+                onClick={() => !notif.isRead && handleMarkAsRead(notif._id)}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -353,7 +358,49 @@ export default function NotificationCenter() {
                       </Badge>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{notif.message}</p>
+                    <p className="text-sm text-gray-600 mb-3 whitespace-pre-wrap">{notif.message}</p>
+
+                    {/* Metadata Section with Professional Icons */}
+                    {notif.metadata && typeof notif.metadata === 'object' && Object.keys(notif.metadata).length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-3 bg-white/80 p-3 rounded-lg border border-orange-100/50 shadow-sm transition-all group-hover:bg-white">
+                        {(notif.metadata as any).date && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <CalendarIcon className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Date:</span> {(notif.metadata as any).date}
+                          </div>
+                        )}
+                        {(notif.metadata as any).time && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <Clock className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Time:</span> {(notif.metadata as any).time}
+                          </div>
+                        )}
+                        {(notif.metadata as any).location && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <MapPin className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Spot:</span> {(notif.metadata as any).location}
+                          </div>
+                        )}
+                        {(notif.metadata as any).audience && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <UsersIcon className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Audience:</span> {(notif.metadata as any).audience}
+                          </div>
+                        )}
+                        {(notif.metadata as any).subjects && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <BookOpen className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Subjects:</span> {(notif.metadata as any).subjects}
+                          </div>
+                        )}
+                        {(notif.metadata as any).marks && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <CheckCircle2 className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Total Marks:</span> {(notif.metadata as any).marks}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className="flex items-center gap-1 text-xs text-gray-500">
                       <Clock className="w-3 h-3" />
