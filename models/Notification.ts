@@ -8,6 +8,8 @@ const NotificationSchema = new mongoose.Schema(
     message: { type: String, required: true },
     relatedId: { type: mongoose.Schema.Types.ObjectId }, // ID of related resource (exam, event, etc)
     relatedModel: String, // Model name (Exam, Event, etc)
+    classId: { type: mongoose.Schema.Types.ObjectId, ref: "Class" }, // Added to target entire class
+    studentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student" }, // Added to target specific student
     isRead: { type: Boolean, default: false },
     readAt: Date,
     priority: { type: String, enum: ["low", "normal", "high", "urgent"], default: "normal" },

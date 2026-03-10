@@ -34,7 +34,7 @@ export default function ParentDashboard() {
           children: childrenData.data?.length || 0,
           attendance: attendanceData.data?.percentage || 0,
           fees: feeData.data?.filter((f: Record<string, unknown>) => f.status === "pending").length || 0,
-          announcements: announcementData.data?.length || 0,
+          announcements: announcementData.notifications?.length || announcementData.data?.length || 0,
         });
       } catch (error) {
         console.error("Failed to fetch parent stats:", error);
@@ -87,29 +87,37 @@ export default function ParentDashboard() {
 
       <Card className="p-6">
         <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
-   <div className="flex flex-wrap gap-3">
-  <Link href="/parent-dashboard/children">
-    <Button variant="primary">View Children Progress</Button>
-  </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/parent-dashboard/children">
+            <Button variant="primary">View Children Progress</Button>
+          </Link>
 
-  <Link href="/parent-dashboard/fees">
-    <Button variant="secondary">Manage Fees</Button>
-  </Link>
+          <Link href="/parent-dashboard/fees">
+            <Button variant="secondary">Manage Fees</Button>
+          </Link>
 
-  <Link href="/parent-dashboard/attendance">
-    <Button variant="secondary">Check Attendance</Button>
-  </Link>
+          <Link href="/parent-dashboard/attendance">
+            <Button variant="secondary">Check Attendance</Button>
+          </Link>
 
-  <Link href="/parent-dashboard/announcements">
-    <Button variant="secondary">School Updates</Button>
-  </Link>
-</div>
+          <Link href="/parent-dashboard/events">
+            <Button variant="secondary">Upcoming Events</Button>
+          </Link>
+
+          <Link href="/parent-dashboard/exams">
+            <Button variant="secondary">Exam Schedule</Button>
+          </Link>
+
+          <Link href="/parent-dashboard/notifications">
+            <Button variant="secondary">School Updates</Button>
+          </Link>
+        </div>
 
       </Card>
 
-    <Alert variant="info">
-  <strong>Welcome, Parent!</strong> Stay updated with your child&apos;s progress.
-</Alert>
+      <Alert variant="info">
+        <strong>Welcome, Parent!</strong> Stay updated with your child&apos;s progress.
+      </Alert>
 
     </div>
   );

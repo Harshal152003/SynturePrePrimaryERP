@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ReactNode } from "react";
+import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Select from "@/components/common/Select";
@@ -90,6 +91,8 @@ const TARGET_AUDIENCE = [
 ];
 
 export default function EventManagement() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin" || user?.role === "teacher";
   const [events, setEvents] = useState<Event[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
@@ -201,11 +204,21 @@ export default function EventManagement() {
     }));
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSaveEvent = async () => {
-    if (!formData.title || !formData.startDate) {
-      showToast.error("Title and start date are required");
+    if (!formData.title) {
+      showToast.error("Event title is required");
       return;
     }
+
+    if (!formData.startDate) {
+      showToast.error("Start date is required (please ensure it's a valid date)");
+      return;
+    }
+
+    if (isSaving) return;
+    setIsSaving(true);
 
     try {
       const method = editingEvent ? "PUT" : "POST";
@@ -232,6 +245,8 @@ export default function EventManagement() {
       fetchEvents();
     } catch (error) {
       showToast.error("Failed to save event");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -452,17 +467,19 @@ export default function EventManagement() {
               {filteredEvents.length} {filteredEvents.length === 1 ? "event" : "events"} found
             </p>
           </div>
-          <button
-            onClick={() => {
-              setEditingEvent(null);
-              resetForm();
-              setModalOpen(true);
-            }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-lg font-medium transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Create Event
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => {
+                setEditingEvent(null);
+                resetForm();
+                setModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-lg font-medium transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Create Event
+            </button>
+          )}
         </div>
 
         <div className="mb-6 flex flex-col md:flex-row gap-3">
@@ -492,7 +509,7 @@ export default function EventManagement() {
           columns={columns}
           data={filteredEvents}
           loading={loading}
-          actions={(row) => (
+          actions={isAdmin ? (row) => (
             <div className="flex gap-2">
               <button
                 onClick={() => handleEditEvent(row as Event)}
@@ -509,7 +526,7 @@ export default function EventManagement() {
                 Delete
               </button>
             </div>
-          )}
+          ) : undefined}
         />
       </div>
 
@@ -535,9 +552,14 @@ export default function EventManagement() {
             </button>
             <button
               onClick={handleSaveEvent}
-              className="px-6 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-lg font-bold shadow-md hover:shadow-lg transition-all"
+              disabled={isSaving}
+              className={`px-6 py-2 rounded-lg font-bold shadow-md transition-all ${
+                isSaving 
+                  ? "bg-gray-400 text-white cursor-not-allowed" 
+                  : "bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white hover:shadow-lg"
+              }`}
             >
-              {editingEvent ? "Save Changes" : "Create Event"}
+              {isSaving ? "Saving..." : editingEvent ? "Save Changes" : "Create Event"}
             </button>
           </div>
         }

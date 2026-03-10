@@ -1,0 +1,78 @@
+{
+  "exams": [
+    {
+      "_id": "69afb3c370d6c0a3dfee43c3",
+      "name": "Endsem Exam",
+      "description": "khdfehk",
+      "classId": "69a5444f05ab8936434c528b",
+      "subjects": [],
+      "startDate": "2323-03-31T00:00:00.000Z",
+      "endDate": "4234-03-31T00:00:00.000Z",
+      "totalMarks": 100,
+      "passingMarks": 35,
+      "examType": "unit-test",
+      "schedule": [],
+      "status": "scheduled",
+      "isPublished": true,
+      "results": [],
+      "createdAt": "2026-03-10T06:01:39.435Z",
+      "updatedAt": "2026-03-10T06:01:39.435Z",
+      "__v": 0
+    },
+    {
+      "_id": "69afb37370d6c0a3dfee43bd",
+      "name": "Endsem Exam",
+      "description": "khdfehk",
+      "classId": "69a5444f05ab8936434c528b",
+      "subjects": [],
+      "startDate": "2323-03-31T00:00:00.000Z",
+      "endDate": "4234-03-31T00:00:00.000Z",
+      "totalMarks": 100,
+      "passingMarks": 35,
+      "examType": "unit-test",
+      "schedule": [],
+      "status": "scheduled",
+      "isPublished": false,
+      "results": [],
+      "createdAt": "2026-03-10T06:00:19.091Z",
+      "updatedAt": "2026-03-10T06:00:19.091Z",
+      "__v": 0
+    },
+    {
+      "_id": "69afb36a70d6c0a3dfee43b7",
+      "name": "Endsem Exam",
+      "description": "khdfehk",
+      "classId": "69a5444f05ab8936434c528b",
+      "subjects": [],
+      "startDate": "2323-03-31T00:00:00.000Z",
+      "endDate": "4234-03-31T00:00:00.000Z",
+      "totalMarks": 100,
+      "passingMarks": 35,
+      "examType": "unit-test",
+      "schedule": [],
+      "status": "scheduled",
+      "isPublished": false,
+      "results": [],
+      "createdAt": "2026-03-10T06:00:10.835Z",
+      "updatedAt": "2026-03-10T06:00:10.835Z",
+      "__v": 0
+    }
+  ],
+  "notifs": [
+    {
+      "_id": "69aea89cc49f6af84ff223e1",
+      "recipientId": "69a58bddc0522c592bd0628e",
+      "type": "exam",
+      "title": "New Exam Scheduled",
+      "message": "A new exam 'endsem' has been scheduled for your class starting on 5/4/5445.",
+      "relatedId": "69aea89bc49f6af84ff223da",
+      "relatedModel": "Exam",
+      "isRead": false,
+      "priority": "normal",
+      "icon": "clipboard-list",
+      "__v": 0,
+      "createdAt": "2026-03-09T11:01:48.025Z",
+      "updatedAt": "2026-03-09T11:01:48.025Z"
+    }
+  ]
+}

@@ -30,6 +30,7 @@ export default function ProfileManagement() {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [oldPassword, setOldPassword] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -83,7 +84,10 @@ export default function ProfileManagement() {
         try {
             setSaving(true);
             const updatePayload: any = { ...formData };
-            if (password) updatePayload.password = password;
+            if (password) {
+                updatePayload.password = password;
+                updatePayload.oldPassword = oldPassword;
+            }
 
             const response = await fetch("/api/auth/profile", {
                 method: "PUT",
@@ -93,6 +97,7 @@ export default function ProfileManagement() {
 
             if (response.ok) {
                 showToast.success("Profile updated successfully");
+                setOldPassword("");
                 setPassword("");
                 setConfirmPassword("");
                 fetchProfile();
@@ -230,25 +235,38 @@ export default function ProfileManagement() {
                                     </h3>
                                     <p className="text-sm text-gray-500 mb-6">Change your password to keep your account secure</p>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <Input
-                                            label="New Password"
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            placeholder="••••••••"
-                                            icon={<Key className="w-4 h-4" />}
-                                            fullWidth
-                                        />
-                                        <Input
-                                            label="Confirm Password"
-                                            type="password"
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                            placeholder="••••••••"
-                                            icon={<Key className="w-4 h-4" />}
-                                            fullWidth
-                                        />
+                                    <div className="flex flex-col gap-5">
+                                        <div className="w-full md:w-1/2">
+                                            <Input
+                                                label="Old Password"
+                                                type="password"
+                                                value={oldPassword}
+                                                onChange={(e) => setOldPassword(e.target.value)}
+                                                placeholder="••••••••"
+                                                icon={<Key className="w-4 h-4" />}
+                                                fullWidth
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            <Input
+                                                label="New Password"
+                                                type="password"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                placeholder="••••••••"
+                                                icon={<Key className="w-4 h-4" />}
+                                                fullWidth
+                                            />
+                                            <Input
+                                                label="Confirm New Password"
+                                                type="password"
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                placeholder="••••••••"
+                                                icon={<Key className="w-4 h-4" />}
+                                                fullWidth
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 

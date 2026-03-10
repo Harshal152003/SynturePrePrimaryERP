@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, description, classId, subjects, startDate, endDate, totalMarks, passingMarks, examType, schedule } = body;
+    const { name, description, classId, subjects, startDate, endDate, totalMarks, passingMarks, examType, schedule, isPublished, status } = body;
 
     if (!name || !classId || !startDate) {
       return NextResponse.json(
@@ -90,6 +90,8 @@ export async function POST(req: Request) {
       passingMarks,
       examType,
       schedule,
+      isPublished,
+      status,
     });
 
     await exam.save();
@@ -111,23 +113,27 @@ export async function POST(req: Request) {
       });
     }
 
-    // Notify all students/parents in the class about the new exam
-    try {
-      await notifyClass(String(classId), {
-        type: "exam",
-        title: "New Exam: " + exam.name,
-        message: exam.description || `A new exam '${exam.name}' has been scheduled.`,
-        metadata: {
-          date: new Date(startDate).toLocaleDateString(),
-          subjects: exam.subjects.join(", "),
-          marks: exam.totalMarks
-        },
-        relatedId: exam._id,
-        relatedModel: "Exam",
-        icon: "clipboard-list",
-      });
-    } catch (notifyError) {
-      console.error("Failed to send class notifications for exam:", notifyError);
+    // Notify all students/parents in the class about the new exam if published
+    if (isPublished) {
+      try {
+        await notifyClass(String(classId), {
+          type: "exam",
+          title: "New Exam: " + exam.name,
+          message: exam.description || `A new exam '${exam.name}' has been scheduled.`,
+          metadata: {
+            date: new Date(startDate).toLocaleDateString(),
+            subjects: Array.isArray(exam.subjects) ? exam.subjects.join(", ") : "",
+            marks: exam.totalMarks,
+            examType: exam.examType,
+            status: "published" // Ensure status is present
+          },
+          relatedId: exam._id,
+          relatedModel: "Exam",
+          icon: "clipboard-list",
+        });
+      } catch (notifyError) {
+        console.error("Failed to send class notifications for exam:", notifyError);
+      }
     }
 
     return NextResponse.json({ success: true, exam }, { status: 201 });
@@ -186,7 +192,9 @@ export async function PUT(req: Request) {
           message: `The schedule for '${exam.name}' has been published.`,
           metadata: {
             date: new Date(exam.startDate).toLocaleDateString(),
-            subjects: exam.subjects.join(", "),
+            subjects: Array.isArray(exam.subjects) ? exam.subjects.join(", ") : "",
+            examType: exam.examType,
+            status: "published"
           },
           relatedId: exam._id,
           relatedModel: "Exam",

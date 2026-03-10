@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Notification from "@/models/Notification";
+import Student from "@/models/Student";
 import { verifyToken } from "@/lib/auth";
 
 export async function GET(req: Request) {
@@ -17,7 +18,8 @@ export async function GET(req: Request) {
     const limit = Math.max(1, Math.min(100, parseInt(url.searchParams.get("limit") || "20")));
     const unreadOnly = url.searchParams.get("unread") === "true";
 
-    const filter: Record<string, unknown> = { recipientId: user.id };
+    const filter: any = { recipientId: user.id };
+
     if (unreadOnly) filter.isRead = false;
 
     const skip = (page - 1) * limit;
@@ -30,7 +32,7 @@ export async function GET(req: Request) {
         .limit(limit)
         .lean(),
       Notification.countDocuments(filter),
-      Notification.countDocuments({ recipientId: user.id, isRead: false }),
+      Notification.countDocuments({ ...filter, isRead: false }),
     ]);
 
     return NextResponse.json({

@@ -86,28 +86,56 @@ export async function notifyClass(
         const recipientIds = new Set<string>();
 
         for (const student of students) {
-            // Add student's own user record if it exists
-            const studentUser = await User.findOne({ email: student.email }, "_id");
-            if (studentUser) recipientIds.add(String(studentUser._id));
+            // 1. Add student ID (for student login & legacy parent login via student ID)
+            recipientIds.add(String(student._id));
 
-            // Add all parent user IDs linked to this student
+            // 2. Add student's own User record if exists
+            if (student.email) {
+                const studentUser = await User.findOne({ email: student.email }, "_id");
+                if (studentUser) recipientIds.add(String(studentUser._id));
+            }
+
+            // 3. Add linked parents (via parentId or email)
             if (student.parents && student.parents.length > 0) {
                 for (const p of student.parents) {
-                    if ((p as any).parentId) {
-                        recipientIds.add(String((p as any).parentId));
+                    const parent = p as any;
+                    if (parent.parentId) {
+                        recipientIds.add(String(parent.parentId));
+                    } else if (parent.email) {
+                        const parentUser = await User.findOne({ email: parent.email }, "_id");
+                        if (parentUser) recipientIds.add(String(parentUser._id));
                     }
                 }
             }
         }
 
+        // 4. ALSO: Find all Users with role 'parent' who have any of these studentIds linked
+        // This handles cases where the link exists in the User record but not in the Student record
+        const studentIdsStrings = Array.from(recipientIds);
+        const externalParents = await User.find({
+            role: "parent",
+            $or: [
+                { studentId: { $in: studentIdsStrings } },
+                { children: { $in: studentIdsStrings } }
+            ]
+        }, "_id");
+        
+        for (const p of externalParents) {
+            recipientIds.add(String(p._id));
+        }
+
         const notifications = Array.from(recipientIds).map(uid => ({
             ...options,
             recipientId: uid,
+            classId: classId, // Add classId so it can be filtered in parent portal
             isRead: false,
         }));
 
         if (notifications.length > 0) {
             await Notification.insertMany(notifications);
+            console.log(`Sent ${notifications.length} notifications to class ${classId}`);
+        } else {
+            console.log(`No recipients found for class ${classId} notifications`);
         }
 
         return true;

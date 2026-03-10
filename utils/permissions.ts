@@ -26,12 +26,23 @@ export const PERMISSIONS: any = {
     "events"
   ],
 
+  student: [
+    "dashboard",
+    "attendance",
+    "timetable",
+    "exams",
+    "notifications",
+    "events"
+  ],
+
   parent: [
     "dashboard",
     "parent-portal",
     "gallery",
     "meal-plan",
-    "notifications"
+    "notifications",
+    "events",
+    "exams"
   ]
 };
 

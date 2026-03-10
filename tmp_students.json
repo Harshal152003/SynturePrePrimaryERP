@@ -1,0 +1,35 @@
+[
+  {
+    "_id": "69a58bddc0522c592bd0628e",
+    "firstName": "Prathmesh",
+    "lastName": "Pingale",
+    "email": "pingaleprathmesh@gamil.com",
+    "password": "$2b$10$McW37Mly3/.UxxJTYbLVuOoob5wNyJ4NZnbBwu91KdAVS2RZUsSBW",
+    "dob": "2005-05-11T00:00:00.000Z",
+    "gender": "male",
+    "classId": "69a5444f05ab8936434c528b",
+    "admissionNo": "STD0011",
+    "admissionDate": "2026-04-01T00:00:00.000Z",
+    "medical": {
+      "allergies": [],
+      "notes": "na"
+    },
+    "parents": [
+      {
+        "name": "Pratham",
+        "phone": "911231973",
+        "email": "prathampingale@gmail.com",
+        "relation": "Brother",
+        "_id": "69a58bddc0522c592bd0628f"
+      }
+    ],
+    "pickupInfo": {
+      "pickupPerson": "brother",
+      "pickupPhone": "9977665544"
+    },
+    "documents": [],
+    "createdAt": "2026-03-02T13:08:45.929Z",
+    "updatedAt": "2026-03-02T13:08:45.929Z",
+    "__v": 0
+  }
+]

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ReactNode } from "react";
+import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Select from "@/components/common/Select";
@@ -81,6 +82,8 @@ const EXAM_TYPES = [
 ];
 
 export default function ExamManagement() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin" || user?.role === "teacher";
   const [exams, setExams] = useState<Exam[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,11 +208,16 @@ export default function ExamManagement() {
     }));
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSaveExam = async () => {
     if (!formData.name || !formData.classId || !formData.startDate) {
       showToast.error("Name, class, and start date are required");
       return;
     }
+
+    if (isSaving) return;
+    setIsSaving(true);
 
     try {
       const method = editingExam ? "PUT" : "POST";
@@ -236,6 +244,8 @@ export default function ExamManagement() {
       fetchExams();
     } catch (error) {
       showToast.error("Failed to save exam");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -468,17 +478,19 @@ export default function ExamManagement() {
               {filteredExams.length} {filteredExams.length === 1 ? "exam" : "exams"} found
             </p>
           </div>
-          <button
-            onClick={() => {
-              setEditingExam(null);
-              resetForm();
-              setModalOpen(true);
-            }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Create Exam
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => {
+                setEditingExam(null);
+                resetForm();
+                setModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Create Exam
+            </button>
+          )}
         </div>
 
         <div className="mb-6 flex flex-col md:flex-row gap-3">
@@ -508,7 +520,7 @@ export default function ExamManagement() {
           columns={columns}
           data={filteredExams}
           loading={loading}
-          actions={(row) => (
+          actions={isAdmin ? (row) => (
             <div className="flex gap-2">
               <button
                 onClick={() => handleEditExam(row as Exam)}
@@ -525,7 +537,7 @@ export default function ExamManagement() {
                 Delete
               </button>
             </div>
-          )}
+          ) : undefined}
         />
       </div>
 
@@ -546,11 +558,12 @@ export default function ExamManagement() {
                 setEditingExam(null);
               }}
               variant="secondary"
+              disabled={isSaving}
             >
               Cancel
             </Button>
-            <Button onClick={handleSaveExam} variant="primary">
-              {editingExam ? "Update" : "Create"} Exam
+            <Button onClick={handleSaveExam} variant="primary" disabled={isSaving}>
+              {isSaving ? "Saving..." : editingExam ? "Update Exam" : "Create Exam"}
             </Button>
           </>
         }
@@ -855,9 +868,9 @@ export default function ExamManagement() {
                 </div>
                 <div>
                   <label htmlFor="isPublished" className="text-sm font-medium text-gray-700 cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, isPublished: !prev.isPublished }))}>
-                    Publish Results
+                    Publish Schedule
                   </label>
-                  <p className="text-xs text-gray-400">Visible to students</p>
+                  <p className="text-xs text-gray-400">Notify parents & show on dashboard</p>
                 </div>
               </div>
             </div>

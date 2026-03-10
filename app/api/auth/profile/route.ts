@@ -19,6 +19,9 @@ export async function GET(req: Request) {
         let user = null;
         if (decoded.role === "admin" || decoded.role === "parent") {
             user = await User.findById(decoded.id).select("-password").lean();
+            if (!user && decoded.role === "parent") {
+                user = await Student.findById(decoded.id).select("-password").lean();
+            }
         } else if (decoded.role === "teacher") {
             user = await Teacher.findById(decoded.id).select("-password").lean();
         } else if (decoded.role === "student") {
@@ -50,26 +53,44 @@ export async function PUT(req: Request) {
         }
 
         const body = await req.json();
-        const { name, firstName, lastName, email, password } = body;
+        const { name, firstName, lastName, email, password, oldPassword } = body;
+
+        let userModel: any = User;
+        if (decoded.role === "teacher") userModel = Teacher;
+        if (decoded.role === "student") userModel = Student;
+
+        let currentUser = await userModel.findById(decoded.id);
+
+        if (!currentUser && decoded.role === "parent") {
+            currentUser = await Student.findById(decoded.id);
+            userModel = Student;
+        }
+
+        if (!currentUser) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
 
         let updateData: any = {};
         if (name) updateData.name = name;
         if (firstName) updateData.firstName = firstName;
         if (lastName) updateData.lastName = lastName;
         if (email) updateData.email = email;
+        
         if (password) {
+            if (!oldPassword) {
+                return NextResponse.json({ error: "Old password is required to set a new password" }, { status: 400 });
+            }
+            
+            const isMatch = await bcrypt.compare(oldPassword, currentUser.password);
+            if (!isMatch) {
+                return NextResponse.json({ error: "Incorrect old password" }, { status: 400 });
+            }
+
             const salt = await bcrypt.genSalt(10);
             updateData.password = await bcrypt.hash(password, salt);
         }
 
-        let updatedUser = null;
-        if (decoded.role === "admin" || decoded.role === "parent") {
-            updatedUser = await User.findByIdAndUpdate(decoded.id, updateData, { new: true }).select("-password").lean();
-        } else if (decoded.role === "teacher") {
-            updatedUser = await Teacher.findByIdAndUpdate(decoded.id, updateData, { new: true }).select("-password").lean();
-        } else if (decoded.role === "student") {
-            updatedUser = await Student.findByIdAndUpdate(decoded.id, updateData, { new: true }).select("-password").lean();
-        }
+        const updatedUser = await userModel.findByIdAndUpdate(decoded.id, updateData, { new: true }).select("-password").lean();
 
         if (!updatedUser) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
