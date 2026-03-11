@@ -23,6 +23,8 @@ import {
   Calendar as CalendarIcon,
   Users as UsersIcon,
   BookOpen,
+  ExternalLink,
+  FileText,
 } from "lucide-react";
 
 interface Notification {
@@ -397,6 +399,44 @@ export default function NotificationCenter() {
                           <div className="flex items-center gap-2 text-[11px] text-gray-700">
                             <CheckCircle2 className="w-4 h-4 text-orange-500" />
                             <span className="font-bold text-gray-900">Total Marks:</span> {(notif.metadata as any).marks}
+                          </div>
+                        )}
+                        
+                        {/* Attachments Display */}
+                        {(notif.metadata as any).attachments && Array.isArray((notif.metadata as any).attachments) && (notif.metadata as any).attachments.length > 0 && (
+                          <div className="col-span-1 sm:col-span-2 mt-2 pt-2 border-t border-orange-100 flex flex-wrap gap-2">
+                            <p className="w-full text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Attachments</p>
+                            {(notif.metadata as any).attachments.slice(0, 3).map((file: any, fidx: number) => (
+                              <a
+                                key={fidx}
+                                href={file.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 p-2 bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-200 rounded-lg transition-all group/file max-w-full"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {file.url && (file.url.endsWith('.jpg') || file.url.endsWith('.jpeg') || file.url.endsWith('.png') || file.url.includes('cloudinary')) ? (
+                                  <div className="w-8 h-8 rounded bg-gray-200 overflow-hidden flex-shrink-0">
+                                    <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
+                                  </div>
+                                ) : (
+                                  <div className="w-8 h-8 rounded bg-orange-100 flex items-center justify-center flex-shrink-0">
+                                    <FileText className="w-4 h-4 text-orange-600" />
+                                  </div>
+                                )}
+                                <div className="flex flex-col min-w-0 pr-1">
+                                  <span className="text-[11px] font-bold text-gray-700 truncate">{file.name || 'Attachment'}</span>
+                                  <span className="text-[9px] text-gray-400 flex items-center gap-1">
+                                    View File <ExternalLink className="w-2 h-2" />
+                                  </span>
+                                </div>
+                              </a>
+                            ))}
+                            {(notif.metadata as any).attachments.length > 3 && (
+                              <div className="flex items-center justify-center p-2 text-[9px] font-bold text-gray-400 bg-gray-50 border border-dashed border-gray-200 rounded-lg">
+                                +{(notif.metadata as any).attachments.length - 3} more
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

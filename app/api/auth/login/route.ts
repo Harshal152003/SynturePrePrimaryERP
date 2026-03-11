@@ -189,6 +189,7 @@ export async function POST(req: Request) {
           role: detectedRole,
           name: user.name || user.firstName,
         },
+        token, // Added for React Native mobile client where reading cookies can be flaky
       },
       { status: 200 }
     );

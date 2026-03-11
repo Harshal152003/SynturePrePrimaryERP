@@ -32,6 +32,8 @@ import {
   Paperclip,
   Eye,
   Search,
+  Camera,
+  Loader2,
 } from "lucide-react";
 
 interface Class {
@@ -100,6 +102,7 @@ export default function EventManagement() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<{
     title: string;
@@ -204,11 +207,52 @@ export default function EventManagement() {
     }));
   };
 
+  const handleFileUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showToast.error("Only image files are allowed");
+      return;
+    }
+
+    setUploadingIndex(index);
+    const uploadData = new FormData();
+    uploadData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadData,
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        handleAttachmentChange(index, "url", data.url);
+        if (!formData.attachments[index].name) {
+          handleAttachmentChange(index, "name", file.name);
+        }
+        showToast.success("Image uploaded successfully");
+      } else {
+        showToast.error(data.error || "Upload failed");
+      }
+    } catch (error) {
+      showToast.error("Error uploading image");
+    } finally {
+      setUploadingIndex(null);
+    }
+  };
+
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveEvent = async () => {
     if (!formData.title) {
       showToast.error("Event title is required");
+      return;
+    }
+
+    if (uploadingIndex !== null) {
+      showToast.error("Please wait for the image to finish uploading.");
       return;
     }
 
@@ -224,7 +268,10 @@ export default function EventManagement() {
       const method = editingEvent ? "PUT" : "POST";
       const url = "/api/events";
 
-      const payload = editingEvent ? { id: editingEvent._id, ...formData } : formData;
+      // Filter out attachments that are empty before sending to the server
+      const validAttachments = formData.attachments.filter(a => a.url && a.url.trim() !== "");
+      const cleanFormData = { ...formData, attachments: validAttachments };
+      const payload = editingEvent ? { id: editingEvent._id, ...cleanFormData } : cleanFormData;
 
       const res = await fetch(url, {
         method,
@@ -643,7 +690,7 @@ export default function EventManagement() {
           {/* Section: Date & Time */}
           <div className="bg-white p-5 rounded-xl border border-gray-200">
             <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
-              <Clock className="w-4 h-4 text-yellow-500" />
+              <Calendar className="w-4 h-4 text-yellow-500" />
               Date & Schedule
             </h3>
             <div className="space-y-5">
@@ -652,19 +699,23 @@ export default function EventManagement() {
                   label="Start Date *"
                   name="startDate"
                   type="date"
+                  icon={<Calendar className="w-4 h-4" />}
                   value={formData.startDate}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
-                  className="focus:ring-yellow-400"
+                  className="focus:ring-yellow-400 cursor-pointer"
                 />
                 <Input
                   label="End Date"
                   name="endDate"
                   type="date"
+                  icon={<Calendar className="w-4 h-4" />}
                   value={formData.endDate}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
-                  className="focus:ring-yellow-400"
+                  className="focus:ring-yellow-400 cursor-pointer"
                 />
               </div>
 
@@ -673,19 +724,23 @@ export default function EventManagement() {
                   label="Start Time"
                   name="startTime"
                   type="time"
+                  icon={<Clock className="w-4 h-4" />}
                   value={formData.startTime}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
-                  className="focus:ring-yellow-400"
+                  className="focus:ring-yellow-400 cursor-pointer"
                 />
                 <Input
                   label="End Time"
                   name="endTime"
                   type="time"
+                  icon={<Clock className="w-4 h-4" />}
                   value={formData.endTime}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
-                  className="focus:ring-yellow-400"
+                  className="focus:ring-yellow-400 cursor-pointer"
                 />
               </div>
             </div>
@@ -771,14 +826,47 @@ export default function EventManagement() {
                       onChange={(e) => handleAttachmentChange(idx, "name", e.target.value)}
                       className="w-full px-3 py-2 border-b border-transparent focus:border-yellow-400 focus:outline-none transition-all text-sm font-medium"
                     />
-                    <input
-                      type="text"
-                      placeholder="Resource URL"
-                      value={attachment.url}
-                      onChange={(e) => handleAttachmentChange(idx, "url", e.target.value)}
-                      className="w-full px-3 py-2 border-b border-transparent focus:border-yellow-400 focus:outline-none transition-all text-xs text-blue-600"
-                    />
+                    <div className="flex gap-2">
+                       <input
+                        type="text"
+                        placeholder="Resource URL or uploaded image path"
+                        value={attachment.url}
+                        onChange={(e) => handleAttachmentChange(idx, "url", e.target.value)}
+                        className="flex-1 px-3 py-2 border-b border-transparent focus:border-yellow-400 focus:outline-none transition-all text-xs text-blue-600"
+                      />
+                      <div className="relative">
+                        <input
+                          type="file"
+                          id={`file-upload-${idx}`}
+                          className="hidden"
+                          accept="image/*"
+                          onChange={(e) => handleFileUpload(idx, e)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById(`file-upload-${idx}`)?.click()}
+                          disabled={uploadingIndex === idx}
+                          className={`p-2 rounded-lg transition-all ${
+                            uploadingIndex === idx 
+                              ? "bg-gray-100 text-gray-400" 
+                              : "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+                          }`}
+                          title="Upload Image"
+                        >
+                          {uploadingIndex === idx ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Camera className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                  {attachment.url && attachment.url.startsWith("http") && (
+                    <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
+                      <img src={attachment.url} alt="Resource" className="w-full h-full object-cover" />
+                    </div>
+                  )}
                   <button
                     type="button"
                     onClick={() => handleRemoveAttachment(idx)}

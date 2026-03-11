@@ -65,7 +65,11 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { title, description, eventType, startDate, endDate, location, image, targetAudience, classIds, status, notify } = body;
+    let { title, description, eventType, startDate, endDate, startTime, endTime, location, image, attachments, targetAudience, classIds, status, notify } = body;
+
+    // Sanitize attachments and image
+    attachments = (attachments || []).filter((a: any) => a.url && typeof a.url === "string" && a.url.trim() !== "");
+    if (typeof image === "string" && image.trim() === "") image = undefined;
 
     if (!title || !startDate) {
       return NextResponse.json(
@@ -80,8 +84,11 @@ export async function POST(req: Request) {
       eventType,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : undefined,
+      startTime,
+      endTime,
       location,
       image,
+      attachments,
       targetAudience,
       classIds,
       status: status || "draft",
@@ -115,15 +122,21 @@ export async function POST(req: Request) {
           title: "New Event: " + event.title,
           message: event.description || `A new ${event.eventType} has been scheduled.`,
           metadata: {
+            startDate: new Date(startDate).toLocaleDateString(),
+            endDate: endDate ? new Date(endDate).toLocaleDateString() : undefined,
             date: new Date(startDate).toLocaleDateString(),
-            time: body.startTime,
+            time: startTime && endTime ? `${startTime} - ${endTime}` : (startTime || ""),
+            startTime: startTime,
+            endTime: endTime,
             location: event.location,
-            audience: event.targetAudience === 'all' ? 'All' : event.targetAudience.charAt(0).toUpperCase() + event.targetAudience.slice(1)
+            image: image || (attachments && attachments.length > 0 ? attachments[0].url : undefined),
+            audience: event.targetAudience === 'all' ? 'All' : event.targetAudience.charAt(0).toUpperCase() + event.targetAudience.slice(1),
+            attachments: attachments,
           },
           relatedId: event._id,
           relatedModel: "Event",
           icon: "calendar",
-        };
+        } as any;
 
         if (event.targetAudience === "all" || !event.classIds || event.classIds.length === 0) {
           await broadcastNotification("all", notifOptions);
@@ -162,7 +175,15 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, ...updateData } = body;
+    let { id, ...updateData } = body;
+
+    // Sanitize attachments and image if they exist in updateData
+    if (updateData.attachments) {
+      updateData.attachments = updateData.attachments.filter((a: any) => a.url && typeof a.url === "string" && a.url.trim() !== "");
+    }
+    if (typeof updateData.image === "string" && updateData.image.trim() === "") {
+      updateData.image = undefined;
+    }
 
     if (!id) {
       return NextResponse.json(
@@ -192,15 +213,21 @@ export async function PUT(req: Request) {
           title: "Event Update: " + event.title,
           message: event.description || `The event '${event.title}' has been updated.`,
           metadata: {
+            startDate: new Date(event.startDate).toLocaleDateString(),
+            endDate: event.endDate ? new Date(event.endDate).toLocaleDateString() : undefined,
             date: new Date(event.startDate).toLocaleDateString(),
-            time: event.startTime,
+            time: event.startTime && event.endTime ? `${event.startTime} - ${event.endTime}` : (event.startTime || ""),
+            startTime: event.startTime,
+            endTime: event.endTime,
             location: event.location,
-            audience: event.targetAudience === 'all' ? 'All' : event.targetAudience.charAt(0).toUpperCase() + event.targetAudience.slice(1)
+            image: event.image || (event.attachments && event.attachments.length > 0 ? event.attachments[0].url : undefined),
+            audience: event.targetAudience === 'all' ? 'All' : event.targetAudience.charAt(0).toUpperCase() + event.targetAudience.slice(1),
+            attachments: event.attachments,
           },
           relatedId: event._id,
           relatedModel: "Event",
           icon: "calendar",
-        };
+        } as any;
 
         if (event.targetAudience === "all" || !event.classIds || event.classIds.length === 0) {
           await broadcastNotification("all", notifOptions);

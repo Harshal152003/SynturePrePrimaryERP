@@ -121,11 +121,19 @@ export async function POST(req: Request) {
           title: "New Exam: " + exam.name,
           message: exam.description || `A new exam '${exam.name}' has been scheduled.`,
           metadata: {
+            startDate: new Date(startDate).toLocaleDateString(),
+            endDate: endDate ? new Date(endDate).toLocaleDateString() : new Date(startDate).toLocaleDateString(),
             date: new Date(startDate).toLocaleDateString(),
             subjects: Array.isArray(exam.subjects) ? exam.subjects.join(", ") : "",
+            schedule: exam.schedule?.map((s: any) => ({
+              subject: s.subject,
+              date: new Date(s.date).toLocaleDateString(),
+              startTime: s.startTime,
+              endTime: s.endTime
+            })),
             marks: exam.totalMarks,
             examType: exam.examType,
-            status: "published" // Ensure status is present
+            status: "published"
           },
           relatedId: exam._id,
           relatedModel: "Exam",
@@ -191,8 +199,16 @@ export async function PUT(req: Request) {
           title: "Exam Published: " + exam.name,
           message: `The schedule for '${exam.name}' has been published.`,
           metadata: {
+            startDate: new Date(exam.startDate).toLocaleDateString(),
+            endDate: exam.endDate ? new Date(exam.endDate).toLocaleDateString() : new Date(exam.startDate).toLocaleDateString(),
             date: new Date(exam.startDate).toLocaleDateString(),
             subjects: Array.isArray(exam.subjects) ? exam.subjects.join(", ") : "",
+            schedule: exam.schedule?.map((s: any) => ({
+              subject: s.subject,
+              date: new Date(s.date).toLocaleDateString(),
+              startTime: s.startTime,
+              endTime: s.endTime
+            })),
             examType: exam.examType,
             status: "published"
           },

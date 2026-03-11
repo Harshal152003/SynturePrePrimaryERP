@@ -169,7 +169,7 @@ export async function DELETE(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    let id = searchParams.get("id");
     const clearAll = searchParams.get("clearAll") === "true";
 
     if (clearAll) {
@@ -177,21 +177,32 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ success: true, message: "All notifications cleared" });
     }
 
+    // Try reading from body as a fallback if not in query params
     if (!id) {
-      return NextResponse.json(
-        { success: false, error: "Notification ID is required" },
-        { status: 400 }
-      );
+      try {
+        const body = await req.json();
+        id = body.id;
+      } catch (e) {
+        // Body might not exist
+      }
     }
 
-    const notification = await Notification.findOneAndDelete({ _id: id, recipientId: user.id });
-
-    if (!notification) {
-      return NextResponse.json(
-        { success: false, error: "Notification not found" },
-        { status: 404 }
-      );
+    if (!id) {
+      return NextResponse.json({ success: false, error: "Notification ID is required" }, { status: 400 });
     }
+
+    // Try finding it first to differentiate between not found vs unauthorized
+    const existing = await Notification.findById(id);
+    if (!existing) {
+      return NextResponse.json({ success: false, error: "Notification not found in database" }, { status: 404 });
+    }
+
+    // Check ownership
+    if (String(existing.recipientId) !== String(user.id)) {
+      return NextResponse.json({ success: false, error: "Unauthorized to delete this notification" }, { status: 403 });
+    }
+
+    await Notification.findByIdAndDelete(id);
 
     return NextResponse.json({ success: true, message: "Notification deleted successfully" });
   } catch (error) {
