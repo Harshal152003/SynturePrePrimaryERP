@@ -1,5 +1,6 @@
-import AttendanceManagement from "@/components/admin/AttendanceManagement";
+"use client";
+import ParentAttendanceView from "@/components/parent/ParentAttendanceView";
 
-export default function DashboardAttendancePage() {
-  return <AttendanceManagement />;
+export default function ParentAttendancePage() {
+  return <ParentAttendanceView />;
 }

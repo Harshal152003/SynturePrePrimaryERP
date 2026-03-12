@@ -21,7 +21,6 @@ import {
   Edit2,
   Trash2,
   Download,
-  Upload,
   Filter,
   MapPin,
   Bell,
@@ -29,11 +28,8 @@ import {
   Image as ImageIcon,
   FileText,
   X,
-  Paperclip,
   Eye,
   Search,
-  Camera,
-  Loader2,
 } from "lucide-react";
 
 interface Class {
@@ -102,7 +98,7 @@ export default function EventManagement() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+
 
   const [formData, setFormData] = useState<{
     title: string;
@@ -187,61 +183,6 @@ export default function EventManagement() {
     }));
   };
 
-  const handleAddAttachment = () => {
-    setFormData((prev) => ({
-      ...prev,
-      attachments: [...prev.attachments, { name: "", url: "" }],
-    }));
-  };
-
-  const handleAttachmentChange = (index: number, field: keyof Attachment, value: string) => {
-    const updatedAttachments = [...formData.attachments];
-    updatedAttachments[index] = { ...updatedAttachments[index], [field]: value };
-    setFormData((prev) => ({ ...prev, attachments: updatedAttachments }));
-  };
-
-  const handleRemoveAttachment = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleFileUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      showToast.error("Only image files are allowed");
-      return;
-    }
-
-    setUploadingIndex(index);
-    const uploadData = new FormData();
-    uploadData.append("file", file);
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: uploadData,
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        handleAttachmentChange(index, "url", data.url);
-        if (!formData.attachments[index].name) {
-          handleAttachmentChange(index, "name", file.name);
-        }
-        showToast.success("Image uploaded successfully");
-      } else {
-        showToast.error(data.error || "Upload failed");
-      }
-    } catch (error) {
-      showToast.error("Error uploading image");
-    } finally {
-      setUploadingIndex(null);
-    }
-  };
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -251,10 +192,7 @@ export default function EventManagement() {
       return;
     }
 
-    if (uploadingIndex !== null) {
-      showToast.error("Please wait for the image to finish uploading.");
-      return;
-    }
+
 
     if (!formData.startDate) {
       showToast.error("Start date is required (please ensure it's a valid date)");
@@ -809,84 +747,7 @@ export default function EventManagement() {
             </div>
           )}
 
-          {/* Section: Attachments */}
-          <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2 uppercase tracking-wider">
-              <Paperclip className="w-4 h-4 text-yellow-500" />
-              Resource Attachments
-            </h3>
-            <div className="space-y-4">
-              {formData.attachments.map((attachment, idx) => (
-                <div key={idx} className="flex gap-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm group transition-all hover:border-yellow-200">
-                  <div className="flex-1 space-y-3">
-                    <input
-                      type="text"
-                      placeholder="File name (e.g., Agenda.pdf)"
-                      value={attachment.name}
-                      onChange={(e) => handleAttachmentChange(idx, "name", e.target.value)}
-                      className="w-full px-3 py-2 border-b border-transparent focus:border-yellow-400 focus:outline-none transition-all text-sm font-medium"
-                    />
-                    <div className="flex gap-2">
-                       <input
-                        type="text"
-                        placeholder="Resource URL or uploaded image path"
-                        value={attachment.url}
-                        onChange={(e) => handleAttachmentChange(idx, "url", e.target.value)}
-                        className="flex-1 px-3 py-2 border-b border-transparent focus:border-yellow-400 focus:outline-none transition-all text-xs text-blue-600"
-                      />
-                      <div className="relative">
-                        <input
-                          type="file"
-                          id={`file-upload-${idx}`}
-                          className="hidden"
-                          accept="image/*"
-                          onChange={(e) => handleFileUpload(idx, e)}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => document.getElementById(`file-upload-${idx}`)?.click()}
-                          disabled={uploadingIndex === idx}
-                          className={`p-2 rounded-lg transition-all ${
-                            uploadingIndex === idx 
-                              ? "bg-gray-100 text-gray-400" 
-                              : "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
-                          }`}
-                          title="Upload Image"
-                        >
-                          {uploadingIndex === idx ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Camera className="w-4 h-4" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {attachment.url && attachment.url.startsWith("http") && (
-                    <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
-                      <img src={attachment.url} alt="Resource" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAttachment(idx)}
-                    className="p-2 h-fit text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all self-center"
-                    title="Remove Attachment"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={handleAddAttachment}
-                className="flex items-center gap-2 px-4 py-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-yellow-400 hover:text-yellow-600 hover:bg-yellow-50 transition-all w-full justify-center text-sm font-bold group"
-              >
-                <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                Add Document or Link
-              </button>
-            </div>
-          </div>
+
 
           {/* Section: Publication Settings */}
           <div className="bg-white p-5 rounded-xl border border-gray-200">

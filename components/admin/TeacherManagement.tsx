@@ -25,6 +25,8 @@ import {
   Filter,
   X,
   School,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 interface ClassAssignment {
@@ -61,6 +63,7 @@ export default function TeacherManagement() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [selectedClass, setSelectedClass] = useState("");
   const [saving, setSaving] = useState(false);
@@ -250,6 +253,7 @@ export default function TeacherManagement() {
       classes: teacher.classes || [],
       qualifications: teacher.qualifications || [],
     });
+    setShowPassword(false);
     setModalOpen(true);
   };
 
@@ -410,6 +414,7 @@ export default function TeacherManagement() {
                 classes: [],
                 qualifications: [],
               });
+              setShowPassword(false);
               setModalOpen(true);
             }}
             className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-lg font-medium transition-all"
@@ -541,17 +546,28 @@ export default function TeacherManagement() {
             value={formData.email}
             onChange={handleInputChange}
             placeholder="Enter email address"
+            autoComplete="off"
             fullWidth
           />
 
           <Input
             label={editingTeacher ? "Password (leave blank to keep current)" : "Password *"}
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={formData.password}
             onChange={handleInputChange}
             placeholder="Enter password (min 6 characters)"
+            autoComplete="new-password"
             fullWidth
+            endIcon={
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="hover:text-purple-500 transition-colors focus:outline-none"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            }
           />
 
           <Input

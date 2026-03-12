@@ -38,11 +38,13 @@ export const PERMISSIONS: any = {
   parent: [
     "dashboard",
     "parent-portal",
+    "children",
+    "attendance",
+    "timetable",
     "gallery",
-    "meal-plan",
     "notifications",
-    "events",
-    "exams"
+    "contact-school",
+    "change-password"
   ]
 };
 

@@ -24,6 +24,11 @@ import {
   PanelLeftClose,
   PanelLeft,
   Clock,
+  BookOpen,
+  Phone,
+  KeyRound,
+  UserCheck,
+  UserCircle,
 } from "lucide-react";
 
 interface User {
@@ -36,7 +41,7 @@ interface MenuItem {
   path: string;
   module: string;
   icon: ComponentType<{ className?: string }>;
-  color: "orange" | "pink" | "rose" | "purple" | "amber" | "green" | "fuchsia" | "indigo" | "red" | "yellow" | "cyan" | "violet" | "slate";
+  color: "orange" | "pink" | "rose" | "purple" | "amber" | "green" | "fuchsia" | "indigo" | "red" | "yellow" | "cyan" | "violet" | "slate" | "emerald";
 }
 
 export default function Sidebar({
@@ -97,6 +102,13 @@ export default function Sidebar({
       color: "purple",
     },
     {
+      name: "Children",
+      path: `${basePath}/children`,
+      module: "children",
+      icon: UserCheck,
+      color: "violet",
+    },
+    {
       name: "Attendance",
       path: `${basePath}/attendance`,
       module: "attendance",
@@ -122,6 +134,13 @@ export default function Sidebar({
       path: `${basePath}/exams`,
       module: "exams",
       icon: FileText,
+      color: "indigo",
+    },
+    {
+      name: "Exam Results",
+      path: `${basePath}/exam-results`,
+      module: "exam-results",
+      icon: BookOpen,
       color: "indigo",
     },
     {
@@ -171,6 +190,20 @@ export default function Sidebar({
       color: "violet",
     },
     {
+      name: "Contact School",
+      path: `${basePath}/contact-school`,
+      module: "contact-school",
+      icon: Phone,
+      color: "pink",
+    },
+    {
+      name: "Change Password",
+      path: `${basePath}/change-password`,
+      module: "change-password",
+      icon: KeyRound,
+      color: "slate",
+    },
+    {
       name: "Settings",
       path: `${basePath}/settings`,
       module: "settings",
@@ -180,7 +213,7 @@ export default function Sidebar({
   ];
 
   const getColorClasses = (
-    color: "orange" | "pink" | "rose" | "purple" | "amber" | "green" | "fuchsia" | "indigo" | "red" | "yellow" | "cyan" | "violet" | "slate",
+    color: "orange" | "pink" | "rose" | "purple" | "amber" | "green" | "fuchsia" | "indigo" | "red" | "yellow" | "cyan" | "violet" | "slate" | "emerald",
     isActive: boolean
   ): string => {
     const colors: Record<string, string> = {
@@ -197,6 +230,7 @@ export default function Sidebar({
       cyan: isActive ? "bg-cyan-500 text-white" : "bg-cyan-50 text-cyan-600",
       violet: isActive ? "bg-violet-500 text-white" : "bg-violet-50 text-violet-600",
       slate: isActive ? "bg-slate-500 text-white" : "bg-slate-50 text-slate-600",
+      emerald: isActive ? "bg-emerald-500 text-white" : "bg-emerald-50 text-emerald-600",
     };
     return colors[color] || colors.orange;
   };
