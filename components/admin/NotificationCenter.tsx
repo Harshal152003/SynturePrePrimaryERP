@@ -19,6 +19,12 @@ import {
   Clock,
   Search,
   X,
+  MapPin,
+  Calendar as CalendarIcon,
+  Users as UsersIcon,
+  BookOpen,
+  ExternalLink,
+  FileText,
 } from "lucide-react";
 
 interface Notification {
@@ -29,7 +35,8 @@ interface Notification {
   priority: string;
   isRead: boolean;
   createdAt: string;
-  [key: string]: unknown; // Added index signature
+  metadata?: any;
+  [key: string]: any;
 }
 
 const NOTIFICATION_TYPES = [
@@ -329,11 +336,11 @@ export default function NotificationCenter() {
             filteredNotifications.map((notif) => (
               <div
                 key={notif._id}
-                className={`border rounded-lg p-4 transition-all ${
-                  !notif.isRead
-                    ? "border-l-4 border-l-orange-500 bg-orange-50 hover:bg-orange-100"
-                    : "border-gray-200 hover:bg-gray-50"
-                }`}
+                className={`border rounded-xl p-4 transition-all cursor-pointer group ${!notif.isRead
+                    ? "border-l-4 border-l-orange-500 bg-orange-50/50 hover:bg-orange-100/70"
+                    : "border-gray-200 hover:bg-gray-50 bg-white"
+                  }`}
+                onClick={() => !notif.isRead && handleMarkAsRead(notif._id)}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -353,7 +360,87 @@ export default function NotificationCenter() {
                       </Badge>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{notif.message}</p>
+                    <p className="text-sm text-gray-600 mb-3 whitespace-pre-wrap">{notif.message}</p>
+
+                    {/* Metadata Section with Professional Icons */}
+                    {notif.metadata && typeof notif.metadata === 'object' && Object.keys(notif.metadata).length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-3 bg-white/80 p-3 rounded-lg border border-orange-100/50 shadow-sm transition-all group-hover:bg-white">
+                        {(notif.metadata as any).date && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <CalendarIcon className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Date:</span> {(notif.metadata as any).date}
+                          </div>
+                        )}
+                        {(notif.metadata as any).time && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <Clock className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Time:</span> {(notif.metadata as any).time}
+                          </div>
+                        )}
+                        {(notif.metadata as any).location && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <MapPin className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Spot:</span> {(notif.metadata as any).location}
+                          </div>
+                        )}
+                        {(notif.metadata as any).audience && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <UsersIcon className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Audience:</span> {(notif.metadata as any).audience}
+                          </div>
+                        )}
+                        {(notif.metadata as any).subjects && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <BookOpen className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Subjects:</span> {(notif.metadata as any).subjects}
+                          </div>
+                        )}
+                        {(notif.metadata as any).marks && (
+                          <div className="flex items-center gap-2 text-[11px] text-gray-700">
+                            <CheckCircle2 className="w-4 h-4 text-orange-500" />
+                            <span className="font-bold text-gray-900">Total Marks:</span> {(notif.metadata as any).marks}
+                          </div>
+                        )}
+                        
+                        {/* Attachments Display */}
+                        {(notif.metadata as any).attachments && Array.isArray((notif.metadata as any).attachments) && (notif.metadata as any).attachments.length > 0 && (
+                          <div className="col-span-1 sm:col-span-2 mt-2 pt-2 border-t border-orange-100 flex flex-wrap gap-2">
+                            <p className="w-full text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Attachments</p>
+                            {(notif.metadata as any).attachments.slice(0, 3).map((file: any, fidx: number) => (
+                              <a
+                                key={fidx}
+                                href={file.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 p-2 bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-200 rounded-lg transition-all group/file max-w-full"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {file.url && (file.url.endsWith('.jpg') || file.url.endsWith('.jpeg') || file.url.endsWith('.png') || file.url.includes('cloudinary')) ? (
+                                  <div className="w-8 h-8 rounded bg-gray-200 overflow-hidden flex-shrink-0">
+                                    <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
+                                  </div>
+                                ) : (
+                                  <div className="w-8 h-8 rounded bg-orange-100 flex items-center justify-center flex-shrink-0">
+                                    <FileText className="w-4 h-4 text-orange-600" />
+                                  </div>
+                                )}
+                                <div className="flex flex-col min-w-0 pr-1">
+                                  <span className="text-[11px] font-bold text-gray-700 truncate">{file.name || 'Attachment'}</span>
+                                  <span className="text-[9px] text-gray-400 flex items-center gap-1">
+                                    View File <ExternalLink className="w-2 h-2" />
+                                  </span>
+                                </div>
+                              </a>
+                            ))}
+                            {(notif.metadata as any).attachments.length > 3 && (
+                              <div className="flex items-center justify-center p-2 text-[9px] font-bold text-gray-400 bg-gray-50 border border-dashed border-gray-200 rounded-lg">
+                                +{(notif.metadata as any).attachments.length - 3} more
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className="flex items-center gap-1 text-xs text-gray-500">
                       <Clock className="w-3 h-3" />

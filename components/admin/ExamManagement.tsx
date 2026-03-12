@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ReactNode } from "react";
+import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Select from "@/components/common/Select";
@@ -81,6 +82,8 @@ const EXAM_TYPES = [
 ];
 
 export default function ExamManagement() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin" || user?.role === "teacher";
   const [exams, setExams] = useState<Exam[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,11 +208,16 @@ export default function ExamManagement() {
     }));
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSaveExam = async () => {
     if (!formData.name || !formData.classId || !formData.startDate) {
       showToast.error("Name, class, and start date are required");
       return;
     }
+
+    if (isSaving) return;
+    setIsSaving(true);
 
     try {
       const method = editingExam ? "PUT" : "POST";
@@ -236,6 +244,8 @@ export default function ExamManagement() {
       fetchExams();
     } catch (error) {
       showToast.error("Failed to save exam");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -468,17 +478,19 @@ export default function ExamManagement() {
               {filteredExams.length} {filteredExams.length === 1 ? "exam" : "exams"} found
             </p>
           </div>
-          <button
-            onClick={() => {
-              setEditingExam(null);
-              resetForm();
-              setModalOpen(true);
-            }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Create Exam
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => {
+                setEditingExam(null);
+                resetForm();
+                setModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Create Exam
+            </button>
+          )}
         </div>
 
         <div className="mb-6 flex flex-col md:flex-row gap-3">
@@ -508,7 +520,7 @@ export default function ExamManagement() {
           columns={columns}
           data={filteredExams}
           loading={loading}
-          actions={(row) => (
+          actions={isAdmin ? (row) => (
             <div className="flex gap-2">
               <button
                 onClick={() => handleEditExam(row as Exam)}
@@ -525,7 +537,7 @@ export default function ExamManagement() {
                 Delete
               </button>
             </div>
-          )}
+          ) : undefined}
         />
       </div>
 
@@ -537,33 +549,40 @@ export default function ExamManagement() {
           setEditingExam(null);
         }}
         title={editingExam ? "Edit Exam" : "Create Exam"}
-        size="lg"
+        size="xl"
         footer={
-          <>
-            <Button
+          <div className="flex gap-3">
+            <button
               onClick={() => {
                 setModalOpen(false);
                 setEditingExam(null);
               }}
-              variant="secondary"
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all font-medium"
             >
               Cancel
-            </Button>
-            <Button onClick={handleSaveExam} variant="primary">
-              {editingExam ? "Update" : "Create"} Exam
-            </Button>
-          </>
+            </button>
+            <button
+              onClick={handleSaveExam}
+              disabled={isSaving}
+              className={`px-6 py-2 rounded-lg font-bold shadow-md transition-all ${
+                isSaving 
+                  ? "bg-gray-400 text-white cursor-not-allowed" 
+                  : "bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white hover:shadow-lg"
+              }`}
+            >
+              {isSaving ? "Saving..." : editingExam ? "Save Changes" : "Create Exam"}
+            </button>
+          </div>
         }
       >
-        <div className="space-y-0 mt-2 max-h-[72vh] overflow-y-auto pr-1 custom-scrollbar">
-
-          {/* ── Basic Information ── */}
-          <div className="p-5 border-b border-gray-100">
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <FileText className="w-4 h-4" />
+        <div className="space-y-6 mt-4 max-h-[75vh] overflow-y-auto pr-3 custom-scrollbar">
+          {/* Section: Basic Information */}
+          <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2 uppercase tracking-wider">
+              <FileText className="w-4 h-4 text-blue-500" />
               Basic Information
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-5">
               <Input
                 label="Exam Name *"
                 name="name"
@@ -571,75 +590,90 @@ export default function ExamManagement() {
                 onChange={handleInputChange}
                 placeholder="e.g., Mid-Term 2025, Final Exam"
                 fullWidth
+                className="focus:ring-blue-400"
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 mt-1">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Add a description..."
                   rows={2}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all resize-none text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all resize-none shadow-sm bg-white"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Class *</label>
-                  <select
-                    name="classId"
-                    value={formData.classId}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all appearance-none bg-white text-sm"
-                  >
-                    <option value="">Select Class</option>
-                    {classes.map((cls) => (
-                      <option key={cls._id} value={cls._id}>
-                        {cls.name} - Section {cls.section}
-                      </option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Class *</label>
+                  <div className="relative">
+                    <select
+                      name="classId"
+                      value={formData.classId}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                    >
+                      <option value="">Select Class</option>
+                      {classes.map((cls) => (
+                        <option key={cls._id} value={cls._id}>
+                          {cls.name} - Section {cls.section}
+                        </option>
+                      ))}
+                    </select>
+                    <Filter className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Exam Type</label>
-                  <select
-                    name="examType"
-                    value={formData.examType}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all appearance-none bg-white text-sm"
-                  >
-                    {EXAM_TYPES.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Exam Type</label>
+                  <div className="relative">
+                    <select
+                      name="examType"
+                      value={formData.examType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                    >
+                      {EXAM_TYPES.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                    <Filter className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Input
                   label="Start Date *"
                   name="startDate"
                   type="date"
+                  icon={<Calendar className="w-4 h-4" />}
                   value={formData.startDate}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
+                  className="focus:ring-blue-400 cursor-pointer"
                 />
                 <Input
                   label="End Date"
                   name="endDate"
                   type="date"
+                  icon={<Calendar className="w-4 h-4" />}
                   value={formData.endDate}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
+                  className="focus:ring-blue-400 cursor-pointer"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Input
                   label="Total Marks"
                   name="totalMarks"
@@ -647,6 +681,7 @@ export default function ExamManagement() {
                   value={formData.totalMarks}
                   onChange={handleInputChange}
                   fullWidth
+                  className="focus:ring-blue-400"
                 />
                 <Input
                   label="Passing Marks"
@@ -655,18 +690,19 @@ export default function ExamManagement() {
                   value={formData.passingMarks}
                   onChange={handleInputChange}
                   fullWidth
+                  className="focus:ring-blue-400"
                 />
               </div>
             </div>
           </div>
 
-          {/* ── Subjects ── */}
-          <div className="p-5 border-b border-gray-100">
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <BookOpen className="w-4 h-4" />
+          {/* Section: Subjects */}
+          <div className="bg-white p-5 rounded-xl border border-gray-200">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
+              <BookOpen className="w-4 h-4 text-blue-500" />
               Subjects
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="flex gap-2">
                 <input
                   id="subjectInput"
@@ -679,7 +715,7 @@ export default function ExamManagement() {
                       (e.target as HTMLInputElement).value = "";
                     }
                   }}
-                  className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                  className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all text-sm"
                 />
                 <button
                   type="button"
@@ -691,7 +727,7 @@ export default function ExamManagement() {
                       input.focus();
                     }
                   }}
-                  className="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all flex items-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" />
                   Add
@@ -708,7 +744,7 @@ export default function ExamManagement() {
                       <button
                         type="button"
                         onClick={() => handleRemoveSubject(index)}
-                        className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                        className="hover:bg-blue-200 rounded-full p-1 transition-colors"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -716,91 +752,99 @@ export default function ExamManagement() {
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-gray-400 italic">No subjects added yet.</p>
+                <p className="text-sm text-gray-400 italic text-center py-2 bg-gray-50 rounded-xl border border-dashed border-gray-200">No subjects added yet.</p>
               )}
             </div>
           </div>
 
-          {/* ── Exam Schedule ── */}
-          <div className="p-5 border-b border-gray-100">
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
+          {/* Section: Exam Schedule */}
+          <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2 uppercase tracking-wider">
+              <Calendar className="w-4 h-4 text-blue-500" />
               Exam Schedule
-              <span className="text-xs font-normal text-gray-400 normal-case tracking-normal">(Optional)</span>
+              <span className="text-xs font-normal text-gray-400 normal-case tracking-normal ml-auto">(Optional)</span>
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {formData.schedule.map((item, idx) => (
-                <div key={idx} className="p-4 bg-gray-50 rounded-xl border border-gray-200 relative">
+                <div key={idx} className="p-5 bg-white rounded-xl border border-gray-200 shadow-sm relative group transition-all hover:border-blue-200">
                   <button
                     type="button"
                     onClick={() => handleRemoveScheduleItem(idx)}
-                    className="absolute top-3 right-3 p-1 text-red-500 hover:bg-red-100 rounded-lg transition-all"
+                    className="absolute top-3 right-3 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                   >
-                    <X className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
-                  <p className="text-xs font-semibold text-gray-500 mb-3">Schedule Item {idx + 1}</p>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">
+                      {idx + 1}
+                    </div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Schedule Item</p>
+                  </div>
 
-                  <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Subject</label>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Subject</label>
                       <input
                         type="text"
                         placeholder="e.g., Mathematics"
                         value={item.subject}
                         onChange={(e) => handleScheduleChange(idx, "subject", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Date</label>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Date</label>
                       <input
                         type="date"
                         value={item.date}
                         onChange={(e) => handleScheduleChange(idx, "date", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                        onClick={(e) => (e.target as any).showPicker?.()}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm transition-all cursor-pointer"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Start Time</label>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Start Time</label>
                       <input
                         type="time"
                         value={item.startTime}
                         onChange={(e) => handleScheduleChange(idx, "startTime", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                        onClick={(e) => (e.target as any).showPicker?.()}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm transition-all cursor-pointer"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">End Time</label>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">End Time</label>
                       <input
                         type="time"
                         value={item.endTime}
                         onChange={(e) => handleScheduleChange(idx, "endTime", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                        onClick={(e) => (e.target as any).showPicker?.()}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm transition-all cursor-pointer"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Room</label>
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Room</label>
                       <input
                         type="text"
                         placeholder="e.g., Room 101"
                         value={item.roomNumber}
                         onChange={(e) => handleScheduleChange(idx, "roomNumber", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Instructions</label>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Instructions</label>
                     <input
                       type="text"
                       placeholder="e.g., Bring calculator, No mobile phones"
                       value={item.instructions}
                       onChange={(e) => handleScheduleChange(idx, "instructions", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm transition-all"
                     />
                   </div>
                 </div>
@@ -808,56 +852,58 @@ export default function ExamManagement() {
               <button
                 type="button"
                 onClick={handleAddScheduleItem}
-                className="flex items-center gap-2 px-4 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-all w-full justify-center text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-all w-full justify-center text-sm font-bold group"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 Add Schedule Item
               </button>
             </div>
           </div>
 
-          {/* ── Status & Publishing ── */}
-          <div className="p-5">
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
+          {/* Section: Status & Publishing */}
+          <div className="bg-white p-5 rounded-xl border border-gray-200">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
+              <CheckCircle2 className="w-4 h-4 text-blue-500" />
               Status & Publishing
             </h3>
-            <div className="grid grid-cols-2 gap-4 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all appearance-none bg-white text-sm"
-                >
-                  <option value="scheduled">Scheduled</option>
-                  <option value="ongoing">Ongoing</option>
-                  <option value="completed">Completed</option>
-                </select>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Exam Status</label>
+                <div className="relative">
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                  >
+                    <option value="scheduled">Scheduled</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                  <Filter className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
 
-              <div className="flex items-center gap-3 pb-1">
-                <div className="relative">
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <div className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     id="isPublished"
                     name="isPublished"
                     checked={formData.isPublished}
                     onChange={handleInputChange}
-                    className="sr-only"
+                    className="sr-only peer"
                   />
                   <div
                     onClick={() => setFormData(prev => ({ ...prev, isPublished: !prev.isPublished }))}
-                    className={`w-11 h-6 rounded-full cursor-pointer transition-colors ${formData.isPublished ? "bg-blue-500" : "bg-gray-300"}`}
-                  >
-                    <div className={`w-4 h-4 bg-white rounded-full shadow mt-1 transition-transform ${formData.isPublished ? "translate-x-6" : "translate-x-1"}`} />
-                  </div>
+                    className="w-12 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"
+                  />
                 </div>
                 <div>
-                  <label htmlFor="isPublished" className="text-sm font-medium text-gray-700 cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, isPublished: !prev.isPublished }))}>
-                    Publish Results
+                  <label htmlFor="isPublished" className="text-sm font-bold text-gray-800 cursor-pointer block" onClick={() => setFormData(prev => ({ ...prev, isPublished: !prev.isPublished }))}>
+                    Publish Schedule
                   </label>
-                  <p className="text-xs text-gray-400">Visible to students</p>
+                  <p className="text-xs text-gray-500">Notify parents & show on dashboard</p>
                 </div>
               </div>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ReactNode } from "react";
+import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Select from "@/components/common/Select";
@@ -20,7 +21,6 @@ import {
   Edit2,
   Trash2,
   Download,
-  Upload,
   Filter,
   MapPin,
   Bell,
@@ -28,7 +28,6 @@ import {
   Image as ImageIcon,
   FileText,
   X,
-  Paperclip,
   Eye,
   Search,
 } from "lucide-react";
@@ -90,13 +89,16 @@ const TARGET_AUDIENCE = [
 ];
 
 export default function EventManagement() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin" || user?.role === "teacher";
   const [events, setEvents] = useState<Event[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("published");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+
 
   const [formData, setFormData] = useState<{
     title: string;
@@ -181,37 +183,33 @@ export default function EventManagement() {
     }));
   };
 
-  const handleAddAttachment = () => {
-    setFormData((prev) => ({
-      ...prev,
-      attachments: [...prev.attachments, { name: "", url: "" }],
-    }));
-  };
 
-  const handleAttachmentChange = (index: number, field: keyof Attachment, value: string) => {
-    const updatedAttachments = [...formData.attachments];
-    updatedAttachments[index] = { ...updatedAttachments[index], [field]: value };
-    setFormData((prev) => ({ ...prev, attachments: updatedAttachments }));
-  };
-
-  const handleRemoveAttachment = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index),
-    }));
-  };
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveEvent = async () => {
-    if (!formData.title || !formData.startDate) {
-      showToast.error("Title and start date are required");
+    if (!formData.title) {
+      showToast.error("Event title is required");
       return;
     }
+
+
+
+    if (!formData.startDate) {
+      showToast.error("Start date is required (please ensure it's a valid date)");
+      return;
+    }
+
+    if (isSaving) return;
+    setIsSaving(true);
 
     try {
       const method = editingEvent ? "PUT" : "POST";
       const url = "/api/events";
 
-      const payload = editingEvent ? { id: editingEvent._id, ...formData } : formData;
+      // Filter out attachments that are empty before sending to the server
+      const validAttachments = formData.attachments.filter(a => a.url && a.url.trim() !== "");
+      const cleanFormData = { ...formData, attachments: validAttachments };
+      const payload = editingEvent ? { id: editingEvent._id, ...cleanFormData } : cleanFormData;
 
       const res = await fetch(url, {
         method,
@@ -232,6 +230,8 @@ export default function EventManagement() {
       fetchEvents();
     } catch (error) {
       showToast.error("Failed to save event");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -452,17 +452,19 @@ export default function EventManagement() {
               {filteredEvents.length} {filteredEvents.length === 1 ? "event" : "events"} found
             </p>
           </div>
-          <button
-            onClick={() => {
-              setEditingEvent(null);
-              resetForm();
-              setModalOpen(true);
-            }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-lg font-medium transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Create Event
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => {
+                setEditingEvent(null);
+                resetForm();
+                setModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-lg font-medium transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Create Event
+            </button>
+          )}
         </div>
 
         <div className="mb-6 flex flex-col md:flex-row gap-3">
@@ -481,6 +483,7 @@ export default function EventManagement() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white"
           >
+            <option value="all">All Events</option>
             <option value="published">Published</option>
             <option value="draft">Draft</option>
             <option value="archived">Archived</option>
@@ -491,7 +494,7 @@ export default function EventManagement() {
           columns={columns}
           data={filteredEvents}
           loading={loading}
-          actions={(row) => (
+          actions={isAdmin ? (row) => (
             <div className="flex gap-2">
               <button
                 onClick={() => handleEditEvent(row as Event)}
@@ -508,7 +511,7 @@ export default function EventManagement() {
                 Delete
               </button>
             </div>
-          )}
+          ) : undefined}
         />
       </div>
 
@@ -520,45 +523,40 @@ export default function EventManagement() {
           setEditingEvent(null);
         }}
         title={editingEvent ? "Edit Event" : "Create Event"}
-        size="lg"
+        size="xl"
         footer={
-          <>
-            <Button
+          <div className="flex gap-3">
+            <button
               onClick={() => {
                 setModalOpen(false);
                 setEditingEvent(null);
               }}
-              variant="secondary"
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all font-medium"
             >
               Cancel
-            </Button>
-            <Button onClick={handleSaveEvent} variant="primary">
-              {editingEvent ? "Update" : "Create"} Event
-            </Button>
-          </>
+            </button>
+            <button
+              onClick={handleSaveEvent}
+              disabled={isSaving}
+              className={`px-6 py-2 rounded-lg font-bold shadow-md transition-all ${
+                isSaving 
+                  ? "bg-gray-400 text-white cursor-not-allowed" 
+                  : "bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white hover:shadow-lg"
+              }`}
+            >
+              {isSaving ? "Saving..." : editingEvent ? "Save Changes" : "Create Event"}
+            </button>
+          </div>
         }
       >
-        <div className="space-y-5 mt-4 max-h-[70vh] overflow-y-auto pr-2">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-lg flex items-center justify-center">
-              {editingEvent ? (
-                <Edit2 className="w-5 h-5 text-white" />
-              ) : (
-                <Plus className="w-5 h-5 text-white" />
-              )}
-            </div>
-            <h2 className="text-lg font-semibold text-gray-800">
-              {editingEvent ? "Edit Event" : "Create Event"}
-            </h2>
-          </div>
-
-          {/* Basic Information */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <FileText className="w-4 h-4" />
+        <div className="space-y-6 mt-4 max-h-[75vh] overflow-y-auto pr-3 custom-scrollbar">
+          {/* Section: Basic Information */}
+          <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2 uppercase tracking-wider">
+              <FileText className="w-4 h-4 text-yellow-500" />
               Basic Information
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-5">
               <Input
                 label="Event Title *"
                 name="title"
@@ -566,246 +564,256 @@ export default function EventManagement() {
                 onChange={handleInputChange}
                 placeholder="e.g., Annual Sports Day, Parent-Teacher Meeting"
                 fullWidth
+                className="focus:ring-yellow-400"
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 mt-1">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Describe the event..."
-                  rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all resize-none"
+                  placeholder="Describe the event details, agenda, or important notes..."
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all resize-none shadow-sm bg-white"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Event Type</label>
-                  <select
-                    name="eventType"
-                    value={formData.eventType}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white"
-                  >
-                    {EVENT_TYPES.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Event Type</label>
+                  <div className="relative">
+                    <select
+                      name="eventType"
+                      value={formData.eventType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                    >
+                      {EVENT_TYPES.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                    <Filter className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Target Audience
                   </label>
-                  <select
-                    name="targetAudience"
-                    value={formData.targetAudience}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white"
-                  >
-                    {TARGET_AUDIENCE.map((audience) => (
-                      <option key={audience.value} value={audience.value}>
-                        {audience.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      name="targetAudience"
+                      value={formData.targetAudience}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                    >
+                      {TARGET_AUDIENCE.map((audience) => (
+                        <option key={audience.value} value={audience.value}>
+                          {audience.label}
+                        </option>
+                      ))}
+                    </select>
+                    <Users className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Date & Time */}
-          <div className="border-t pt-5">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Date & Time
+          {/* Section: Date & Time */}
+          <div className="bg-white p-5 rounded-xl border border-gray-200">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
+              <Calendar className="w-4 h-4 text-yellow-500" />
+              Date & Schedule
             </h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Input
                   label="Start Date *"
                   name="startDate"
                   type="date"
+                  icon={<Calendar className="w-4 h-4" />}
                   value={formData.startDate}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
+                  className="focus:ring-yellow-400 cursor-pointer"
                 />
                 <Input
                   label="End Date"
                   name="endDate"
                   type="date"
+                  icon={<Calendar className="w-4 h-4" />}
                   value={formData.endDate}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
+                  className="focus:ring-yellow-400 cursor-pointer"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Input
                   label="Start Time"
                   name="startTime"
                   type="time"
+                  icon={<Clock className="w-4 h-4" />}
                   value={formData.startTime}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
+                  className="focus:ring-yellow-400 cursor-pointer"
                 />
                 <Input
                   label="End Time"
                   name="endTime"
                   type="time"
+                  icon={<Clock className="w-4 h-4" />}
                   value={formData.endTime}
                   onChange={handleInputChange}
+                  onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
+                  className="focus:ring-yellow-400 cursor-pointer"
                 />
               </div>
             </div>
           </div>
 
-          {/* Location & Image */}
-          <div className="border-t pt-5">
-            <div className="space-y-4">
+          {/* Section: Multimedia & Location */}
+          <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2 uppercase tracking-wider">
+              <MapPin className="w-4 h-4 text-yellow-500" />
+              Location & Media
+            </h3>
+            <div className="space-y-5">
               <Input
                 label="Location"
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
+                icon={<MapPin className="w-4 h-4 text-gray-400 transition-colors" />}
                 placeholder="e.g., School Auditorium, Sports Ground"
                 fullWidth
+                className="focus:ring-yellow-400"
               />
 
               <Input
-                label="Image URL"
+                label="Banner Image URL"
                 name="image"
                 value={formData.image}
                 onChange={handleInputChange}
+                icon={<ImageIcon className="w-4 h-4 text-gray-400" />}
                 placeholder="https://example.com/image.jpg"
                 fullWidth
+                className="focus:ring-yellow-400"
               />
             </div>
           </div>
 
-          {/* Classes */}
+          {/* Section: Classes */}
           {formData.targetAudience === "students" && (
-            <div className="border-t pt-5">
-              <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Select Classes (Optional)
-              </label>
-              <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-3">
+            <div className="bg-white p-5 rounded-xl border border-gray-200">
+              <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
+                <Users className="w-4 h-4 text-yellow-500" />
+                Select Target Classes
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-48 overflow-y-auto custom-scrollbar p-1">
                 {classes.map((cls) => (
                   <label
                     key={cls._id}
-                    className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${formData.classIds.includes(cls._id)
+                      ? "bg-yellow-50 border-yellow-200 shadow-sm"
+                      : "bg-white border-gray-200 hover:border-yellow-200"
+                      }`}
                   >
                     <input
                       type="checkbox"
                       checked={formData.classIds.includes(cls._id)}
                       onChange={() => handleClassToggle(cls._id)}
-                      className="w-4 h-4 text-yellow-600 rounded focus:ring-2 focus:ring-yellow-400"
+                      className="w-5 h-5 text-yellow-500 rounded-md focus:ring-yellow-400 border-gray-300 transition-all"
                     />
-                    <span className="text-sm text-gray-700">
-                      {cls.name} - {cls.section}
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-gray-800">{cls.name}</span>
+                      <span className="text-xs text-gray-500">{cls.section}</span>
+                    </div>
                   </label>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Attachments */}
-          <div className="border-t pt-5">
-            <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <Paperclip className="w-4 h-4" />
-              Attachments (Optional)
-            </label>
-            <div className="space-y-3">
-              {formData.attachments.map((attachment, idx) => (
-                <div key={idx} className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="File name"
-                    value={attachment.name}
-                    onChange={(e) => handleAttachmentChange(idx, "name", e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="URL"
-                    value={attachment.url}
-                    onChange={(e) => handleAttachmentChange(idx, "url", e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAttachment(idx)}
-                    className="p-2 text-red-600 hover:bg-red-100 rounded transition-all"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+
+
+          {/* Section: Publication Settings */}
+          <div className="bg-white p-5 rounded-xl border border-gray-200">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
+              <Bell className="w-4 h-4 text-yellow-500" />
+              Publication & Notifications
+            </h3>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Publishing Status</label>
+                  <div className="relative">
+                    <select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm font-medium"
+                    >
+                      <option value="draft">Draft - Keep it private</option>
+                      <option value="published">Published - Live for everyone</option>
+                      <option value="archived">Archived - Move to history</option>
+                    </select>
+                    <Filter className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={handleAddAttachment}
-                className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-yellow-400 hover:text-yellow-600 transition-all w-full justify-center text-sm"
-              >
-                <Plus className="w-4 h-4" />
-                Add Attachment
-              </button>
-            </div>
-          </div>
 
-          {/* Notification & Status */}
-          <div className="border-t pt-5">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white"
-                >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                  <option value="archived">Archived</option>
-                </select>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Notification Channel
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="notificationType"
+                      value={formData.notificationType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                    >
+                      <option value="all">All Channels (Email, SMS, App)</option>
+                      <option value="email">Email Only</option>
+                      <option value="sms">SMS Only</option>
+                      <option value="in-app">In-App Only</option>
+                    </select>
+                    <Bell className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Notification Type
+              <div className="p-4 bg-yellow-50 border border-yellow-100 rounded-xl">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      name="notify"
+                      checked={formData.notify}
+                      onChange={handleInputChange}
+                      className="peer sr-only"
+                    />
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                  </div>
+                  <div>
+                    <span className="text-sm font-bold text-gray-800">Send instant notification</span>
+                    <p className="text-xs text-gray-500 mt-0.5">Alert relevant users immediately upon saving.</p>
+                  </div>
                 </label>
-                <select
-                  name="notificationType"
-                  value={formData.notificationType}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white"
-                >
-                  <option value="all">All (Email, SMS, In-App)</option>
-                  <option value="email">Email Only</option>
-                  <option value="sms">SMS Only</option>
-                  <option value="in-app">In-App Only</option>
-                </select>
               </div>
             </div>
-
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                name="notify"
-                checked={formData.notify}
-                onChange={handleInputChange}
-                className="w-4 h-4 text-yellow-600 rounded focus:ring-2 focus:ring-yellow-400"
-              />
-              <span className="text-sm font-medium text-gray-700">
-                Send notification to target audience
-              </span>
-            </label>
           </div>
         </div>
       </Modal>

@@ -13,20 +13,9 @@ export async function GET(req: Request) {
   if (!parent || parent.role !== "parent")
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
 
-  // find all children
-  const students = await Student.find({
-    "parents.parentId": parent.id,
-  }).lean();
-
-  const classIds = students.map((s) => s.classId);
-
-  // return notifications for class + global
+  // return notifications for parent personally
   const notifications = await Notification.find({
-    $or: [
-      { type: "global" },
-      { classId: { $in: classIds } },
-      { studentId: { $in: students.map((s) => s._id) } }
-    ]
+    recipientId: parent.id
   })
     .sort({ createdAt: -1 })
     .lean();

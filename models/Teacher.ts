@@ -8,6 +8,8 @@ export type ITeacherDoc = mongoose.Document & {
   subjects?: string[]; // e.g., ["Math", "EVS"]
   classes?: { classId: mongoose.Types.ObjectId; section?: string }[];
   qualifications?: string[];
+  resetOTP?: string;
+  resetOTPExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -26,6 +28,8 @@ const TeacherSchema = new mongoose.Schema<ITeacherDoc>(
       },
     ],
     qualifications: [String],
+    resetOTP: String,
+    resetOTPExpires: Date,
   },
   { timestamps: true }
 );

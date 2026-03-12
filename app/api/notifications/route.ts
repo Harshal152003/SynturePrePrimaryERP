@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Notification from "@/models/Notification";
+import Student from "@/models/Student";
 import { verifyToken } from "@/lib/auth";
 
 export async function GET(req: Request) {
@@ -17,7 +18,8 @@ export async function GET(req: Request) {
     const limit = Math.max(1, Math.min(100, parseInt(url.searchParams.get("limit") || "20")));
     const unreadOnly = url.searchParams.get("unread") === "true";
 
-    const filter: Record<string, unknown> = { recipientId: user.id };
+    const filter: any = { recipientId: user.id };
+
     if (unreadOnly) filter.isRead = false;
 
     const skip = (page - 1) * limit;
@@ -30,7 +32,7 @@ export async function GET(req: Request) {
         .limit(limit)
         .lean(),
       Notification.countDocuments(filter),
-      Notification.countDocuments({ recipientId: user.id, isRead: false }),
+      Notification.countDocuments({ ...filter, isRead: false }),
     ]);
 
     return NextResponse.json({
@@ -110,7 +112,13 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, isRead } = body;
+    const { id, isRead, markAllRead } = body;
+
+    // "Mark All Read" logic
+    if (markAllRead) {
+      await Notification.updateMany({ recipientId: user.id, isRead: false }, { isRead: true, readAt: new Date() });
+      return NextResponse.json({ success: true, message: "Marked all as read" });
+    }
 
     if (!id) {
       return NextResponse.json(
@@ -161,23 +169,40 @@ export async function DELETE(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    let id = searchParams.get("id");
+    const clearAll = searchParams.get("clearAll") === "true";
+
+    if (clearAll) {
+      await Notification.deleteMany({ recipientId: user.id });
+      return NextResponse.json({ success: true, message: "All notifications cleared" });
+    }
+
+    // Try reading from body as a fallback if not in query params
+    if (!id) {
+      try {
+        const body = await req.json();
+        id = body.id;
+      } catch (e) {
+        // Body might not exist
+      }
+    }
 
     if (!id) {
-      return NextResponse.json(
-        { success: false, error: "Notification ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "Notification ID is required" }, { status: 400 });
     }
 
-    const notification = await Notification.findByIdAndDelete(id);
-
-    if (!notification) {
-      return NextResponse.json(
-        { success: false, error: "Notification not found" },
-        { status: 404 }
-      );
+    // Try finding it first to differentiate between not found vs unauthorized
+    const existing = await Notification.findById(id);
+    if (!existing) {
+      return NextResponse.json({ success: false, error: "Notification not found in database" }, { status: 404 });
     }
+
+    // Check ownership
+    if (String(existing.recipientId) !== String(user.id)) {
+      return NextResponse.json({ success: false, error: "Unauthorized to delete this notification" }, { status: 403 });
+    }
+
+    await Notification.findByIdAndDelete(id);
 
     return NextResponse.json({ success: true, message: "Notification deleted successfully" });
   } catch (error) {

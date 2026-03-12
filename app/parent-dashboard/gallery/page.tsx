@@ -1,6 +1,6 @@
 "use client";
-import GalleryManagement from "@/components/admin/GalleryManagement";
+import ParentGalleryView from "@/components/parent/ParentGalleryView";
 
 export default function GalleryPage() {
-  return <GalleryManagement />;
+  return <ParentGalleryView />;
 }

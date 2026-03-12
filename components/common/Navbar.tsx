@@ -29,6 +29,8 @@ export default function Navbar({
   const searchRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Check if search should be visible (only on admin dashboard)
   const isAdminDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
@@ -55,6 +57,24 @@ export default function Navbar({
       return () => document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [showSearchResults, dropdownOpen, notificationOpen]);
+
+  // Fetch real notifications
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch("/api/notifications?limit=5");
+      if (res.ok) {
+        const data = await res.json();
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch (err) {
+      console.error("Error fetching notifications", err);
+    }
+  };
 
   const handleSearch = async (value: string) => {
     setSearchTerm(value);
@@ -233,54 +253,77 @@ export default function Navbar({
         {/* Right Section - Actions & Profile */}
         <div className="flex items-center gap-3">
           {/* Notifications */}
-          <div className="relative" ref={notificationRef}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setNotificationOpen(!notificationOpen);
-              }}
-              className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors group"
-            >
-              <Bell className="w-5 h-5 text-gray-600 group-hover:text-orange-500 transition-colors" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+          {user?.role !== "admin" && user?.role !== "teacher" && (
+            <div className="relative" ref={notificationRef}>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setNotificationOpen(!notificationOpen);
+                }}
+                className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors group"
+              >
+                <Bell className="w-5 h-5 text-gray-600 group-hover:text-orange-500 transition-colors" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white -translate-y-1 translate-x-1">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
 
-            {notificationOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-                <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-pink-50 border-b border-gray-200">
-                  <p className="text-sm font-semibold text-gray-800">Notifications</p>
-                  <p className="text-xs text-gray-600 mt-0.5">You have 3 unread notifications</p>
-                </div>
-                <div className="max-h-64 overflow-y-auto">
-                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
-                    <p className="text-xs font-medium text-gray-800">New student enrollment</p>
-                    <p className="text-xs text-gray-600 mt-1">Sarah Johnson enrolled in Class A</p>
-                    <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
+              {notificationOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+                  <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-pink-50 border-b border-gray-200">
+                    <p className="text-sm font-semibold text-gray-800">Notifications</p>
+                    <p className="text-xs text-gray-600 mt-0.5">
+                      {unreadCount > 0
+                        ? `You have ${unreadCount} unread notifications`
+                        : "You're all caught up!"}
+                    </p>
                   </div>
-                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
-                    <p className="text-xs font-medium text-gray-800">Fee payment received</p>
-                    <p className="text-xs text-gray-600 mt-1">Payment of $500 received from John Doe</p>
-                    <p className="text-xs text-gray-400 mt-1">5 hours ago</p>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length > 0 ? (
+                      notifications.map((notif) => (
+                        <div
+                          key={notif._id}
+                          className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 transition-colors ${!notif.isRead ? "bg-orange-50/30" : ""}`}
+                          onClick={() => {
+                            router.push("/dashboard/notifications");
+                            setNotificationOpen(false);
+                          }}
+                        >
+                          <div className="flex justify-between items-start">
+                            <p className={`text-xs font-semibold ${!notif.isRead ? "text-orange-600" : "text-gray-800"}`}>
+                              {notif.title}
+                            </p>
+                            {!notif.isRead && <div className="w-2 h-2 bg-orange-500 rounded-full"></div>}
+                          </div>
+                          <p className="text-[11px] text-gray-600 mt-1 line-clamp-6 whitespace-pre-wrap">{notif.message}</p>
+                          <p className="text-[10px] text-gray-400 mt-1">
+                            {new Date(notif.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-8 text-center">
+                        <Bell className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                        <p className="text-xs text-gray-500">No notifications yet</p>
+                      </div>
+                    )}
                   </div>
-                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
-                    <p className="text-xs font-medium text-gray-800">Event reminder</p>
-                    <p className="text-xs text-gray-600 mt-1">Annual Day celebration tomorrow</p>
-                    <p className="text-xs text-gray-400 mt-1">1 day ago</p>
+                  <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex justify-center">
+                    <Link
+                      href="/dashboard/notifications"
+                      className="text-xs font-medium text-orange-600 hover:text-orange-700"
+                      onClick={() => setNotificationOpen(false)}
+                    >
+                      View all notifications
+                    </Link>
                   </div>
                 </div>
-                <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex justify-center">
-                  <Link
-                    href="/dashboard/notifications"
-                    className="text-xs font-medium text-orange-600 hover:text-orange-700"
-                    onClick={() => setNotificationOpen(false)}
-                  >
-                    View all notifications
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Quick Settings */}
           <Link

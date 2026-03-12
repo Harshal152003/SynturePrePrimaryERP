@@ -1,6 +1,6 @@
 "use client";
-import TransportManagement from "@/components/admin/TransportManagement";
+import ParentTransportView from "@/components/parent/ParentTransportView";
 
-export default function TransportRoutesPage() {
-  return <TransportManagement />;
+export default function ParentTransportRoutesPage() {
+  return <ParentTransportView />;
 }

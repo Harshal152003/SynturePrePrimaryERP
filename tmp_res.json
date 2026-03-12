@@ -1,0 +1,67 @@
+{
+  "success": true,
+  "notifications": [
+    {
+      "_id": "69afbccd4e8ef6cdf21a50d5",
+      "recipientId": null,
+      "type": "exam",
+      "title": "New Exam: Endsem Exam",
+      "message": "eeee",
+      "relatedId": "69afbccd4e8ef6cdf21a50cb",
+      "relatedModel": "Exam",
+      "isRead": false,
+      "priority": "normal",
+      "icon": "clipboard-list",
+      "metadata": {
+        "date": "5/25/252",
+        "subjects": "",
+        "marks": 100
+      },
+      "__v": 0,
+      "createdAt": "2026-03-10T06:40:13.624Z",
+      "updatedAt": "2026-03-10T06:40:13.624Z"
+    },
+    {
+      "_id": "69afbc7a4e8ef6cdf21a50c3",
+      "recipientId": null,
+      "type": "exam",
+      "title": "New Exam: Endsem Exam",
+      "message": "fuigu",
+      "relatedId": "69afbc794e8ef6cdf21a50b9",
+      "relatedModel": "Exam",
+      "isRead": false,
+      "priority": "normal",
+      "icon": "clipboard-list",
+      "metadata": {
+        "date": "6/7/5588",
+        "subjects": "",
+        "marks": 100
+      },
+      "__v": 0,
+      "createdAt": "2026-03-10T06:38:50.054Z",
+      "updatedAt": "2026-03-10T06:38:50.054Z"
+    },
+    {
+      "_id": "69aea89cc49f6af84ff223e1",
+      "recipientId": null,
+      "type": "exam",
+      "title": "New Exam Scheduled",
+      "message": "A new exam 'endsem' has been scheduled for your class starting on 5/4/5445.",
+      "relatedId": "69aea89bc49f6af84ff223da",
+      "relatedModel": "Exam",
+      "isRead": false,
+      "priority": "normal",
+      "icon": "clipboard-list",
+      "__v": 0,
+      "createdAt": "2026-03-09T11:01:48.025Z",
+      "updatedAt": "2026-03-09T11:01:48.025Z"
+    }
+  ],
+  "unreadCount": 3,
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 3,
+    "pages": 1
+  }
+}

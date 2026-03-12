@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Modal from "@/components/common/Modal";
@@ -68,6 +69,9 @@ export default function GalleryManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const router = useRouter();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const isParent = user?.role === "parent";
 
   const [formData, setFormData] = useState({
     title: "",
@@ -264,6 +268,7 @@ export default function GalleryManagement() {
   };
 
   const filteredGalleries = galleries.filter((gallery) => {
+    if (isParent && !gallery.isPublished) return false;
     const matchesSearch =
       gallery.albumName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       gallery.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -430,16 +435,18 @@ export default function GalleryManagement() {
               {filteredGalleries.length} {filteredGalleries.length === 1 ? "album" : "albums"} found
             </p>
           </div>
-          <button
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-lg font-medium transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Add Album
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-lg font-medium transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Add Album
+            </button>
+          )}
         </div>
 
         {/* Filters */}
@@ -477,26 +484,30 @@ export default function GalleryManagement() {
           actions={(row) => (
             <div className="flex gap-2">
               <button
-                onClick={() => router.push(`/dashboard/gallery/${(row as GalleryItem)._id}`)}
+                onClick={() => router.push(`/${isParent ? 'parent-dashboard' : 'dashboard'}/gallery/${(row as GalleryItem)._id}`)}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-100 transition-all text-sm font-medium"
               >
                 <Eye className="w-3.5 h-3.5" />
                 View
               </button>
-              <button
-                onClick={() => handleEdit(row as GalleryItem)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-all text-sm font-medium"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete((row as GalleryItem)._id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg hover:bg-red-100 transition-all text-sm font-medium"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                Delete
-              </button>
+              {isAdmin && (
+                <>
+                  <button
+                    onClick={() => handleEdit(row as GalleryItem)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-all text-sm font-medium"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete((row as GalleryItem)._id)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg hover:bg-red-100 transition-all text-sm font-medium"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete
+                  </button>
+                </>
+              )}
             </div>
           )}
         />

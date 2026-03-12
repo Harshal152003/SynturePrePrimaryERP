@@ -51,11 +51,16 @@ export async function POST(req: Request) {
         detectedRole = "student";
       }
     } else if (role === "parent") {
-      // Parent logs in using the email/password that was set on the Student record
-      // by the admin when the student was created. No separate User record needed.
-      user = await Student.findOne({ email: trimmedEmail });
-      if (user) {
+      // First try to find a parent user in the User model
+      user = await User.findOne({ email: trimmedEmail });
+      if (user && user.role === "parent") {
         detectedRole = "parent";
+      } else {
+        // If not found in User, try Student as parent login (legacy/alternate way)
+        user = await Student.findOne({ email: trimmedEmail });
+        if (user) {
+          detectedRole = "parent";
+        }
       }
     } else if (role === "admin" || !role) {
       // Try User model first (admin/parent)
@@ -110,7 +115,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
 
-    console.log(`[api/auth/login] User found: ${user.email} (${user._id}), Role: ${detectedRole}`);
+    console.log(`[api/auth/login] User found: ${user.email} (${user._id}) in model: ${user.constructor.modelName}, Role: ${detectedRole}`);
 
     // Check if password field exists
     if (!user.password) {
@@ -122,18 +127,18 @@ export async function POST(req: Request) {
     }
 
     // Verify password
-    console.log("[api/auth/login] Verifying password...");
-    // const match = await bcrypt.compare(trimmedPassword, user.password); // Use trimmed password
+    console.log(`[AUTH-DEBUG] Attempting login for: ${trimmedEmail}`);
+    console.log(`[AUTH-DEBUG] Model: ${user.constructor.modelName} | Role: ${user.role}`);
+    console.log(`[AUTH-DEBUG] Stored Hash: ${user.password.substring(0, 15)}...`);
+    console.log(`[AUTH-DEBUG] Input Password Length: ${trimmedPassword.length}`);
 
-    // DEBUG: Direct comparison for diagnosis if bcrypt fails confusingly
     let match = false;
     try {
       match = await bcrypt.compare(trimmedPassword, user.password);
+      console.log(`[AUTH-DEBUG] bcrypt.compare result: ${match}`);
     } catch (err) {
-      console.error("[api/auth/login] bcrypt error:", err);
+      console.error("[AUTH-DEBUG] bcrypt error:", err);
     }
-
-    console.log(`[api/auth/login] Password match result: ${match}`);
 
     if (!match) {
       try {
@@ -184,6 +189,7 @@ export async function POST(req: Request) {
           role: detectedRole,
           name: user.name || user.firstName,
         },
+        token, // Added for React Native mobile client where reading cookies can be flaky
       },
       { status: 200 }
     );

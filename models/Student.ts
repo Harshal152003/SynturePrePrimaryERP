@@ -27,6 +27,8 @@ export type IStudentDoc = mongoose.Document & {
     pickupPerson?: string;
     pickupPhone?: string;
   };
+  resetOTP?: string;
+  resetOTPExpires?: Date;
   documents?: { name: string; url: string }[];
   createdAt: Date;
   updatedAt: Date;
@@ -74,6 +76,8 @@ const studentSchema = new mongoose.Schema<IStudentDoc>(
       pickupPerson: String,
       pickupPhone: String,
     },
+    resetOTP: String,
+    resetOTPExpires: Date,
     documents: [DocumentSchema],
   },
   { timestamps: true }

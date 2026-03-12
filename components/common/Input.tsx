@@ -5,6 +5,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   helperText?: string;
   icon?: React.ReactNode;
+  endIcon?: React.ReactNode;
   fullWidth?: boolean;
 }
 
@@ -13,6 +14,7 @@ export default function Input({
   error,
   helperText,
   icon,
+  endIcon,
   fullWidth = false,
   className = "",
   ...props
@@ -26,8 +28,9 @@ export default function Input({
           {...props}
           className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
             icon ? "pl-10" : ""
-          } ${error ? "border-red-500 focus:ring-red-500" : ""} ${className}`}
+          } ${endIcon ? "pr-10" : ""} ${error ? "border-red-500 focus:ring-red-500" : ""} ${className}`}
         />
+        {endIcon && <div className="absolute right-3 top-2.5 text-gray-500 flex items-center justify-center">{endIcon}</div>}
       </div>
       {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
       {helperText && <p className="text-gray-500 text-sm mt-1">{helperText}</p>}

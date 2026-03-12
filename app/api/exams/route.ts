@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import Exam from "@/models/Exam";
 import { verifyToken } from "@/lib/auth";
 import { logAdminActivity } from "@/lib/logAdminActivity";
+import { notifyClass } from "@/lib/notifications";
 
 export async function GET(req: Request) {
   try {
@@ -69,7 +70,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, description, classId, subjects, startDate, endDate, totalMarks, passingMarks, examType, schedule } = body;
+    const { name, description, classId, subjects, startDate, endDate, totalMarks, passingMarks, examType, schedule, isPublished, status } = body;
 
     if (!name || !classId || !startDate) {
       return NextResponse.json(
@@ -89,6 +90,8 @@ export async function POST(req: Request) {
       passingMarks,
       examType,
       schedule,
+      isPublished,
+      status,
     });
 
     await exam.save();
@@ -108,6 +111,37 @@ export async function POST(req: Request) {
           totalMarks: exam.totalMarks,
         },
       });
+    }
+
+    // Notify all students/parents in the class about the new exam if published
+    if (isPublished) {
+      try {
+        await notifyClass(String(classId), {
+          type: "exam",
+          title: "New Exam: " + exam.name,
+          message: exam.description || `A new exam '${exam.name}' has been scheduled.`,
+          metadata: {
+            startDate: new Date(startDate).toLocaleDateString(),
+            endDate: endDate ? new Date(endDate).toLocaleDateString() : new Date(startDate).toLocaleDateString(),
+            date: new Date(startDate).toLocaleDateString(),
+            subjects: Array.isArray(exam.subjects) ? exam.subjects.join(", ") : "",
+            schedule: exam.schedule?.map((s: any) => ({
+              subject: s.subject,
+              date: new Date(s.date).toLocaleDateString(),
+              startTime: s.startTime,
+              endTime: s.endTime
+            })),
+            marks: exam.totalMarks,
+            examType: exam.examType,
+            status: "published"
+          },
+          relatedId: exam._id,
+          relatedModel: "Exam",
+          icon: "clipboard-list",
+        });
+      } catch (notifyError) {
+        console.error("Failed to send class notifications for exam:", notifyError);
+      }
     }
 
     return NextResponse.json({ success: true, exam }, { status: 201 });
@@ -144,6 +178,7 @@ export async function PUT(req: Request) {
       );
     }
 
+    const oldExam = await Exam.findById(id);
     const exam = await Exam.findByIdAndUpdate(id, updateData, { new: true }).populate(
       "classId",
       "name section"
@@ -154,6 +189,36 @@ export async function PUT(req: Request) {
         { success: false, error: "Exam not found" },
         { status: 404 }
       );
+    }
+
+    // Trigger notification if isPublished changed from false to true
+    if (updateData.isPublished === true && !oldExam.isPublished) {
+      try {
+        await notifyClass(String(exam.classId._id || exam.classId), {
+          type: "exam",
+          title: "Exam Published: " + exam.name,
+          message: `The schedule for '${exam.name}' has been published.`,
+          metadata: {
+            startDate: new Date(exam.startDate).toLocaleDateString(),
+            endDate: exam.endDate ? new Date(exam.endDate).toLocaleDateString() : new Date(exam.startDate).toLocaleDateString(),
+            date: new Date(exam.startDate).toLocaleDateString(),
+            subjects: Array.isArray(exam.subjects) ? exam.subjects.join(", ") : "",
+            schedule: exam.schedule?.map((s: any) => ({
+              subject: s.subject,
+              date: new Date(s.date).toLocaleDateString(),
+              startTime: s.startTime,
+              endTime: s.endTime
+            })),
+            examType: exam.examType,
+            status: "published"
+          },
+          relatedId: exam._id,
+          relatedModel: "Exam",
+          icon: "clipboard-list",
+        });
+      } catch (notifyError) {
+        console.error("Failed to send exam publication notification:", notifyError);
+      }
     }
 
     return NextResponse.json({ success: true, exam });

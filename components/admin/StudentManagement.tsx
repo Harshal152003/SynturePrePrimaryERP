@@ -27,6 +27,7 @@ import {
   AlertCircle,
   X,
   Eye,
+  EyeOff,
 } from "lucide-react";
 
 interface Parent {
@@ -83,6 +84,7 @@ export default function StudentManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   // --- Fee assignment at enrollment ---
@@ -376,6 +378,7 @@ export default function StudentManagement() {
         pickupPhone: student.pickupInfo?.pickupPhone || "",
       },
     });
+    setShowPassword(false);
     setModalOpen(true);
   };
 
@@ -544,6 +547,7 @@ export default function StudentManagement() {
                   pickupPhone: "",
                 },
               });
+              setShowPassword(false);
               setModalOpen(true);
             }}
             className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-lg font-medium transition-all"
@@ -702,6 +706,7 @@ export default function StudentManagement() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="Parent's email address"
+                    autoComplete="off"
                     fullWidth
                   />
                   <p className="text-xs text-blue-600 mt-1">📱 Parent uses this to login to the mobile app</p>
@@ -710,11 +715,21 @@ export default function StudentManagement() {
                   <Input
                     label={editingStudent ? "Parent Login Password (leave blank to keep)" : "Parent Login Password *"}
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Set a password for parent app login"
+                    autoComplete="new-password"
                     fullWidth
+                    endIcon={
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="hover:text-amber-500 transition-colors focus:outline-none"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    }
                   />
                   <p className="text-xs text-gray-500 mt-1">Share this password with the parent</p>
                 </div>
