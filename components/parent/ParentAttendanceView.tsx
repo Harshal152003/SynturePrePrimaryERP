@@ -80,7 +80,7 @@ export default function ParentAttendanceView() {
     if (s === "present" || s === "p") return { label: "Present", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50", dot: "bg-emerald-500" };
     if (s === "absent" || s === "a") return { label: "Absent", icon: XCircle, color: "text-red-500", bg: "bg-red-50", dot: "bg-red-500" };
     if (s === "late" || s === "l") return { label: "Late", icon: Clock, color: "text-amber-600", bg: "bg-amber-50", dot: "bg-amber-500" };
-    return { label: "Excused", icon: AlertCircle, color: "text-blue-500", bg: "bg-blue-50", dot: "bg-blue-400" };
+    return { label: "Excused", icon: AlertCircle, color: "text-[#4a9c5d]", bg: "bg-green-50", dot: "bg-[#4a9c5d]" };
   };
 
   const monthStr = currentMonth.toISOString().slice(0, 7);
@@ -113,7 +113,7 @@ export default function ParentAttendanceView() {
   };
 
   if (loading) {
-    return <div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-violet-600" /></div>;
+    return <div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a3f22]" /></div>;
   }
 
   return (
@@ -133,7 +133,7 @@ export default function ParentAttendanceView() {
             <select
               value={selectedChildId}
               onChange={e => setSelectedChildId(e.target.value)}
-              className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white font-medium"
+              className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3f22] bg-white font-medium"
             >
               {children.map(c => (
                 <option key={c._id} value={c._id}>{c.name} ({c.className || "—"})</option>
@@ -149,14 +149,14 @@ export default function ParentAttendanceView() {
           { label: "Present", value: presentCount, color: "emerald", dot: "bg-emerald-500" },
           { label: "Absent", value: absentCount, color: "red", dot: "bg-red-500" },
           { label: "Late", value: lateCount, color: "amber", dot: "bg-amber-500" },
-          { label: "Attendance %", value: `${percentage}%`, color: "violet", dot: "bg-violet-500" },
+          { label: "Attendance %", value: `${percentage}%`, color: "[#1a3f22]", dot: "bg-[#1a3f22]" },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
               <div className={`w-2.5 h-2.5 rounded-full ${s.dot}`} />
               <span className="text-xs text-gray-500 font-medium">{s.label}</span>
             </div>
-            <p className={`text-3xl font-bold text-${s.color}-600`}>{s.value}</p>
+            <p className={`text-3xl font-bold text-${s.color}`}>{s.value}</p>
             <p className="text-xs text-gray-400 mt-1">{monthLabel}</p>
           </div>
         ))}
@@ -186,7 +186,7 @@ export default function ParentAttendanceView() {
           {/* Calendar cells */}
           {attendanceLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600" />
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a3f22]" />
             </div>
           ) : (
             <div className="grid grid-cols-7 gap-1">
@@ -195,7 +195,7 @@ export default function ParentAttendanceView() {
                 const rec = getAttendanceForDay(day);
                 const today = new Date();
                 const isToday = today.getDate() === day && today.getMonth() === currentMonth.getMonth() && today.getFullYear() === currentMonth.getFullYear();
-                
+
                 let cellStyle = "bg-gray-50 text-gray-400";
                 let dotColor = "";
                 if (rec) {
@@ -203,15 +203,15 @@ export default function ParentAttendanceView() {
                   if (cfg.dot === "bg-emerald-500") { cellStyle = "bg-emerald-50 text-emerald-700"; dotColor = "bg-emerald-500"; }
                   else if (cfg.dot === "bg-red-500") { cellStyle = "bg-red-50 text-red-700"; dotColor = "bg-red-500"; }
                   else if (cfg.dot === "bg-amber-500") { cellStyle = "bg-amber-50 text-amber-700"; dotColor = "bg-amber-500"; }
-                  else { cellStyle = "bg-blue-50 text-blue-700"; dotColor = "bg-blue-400"; }
+                  else { cellStyle = "bg-green-50 text-[#1a3f22]"; dotColor = "bg-[#4a9c5d]"; }
                 }
 
                 return (
                   <div
                     key={day}
-                    className={`aspect-square rounded-xl flex flex-col items-center justify-center text-sm font-medium transition-all ${cellStyle} ${isToday ? "ring-2 ring-violet-500 ring-offset-1" : ""}`}
+                    className={`aspect-square rounded-xl flex flex-col items-center justify-center text-sm font-medium transition-all ${cellStyle} ${isToday ? "ring-2 ring-[#1a3f22] ring-offset-1" : ""}`}
                   >
-                    <span className={isToday ? "font-bold text-violet-700" : ""}>{day}</span>
+                    <span className={isToday ? "font-bold text-[#1a3f22]" : ""}>{day}</span>
                     {dotColor && <div className={`w-1.5 h-1.5 rounded-full mt-0.5 ${dotColor}`} />}
                   </div>
                 );
@@ -225,7 +225,7 @@ export default function ParentAttendanceView() {
               { label: "Present", dot: "bg-emerald-500" },
               { label: "Absent", dot: "bg-red-500" },
               { label: "Late", dot: "bg-amber-500" },
-              { label: "Excused", dot: "bg-blue-400" },
+              { label: "Excused", dot: "bg-[#4a9c5d]" },
             ].map(l => (
               <div key={l.label} className="flex items-center gap-1.5 text-xs text-gray-500">
                 <div className={`w-2.5 h-2.5 rounded-full ${l.dot}`} />
@@ -238,7 +238,7 @@ export default function ParentAttendanceView() {
         {/* Recent Records */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <CalendarCheck className="w-5 h-5 text-violet-500" />
+            <CalendarCheck className="w-5 h-5 text-[#1a3f22]" />
             Recent Records
           </h3>
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">

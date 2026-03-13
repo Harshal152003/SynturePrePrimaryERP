@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     const user = verifyToken(token);
 
     // Only admin and finance should see total revenue
-    if (!user || !["admin", "finance"].includes(user.role)) {
+    if (!user || !["admin", "finance"].includes(user.role || "admin")) {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
 
@@ -27,3 +27,4 @@ export async function GET(req: Request) {
         return NextResponse.json({ success: false, error: "Failed to fetch summary" }, { status: 500 });
     }
 }
+

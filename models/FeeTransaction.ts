@@ -22,4 +22,9 @@ const FeeTransactionSchema = new mongoose.Schema({
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" } // who collected
 }, { timestamps: true });
 
+// Performance Indexes
+FeeTransactionSchema.index({ studentId: 1 });
+FeeTransactionSchema.index({ status: 1 });
+FeeTransactionSchema.index({ createdAt: -1 });
+
 export default mongoose.models.FeeTransaction || mongoose.model("FeeTransaction", FeeTransactionSchema);

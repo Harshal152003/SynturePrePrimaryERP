@@ -1,13 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import Gallery from "@/models/Gallery";
 import { verifyToken } from "@/lib/auth";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
-    const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+    const cookie = req.headers.get("cookie") || "";
+    const tokenMatch = cookie.match(/token=([^;]+)/);
+    const token = tokenMatch ? tokenMatch[1] : req.cookies.get("token")?.value;
     const user = verifyToken(token);
 
     if (!user) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
@@ -48,14 +50,16 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+    const cookie = req.headers.get("cookie") || "";
+    const tokenMatch = cookie.match(/token=([^;]+)/);
+    const token = tokenMatch ? tokenMatch[1] : req.cookies.get("token")?.value;
     const user = verifyToken(token);
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role && (user.role && user.role !== "admin"))) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 403 }
@@ -95,14 +99,16 @@ export async function POST(req: Request) {
   }
 }
 
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
   try {
     await connectDB();
 
-    const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+    const cookie = req.headers.get("cookie") || "";
+    const tokenMatch = cookie.match(/token=([^;]+)/);
+    const token = tokenMatch ? tokenMatch[1] : req.cookies.get("token")?.value;
     const user = verifyToken(token);
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role && (user.role && user.role !== "admin"))) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 403 }
@@ -138,14 +144,16 @@ export async function PUT(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
   try {
     await connectDB();
 
-    const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+    const cookie = req.headers.get("cookie") || "";
+    const tokenMatch = cookie.match(/token=([^;]+)/);
+    const token = tokenMatch ? tokenMatch[1] : req.cookies.get("token")?.value;
     const user = verifyToken(token);
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role && (user.role && user.role !== "admin"))) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 403 }
@@ -180,3 +188,4 @@ export async function DELETE(req: Request) {
     );
   }
 }
+

@@ -33,5 +33,10 @@ const TeacherSchema = new mongoose.Schema<ITeacherDoc>(
   },
   { timestamps: true }
 );
+
+// Performance Indexes
+TeacherSchema.index({ name: 1 });
+TeacherSchema.index({ createdAt: -1 });
+
 delete mongoose.models.Teacher;
 export default mongoose.models.Teacher || mongoose.model("Teacher", TeacherSchema);

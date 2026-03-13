@@ -15,11 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Xpertance | Pre-Primary ERP System",
+  title: "Little Steps | Pre-Primary ERP",
   description:
-    "Xpertance Pre-Primary ERP System for managing admissions, students, teachers, attendance, fees, payroll, and academic operations efficiently.",
+    "Little Steps Pre-Primary ERP System for managing admissions, students, teachers, attendance, fees, payroll, and academic operations efficiently.",
   keywords: [
-    "Xpertance",
+    "Little Steps",
     "Pre-Primary ERP",
     "School ERP",
     "Education Management System",
@@ -28,9 +28,13 @@ export const metadata: Metadata = {
     "Fees Management",
     "Payroll System",
   ],
-  authors: [{ name: "Xpertance" }],
-  creator: "Xpertance",
-  applicationName: "Xpertance Pre-Primary ERP",
+  authors: [{ name: "Little Steps" }],
+  creator: "Little Steps",
+  applicationName: "Little Steps Pre-Primary ERP",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 
@@ -45,7 +49,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          {children}  
+          {children}
           <ToastContainer
             position="top-right"
             autoClose={4000}

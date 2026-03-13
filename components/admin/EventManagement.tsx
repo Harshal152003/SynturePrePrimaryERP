@@ -406,37 +406,37 @@ export default function EventManagement() {
 
       {/* Stats Cards */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-yellow-700 text-sm font-medium mb-2">Total Events</p>
-              <p className="text-4xl font-bold text-yellow-600">{totalEvents}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">Total Events</p>
+              <p className="text-4xl font-bold text-[#1a3f22]">{totalEvents}</p>
             </div>
-            <div className="w-14 h-14 bg-yellow-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
               <PartyPopper className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f0f5e9] to-[#daeac0] border border-[#477023]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-700 text-sm font-medium mb-2">Today</p>
-              <p className="text-4xl font-bold text-orange-600">{todayEvents}</p>
+              <p className="text-[#477023] text-sm font-medium mb-2">Today</p>
+              <p className="text-4xl font-bold text-[#477023]">{todayEvents}</p>
             </div>
-            <div className="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#477023" }}>
               <Calendar className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f5f9ec] to-[#e4efc9] border border-[#8DA750]/30 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-pink-700 text-sm font-medium mb-2">Upcoming</p>
-              <p className="text-4xl font-bold text-pink-600">{upcomingEvents}</p>
+              <p className="text-[#537B2F] text-sm font-medium mb-2">Upcoming</p>
+              <p className="text-4xl font-bold text-[#537B2F]">{upcomingEvents}</p>
             </div>
-            <div className="w-14 h-14 bg-pink-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#8DA750" }}>
               <Bell className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -459,7 +459,8 @@ export default function EventManagement() {
                 resetForm();
                 setModalOpen(true);
               }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-lg font-medium transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-medium transition-all"
+              style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
             >
               <Plus className="w-4 h-4" />
               Create Event
@@ -538,11 +539,10 @@ export default function EventManagement() {
             <button
               onClick={handleSaveEvent}
               disabled={isSaving}
-              className={`px-6 py-2 rounded-lg font-bold shadow-md transition-all ${
-                isSaving 
-                  ? "bg-gray-400 text-white cursor-not-allowed" 
+              className={`px-6 py-2 rounded-lg font-bold shadow-md transition-all ${isSaving
+                  ? "bg-gray-400 text-white cursor-not-allowed"
                   : "bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white hover:shadow-lg"
-              }`}
+                }`}
             >
               {isSaving ? "Saving..." : editingEvent ? "Save Changes" : "Create Event"}
             </button>

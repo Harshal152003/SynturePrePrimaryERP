@@ -19,7 +19,7 @@ export async function GET(
   const token = req.cookies.get("token")?.value;
   const user = verifyToken(token);
 
-  if (!user || !["admin", "teacher"].includes(user.role)) {
+  if (!user || !["admin", "teacher"].includes(user.role || "admin")) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   }
 
@@ -45,7 +45,7 @@ export async function PUT(
   const token = req.cookies.get("token")?.value;
   const user = verifyToken(token);
 
-  if (!user || (!["admin"].includes(user.role) && user.role !== "teacher")) {
+  if (!user || (!["admin"].includes(user.role || "admin") && user.role !== "teacher")) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   }
   console.log("User role:", user.role, "User ID:", user.id);

@@ -228,49 +228,49 @@ export default function TeacherDashboard() {
 
       {/* Stats Cards */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-700 text-sm font-medium mb-2">My Classes</p>
-              <p className="text-4xl font-bold text-blue-600">{stats.myClasses}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">My Classes</p>
+              <p className="text-4xl font-bold text-[#1a3f22]">{stats.myClasses}</p>
             </div>
-            <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
               <BookOpen className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#edf4ee] to-[#d4e8d5] border border-[#2e6b3a]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-700 text-sm font-medium mb-2">My Students</p>
-              <p className="text-4xl font-bold text-green-600">{stats.myStudents}</p>
+              <p className="text-[#2e6b3a] text-sm font-medium mb-2">My Students</p>
+              <p className="text-4xl font-bold text-[#2e6b3a]">{stats.myStudents}</p>
             </div>
-            <div className="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#2e6b3a" }}>
               <Users className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f0f5e9] to-[#daeac0] border border-[#477023]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-700 text-sm font-medium mb-2">Today's Attendance</p>
-              <p className="text-4xl font-bold text-purple-600">{stats.todayAttendance}</p>
+              <p className="text-[#477023] text-sm font-medium mb-2">Today's Attendance</p>
+              <p className="text-4xl font-bold text-[#477023]">{stats.todayAttendance}</p>
             </div>
-            <div className="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#477023" }}>
               <UserCheck className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f5f9ec] to-[#e4efc9] border border-[#8DA750]/30 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-700 text-sm font-medium mb-2">Upcoming Exams</p>
-              <p className="text-4xl font-bold text-orange-600">{stats.upcomingExams}</p>
+              <p className="text-[#537B2F] text-sm font-medium mb-2">Upcoming Exams</p>
+              <p className="text-4xl font-bold text-[#537B2F]">{stats.upcomingExams}</p>
             </div>
-            <div className="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#8DA750" }}>
               <FileText className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -283,10 +283,10 @@ export default function TeacherDashboard() {
           <div className="bg-white border border-gray-200 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                <School className="w-5 h-5 text-purple-600" />
+                <School className="w-5 h-5 text-[#2e6b3a]" />
                 My Classes
               </h2>
-              <Link href="/teacher-dashboard/classes" className="text-sm text-purple-600 hover:text-purple-700 font-medium">
+              <Link href="/teacher-dashboard/classes" className="text-sm text-[#2e6b3a] hover:text-[#1a3f22] font-medium">
                 View All
               </Link>
             </div>
@@ -300,8 +300,8 @@ export default function TeacherDashboard() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                          <BookOpen className="w-5 h-5 text-purple-600" />
+                        <div className="w-10 h-10 bg-[#e6f0e8] rounded-lg flex items-center justify-center">
+                          <BookOpen className="w-5 h-5 text-[#1a3f22]" />
                         </div>
                         <div>
                           <h3 className="font-semibold text-gray-800">
@@ -315,7 +315,8 @@ export default function TeacherDashboard() {
                       <div className="flex gap-2">
                         <Link
                           href="/teacher-dashboard/attendance"
-                          className="px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition-all text-center block"
+                          className="px-3 py-1.5 border text-white rounded-lg text-sm font-medium transition-all text-center block"
+                          style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)", borderColor: "#1a3f22" }}
                         >
                           Mark Attendance
                         </Link>
@@ -338,34 +339,34 @@ export default function TeacherDashboard() {
           {/* Quick Actions */}
           <div className="bg-white border border-gray-200 rounded-xl p-6 mt-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-blue-600" />
+              <TrendingUp className="w-5 h-5 text-[#1a3f22]" />
               Quick Actions
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Link href="/teacher-dashboard/attendance" className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-all">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-purple-600" />
+              <Link href="/teacher-dashboard/attendance" className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-[#2e6b3a] hover:bg-[#e6f0e8] transition-all">
+                <div className="w-12 h-12 bg-[#e6f0e8] rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-[#1a3f22]" />
                 </div>
                 <span className="text-sm font-medium text-gray-700">Mark Attendance</span>
               </Link>
 
-              <Link href="/teacher-dashboard/exams" className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-blue-600" />
+              <Link href="/teacher-dashboard/exams" className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-[#2e6b3a] hover:bg-[#e6f0e8] transition-all">
+                <div className="w-12 h-12 bg-[#edf4ee] rounded-lg flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-[#2e6b3a]" />
                 </div>
                 <span className="text-sm font-medium text-gray-700">View Exams</span>
               </Link>
 
-              <Link href="/teacher-dashboard/students" className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6 text-green-600" />
+              <Link href="/teacher-dashboard/students" className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-[#477023] hover:bg-[#f0f5e9] transition-all">
+                <div className="w-12 h-12 bg-[#f0f5e9] rounded-lg flex items-center justify-center">
+                  <Users className="w-6 h-6 text-[#477023]" />
                 </div>
                 <span className="text-sm font-medium text-gray-700">View Students</span>
               </Link>
 
-              <Link href="/teacher-dashboard/timetable" className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition-all">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-orange-600" />
+              <Link href="/teacher-dashboard/timetable" className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-[#537B2F] hover:bg-[#f5f9ec] transition-all">
+                <div className="w-12 h-12 bg-[#f5f9ec] rounded-lg flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-[#537B2F]" />
                 </div>
                 <span className="text-sm font-medium text-gray-700">View Timetable</span>
               </Link>
@@ -403,13 +404,13 @@ export default function TeacherDashboard() {
           </div>
 
           {/* Pending Tasks */}
-          <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-6">
+          <div className="bg-gradient-to-br from-[#fcf5e3] to-[#f4e2b8] border border-[#d6ad45]/40 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
-              <AlertCircle className="w-5 h-5 text-amber-600" />
-              <h3 className="font-semibold text-amber-900">Pending Tasks</h3>
+              <AlertCircle className="w-5 h-5 text-[#b08728]" />
+              <h3 className="font-semibold text-[#8c691b]">Pending Tasks</h3>
             </div>
-            <p className="text-2xl font-bold text-amber-600 mb-2">{stats.pendingTasks}</p>
-            <p className="text-sm text-amber-700">
+            <p className="text-2xl font-bold text-[#b08728] mb-2">{stats.pendingTasks}</p>
+            <p className="text-sm text-[#8c691b]">
               {stats.pendingTasks === 0
                 ? "You're all caught up!"
                 : "Tasks require your attention"}
@@ -417,12 +418,12 @@ export default function TeacherDashboard() {
           </div>
 
           {/* Info Card */}
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
+          <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-3">
-              <Bell className="w-5 h-5 text-blue-600" />
-              <h3 className="font-semibold text-blue-900">Welcome!</h3>
+              <Bell className="w-5 h-5 text-[#1a3f22]" />
+              <h3 className="font-semibold text-[#1a3f22]">Welcome!</h3>
             </div>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-[#2e6b3a]">
               Use the sidebar to navigate through your classes, attendance, and student management tools.
             </p>
           </div>

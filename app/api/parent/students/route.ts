@@ -44,7 +44,24 @@ export async function GET(req: Request) {
 
   const students = await Student.find(authQuery)
     .populate("classId", "name")
-    .lean();
+    .lean() as any[];
 
-  return NextResponse.json({ success: true, students });
+  const formattedStudents = students.map(student => {
+    let className = "";
+    let classIdStr = student.classId;
+
+    if (student.classId && typeof student.classId === 'object') {
+      className = student.classId.name;
+      classIdStr = student.classId._id;
+    }
+
+    return {
+      ...student,
+      name: `${student.firstName} ${student.lastName || ''}`.trim(),
+      className,
+      classId: classIdStr
+    };
+  });
+
+  return NextResponse.json({ success: true, students: formattedStudents });
 }

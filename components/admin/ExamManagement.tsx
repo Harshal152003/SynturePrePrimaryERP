@@ -420,49 +420,49 @@ export default function ExamManagement() {
 
       {/* Stats Cards */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-700 text-sm font-medium mb-2">Total Exams</p>
-              <p className="text-4xl font-bold text-blue-600">{totalExams}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">Total Exams</p>
+              <p className="text-4xl font-bold text-[#1a3f22]">{totalExams}</p>
             </div>
-            <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
               <FileText className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 border border-cyan-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#edf4ee] to-[#d4e8d5] border border-[#2e6b3a]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-cyan-700 text-sm font-medium mb-2">Scheduled</p>
-              <p className="text-4xl font-bold text-cyan-600">{scheduledExams}</p>
+              <p className="text-[#2e6b3a] text-sm font-medium mb-2">Scheduled</p>
+              <p className="text-4xl font-bold text-[#2e6b3a]">{scheduledExams}</p>
             </div>
-            <div className="w-14 h-14 bg-cyan-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#2e6b3a" }}>
               <Calendar className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f0f5e9] to-[#daeac0] border border-[#477023]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-amber-700 text-sm font-medium mb-2">Ongoing</p>
-              <p className="text-4xl font-bold text-amber-600">{ongoingExams}</p>
+              <p className="text-[#477023] text-sm font-medium mb-2">Ongoing</p>
+              <p className="text-4xl font-bold text-[#477023]">{ongoingExams}</p>
             </div>
-            <div className="w-14 h-14 bg-amber-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#477023" }}>
               <AlertCircle className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f5f9ec] to-[#e4efc9] border border-[#8DA750]/30 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-700 text-sm font-medium mb-2">Completed</p>
-              <p className="text-4xl font-bold text-green-600">{completedExams}</p>
+              <p className="text-[#537B2F] text-sm font-medium mb-2">Completed</p>
+              <p className="text-4xl font-bold text-[#537B2F]">{completedExams}</p>
             </div>
-            <div className="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#8DA750" }}>
               <CheckCircle2 className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -485,7 +485,8 @@ export default function ExamManagement() {
                 resetForm();
                 setModalOpen(true);
               }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-medium transition-all"
+              style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
             >
               <Plus className="w-4 h-4" />
               Create Exam
@@ -564,11 +565,11 @@ export default function ExamManagement() {
             <button
               onClick={handleSaveExam}
               disabled={isSaving}
-              className={`px-6 py-2 rounded-lg font-bold shadow-md transition-all ${
-                isSaving 
-                  ? "bg-gray-400 text-white cursor-not-allowed" 
-                  : "bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white hover:shadow-lg"
-              }`}
+              className={`px-6 py-2 rounded-lg font-bold shadow-md transition-all ${isSaving
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "text-white rounded-lg font-bold shadow-md transition-all hover:shadow-lg"
+                }`}
+              style={!isSaving ? { background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" } : {}}
             >
               {isSaving ? "Saving..." : editingExam ? "Save Changes" : "Create Exam"}
             </button>

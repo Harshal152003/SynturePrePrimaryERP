@@ -12,14 +12,16 @@ export async function GET(
 
   const { classId } = await context.params;   // ✅ FIX — MUST await params
 
-  const token = req.cookies.get("token")?.value;
+  const cookie = req.headers.get("cookie") || "";
+  const tokenMatch = cookie.match(/token=([^;]+)/);
+  const token = tokenMatch ? tokenMatch[1] : req.cookies.get("token")?.value;
+
   const parent = verifyToken(token);
 
   if (!parent || parent.role !== "parent") {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   }
 
-  // Verify the parent actually manages a child assigned to this class
   const studentId = (parent as any).studentId || parent.id;
   const parentEmail = (parent as any).email;
 
@@ -38,7 +40,7 @@ export async function GET(
   const student = await Student.findOne(authQuery).lean();
 
   if (!student) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    return NextResponse.json({ success: false, error: "Forbidden: No child found in this class" }, { status: 403 });
   }
 
   const timetable = await Timetable.find({ classId })

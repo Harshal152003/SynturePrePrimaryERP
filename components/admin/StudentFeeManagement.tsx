@@ -201,7 +201,7 @@ export default function StudentFeeManagement() {
 
         // Header
         doc.setFontSize(22);
-        doc.setTextColor(41, 128, 185);
+        doc.setTextColor(26, 63, 34);
         doc.text("Kidz Zone Pre Primary School", 105, 20, { align: "center" });
 
         doc.setFontSize(12);
@@ -236,7 +236,7 @@ export default function StudentFeeManagement() {
             head: [["Fee Head", "Amount"]],
             body: tableData,
             theme: 'grid',
-            headStyles: { fillColor: [41, 128, 185] },
+            headStyles: { fillColor: [26, 63, 34] },
             columnStyles: {
                 0: { cellWidth: 120 },
                 1: { cellWidth: 60, halign: 'right' }
@@ -349,25 +349,25 @@ export default function StudentFeeManagement() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
+                <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-blue-700 text-sm font-medium mb-2">Total Students</p>
-                            <p className="text-4xl font-bold text-blue-600">{totalStats.totalStudents}</p>
+                            <p className="text-[#1a3f22] text-sm font-medium mb-2">Total Students</p>
+                            <p className="text-4xl font-bold text-[#1a3f22]">{totalStats.totalStudents}</p>
                         </div>
-                        <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center">
+                        <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
                             <User className="w-7 h-7 text-white" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-6">
+                <div className="bg-gradient-to-br from-[#edf4ee] to-[#d4e8d5] border border-[#2e6b3a]/20 rounded-xl p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-green-700 text-sm font-medium mb-2">Total Collected</p>
-                            <p className="text-2xl font-bold text-green-600">{formatCurrency(totalStats.totalPaid)}</p>
+                            <p className="text-[#2e6b3a] text-sm font-medium mb-2">Total Collected</p>
+                            <p className="text-2xl font-bold text-[#2e6b3a]">{formatCurrency(totalStats.totalPaid)}</p>
                         </div>
-                        <div className="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center">
+                        <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#2e6b3a" }}>
                             <CheckCircle2 className="w-7 h-7 text-white" />
                         </div>
                     </div>
@@ -385,17 +385,17 @@ export default function StudentFeeManagement() {
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6">
+                <div className="bg-gradient-to-br from-[#f0f5e9] to-[#daeac0] border border-[#477023]/20 rounded-xl p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-purple-700 text-sm font-medium mb-2">Payment Status</p>
+                            <p className="text-[#477023] text-sm font-medium mb-2">Payment Status</p>
                             <div className="flex gap-2 mt-2">
                                 <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">{totalStats.paidCount} Paid</span>
                                 <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">{totalStats.partialCount} Partial</span>
                                 <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">{totalStats.dueCount} Due</span>
                             </div>
                         </div>
-                        <div className="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center">
+                        <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#477023" }}>
                             <DollarSign className="w-7 h-7 text-white" />
                         </div>
                     </div>
@@ -413,7 +413,7 @@ export default function StudentFeeManagement() {
                             placeholder="Search by name, admission no, email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent"
                         />
                     </div>
 
@@ -423,7 +423,7 @@ export default function StudentFeeManagement() {
                         <select
                             value={selectedClass}
                             onChange={(e) => setSelectedClass(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent appearance-none bg-white"
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent appearance-none bg-white"
                         >
                             <option value="all">All Classes</option>
                             {classes.map((cls) => (
@@ -440,7 +440,7 @@ export default function StudentFeeManagement() {
                         <select
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent appearance-none bg-white"
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent appearance-none bg-white"
                         >
                             <option value="all">All Status</option>
                             <option value="paid">Paid</option>
@@ -489,7 +489,7 @@ export default function StudentFeeManagement() {
                                         <tr key={student._id} className="hover:bg-gray-50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                                    <div className="w-10 h-10 bg-gradient-to-br from-[#1a3f22] to-[#2e6b3a] rounded-full flex items-center justify-center text-white font-semibold">
                                                         {student.firstName.charAt(0)}
                                                     </div>
                                                     <div>
@@ -531,7 +531,8 @@ export default function StudentFeeManagement() {
                                             <td className="px-6 py-4">
                                                 <button
                                                     onClick={() => handleViewDetails(studentData)}
-                                                    className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-all text-sm font-medium"
+                                                    className="flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-all text-sm font-medium"
+                                                    style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
                                                 >
                                                     <Eye className="w-4 h-4" />
                                                     View Details
@@ -568,7 +569,7 @@ export default function StudentFeeManagement() {
                                     const val = e.target.value.replace(/[^0-9]/g, "");
                                     setPaymentData({ ...paymentData, amountPaid: val ? Number(val) : 0 });
                                 }}
-                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             />
                         </div>
                     </div>
@@ -580,7 +581,7 @@ export default function StudentFeeManagement() {
                         <select
                             value={paymentData.paymentMethod}
                             onChange={(e) => setPaymentData({ ...paymentData, paymentMethod: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] bg-white"
                         >
                             <option value="cash">Cash</option>
                             <option value="online">Online Transfer</option>
@@ -597,7 +598,7 @@ export default function StudentFeeManagement() {
                             type="date"
                             value={paymentData.paymentDate}
                             onChange={(e) => setPaymentData({ ...paymentData, paymentDate: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                         />
                     </div>
 
@@ -608,7 +609,7 @@ export default function StudentFeeManagement() {
                         <textarea
                             value={paymentData.note}
                             onChange={(e) => setPaymentData({ ...paymentData, note: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             rows={3}
                             placeholder="Optional notes..."
                         />
@@ -644,7 +645,7 @@ export default function StudentFeeManagement() {
                             value={transactionData.head}
                             onChange={(e) => setTransactionData({ ...transactionData, head: e.target.value })}
                             placeholder="e.g. Tuition Fee, Transport Fee"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                         />
                     </div>
 
@@ -662,7 +663,7 @@ export default function StudentFeeManagement() {
                                     const val = e.target.value.replace(/[^0-9]/g, "");
                                     setTransactionData({ ...transactionData, amount: val ? Number(val) : 0 });
                                 }}
-                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             />
                         </div>
                     </div>
@@ -675,7 +676,7 @@ export default function StudentFeeManagement() {
                             type="date"
                             value={transactionData.dueDate}
                             onChange={(e) => setTransactionData({ ...transactionData, dueDate: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                         />
                     </div>
 
@@ -686,7 +687,7 @@ export default function StudentFeeManagement() {
                         <textarea
                             value={transactionData.note}
                             onChange={(e) => setTransactionData({ ...transactionData, note: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             rows={3}
                             placeholder="Optional notes..."
                         />

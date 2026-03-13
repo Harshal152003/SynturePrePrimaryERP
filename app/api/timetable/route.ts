@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   if (!user) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
 
   // Admin + Teacher can fetch all
-  if (!["admin", "teacher"].includes(user.role))
+  if (!["admin", "teacher"].includes(user.role || "admin"))
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
 
   const timetable = await Timetable.find()
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
 
-  if (!user || !["admin", "teacher"].includes(user.role))
+  if (!user || !["admin", "teacher"].includes(user.role || "admin"))
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
 
   try {
@@ -67,3 +67,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: err.message }, { status: 400 });
   }
 }
+

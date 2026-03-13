@@ -22,7 +22,7 @@ async function checkAuth(req: NextRequest) {
         user = await User.findById(decoded.id);
     }
 
-    if (!user || !["admin", "teacher"].includes(user.role)) return null;
+    if (!user || !["admin", "teacher"].includes(user.role || "admin")) return null;
 
     return user;
 }
@@ -95,3 +95,4 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
+

@@ -377,49 +377,49 @@ export default function GalleryManagement() {
 
       {/* Stats */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-700 text-sm font-medium mb-2">Total Albums</p>
-              <p className="text-4xl font-bold text-purple-600">{stats.total}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">Total Albums</p>
+              <p className="text-4xl font-bold text-[#1a3f22]">{stats.total}</p>
             </div>
-            <div className="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
               <ImageIcon className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#edf4ee] to-[#d4e8d5] border border-[#2e6b3a]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-700 text-sm font-medium mb-2">Published</p>
-              <p className="text-4xl font-bold text-green-600">{stats.published}</p>
+              <p className="text-[#2e6b3a] text-sm font-medium mb-2">Published</p>
+              <p className="text-4xl font-bold text-[#2e6b3a]">{stats.published}</p>
             </div>
-            <div className="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#2e6b3a" }}>
               <CheckCircle2 className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f0f5e9] to-[#daeac0] border border-[#477023]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-yellow-700 text-sm font-medium mb-2">Featured</p>
-              <p className="text-4xl font-bold text-yellow-600">{stats.featured}</p>
+              <p className="text-[#477023] text-sm font-medium mb-2">Featured</p>
+              <p className="text-4xl font-bold text-[#477023]">{stats.featured}</p>
             </div>
-            <div className="w-14 h-14 bg-yellow-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#477023" }}>
               <Star className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f5f9ec] to-[#e4efc9] border border-[#8DA750]/30 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-pink-700 text-sm font-medium mb-2">Total Images</p>
-              <p className="text-4xl font-bold text-pink-600">{stats.totalImages}</p>
+              <p className="text-[#537B2F] text-sm font-medium mb-2">Total Images</p>
+              <p className="text-4xl font-bold text-[#537B2F]">{stats.totalImages}</p>
             </div>
-            <div className="w-14 h-14 bg-pink-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#8DA750" }}>
               <Eye className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -441,7 +441,8 @@ export default function GalleryManagement() {
                 resetForm();
                 setShowModal(true);
               }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-lg font-medium transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-medium transition-all"
+              style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
             >
               <Plus className="w-4 h-4" />
               Add Album

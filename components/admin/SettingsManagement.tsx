@@ -180,25 +180,25 @@ export default function SettingsManagement() {
 
       {/* Stats Cards */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-700 text-sm font-medium mb-2">Academic Year</p>
-              <p className="text-3xl font-bold text-blue-600">{formData.academicYear || "Not Set"}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">Academic Year</p>
+              <p className="text-3xl font-bold text-[#1a3f22]">{formData.academicYear || "Not Set"}</p>
             </div>
-            <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
               <Calendar className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#edf4ee] to-[#d4e8d5] border border-[#2e6b3a]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-700 text-sm font-medium mb-2">Active Features</p>
-              <p className="text-3xl font-bold text-green-600">{enabledFeaturesCount} / 6</p>
+              <p className="text-[#2e6b3a] text-sm font-medium mb-2">Active Features</p>
+              <p className="text-3xl font-bold text-[#2e6b3a]">{enabledFeaturesCount} / 6</p>
             </div>
-            <div className="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#2e6b3a" }}>
               <Zap className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function SettingsManagement() {
           {/* School Information */}
           <div className="bg-white border border-gray-200 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}>
                 <School className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -405,7 +405,8 @@ export default function SettingsManagement() {
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
               >
                 {saving ? (
                   <>

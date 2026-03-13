@@ -15,7 +15,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
       {items.map((item, index) => (
         <div key={index} className="flex items-center gap-2">
           {item.href ? (
-            <Link href={item.href} className="hover:text-blue-600 transition-colors">
+            <Link href={item.href} className="hover:text-[#4a9c5d] transition-colors">
               {item.label}
             </Link>
           ) : (

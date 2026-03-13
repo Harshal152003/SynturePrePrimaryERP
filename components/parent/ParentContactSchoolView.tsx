@@ -31,7 +31,8 @@ export default function ParentContactSchoolView() {
       label: "Phone Number",
       value: settings?.schoolPhone,
       icon: Phone,
-      color: "emerald",
+      color: "green",
+      themeColor: "#1a3f22",
       action: settings?.schoolPhone ? `tel:${settings.schoolPhone}` : undefined,
       actionLabel: "Call Now"
     },
@@ -39,7 +40,8 @@ export default function ParentContactSchoolView() {
       label: "Email Address",
       value: settings?.schoolEmail,
       icon: Mail,
-      color: "blue",
+      color: "green",
+      themeColor: "#2e6b3a",
       action: settings?.schoolEmail ? `mailto:${settings.schoolEmail}` : undefined,
       actionLabel: "Send Email"
     },
@@ -47,7 +49,8 @@ export default function ParentContactSchoolView() {
       label: "Address",
       value: settings?.schoolAddress,
       icon: MapPin,
-      color: "red",
+      color: "green",
+      themeColor: "#4a9c5d",
       action: settings?.schoolAddress ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.schoolAddress)}` : undefined,
       actionLabel: "Open Maps",
       external: true
@@ -56,11 +59,12 @@ export default function ParentContactSchoolView() {
       label: "Principal",
       value: settings?.principalName,
       icon: Building2,
-      color: "violet",
+      color: "green",
+      themeColor: "#1a3f22",
     },
   ].filter(item => item.value);
 
-  if (loading) return <div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-violet-600" /></div>;
+  if (loading) return <div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a3f22]" /></div>;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -72,7 +76,7 @@ export default function ParentContactSchoolView() {
       </div>
 
       {/* School Identity Card */}
-      <div className="bg-gradient-to-br from-violet-600 to-indigo-700 rounded-3xl p-8 mb-6 text-white relative overflow-hidden shadow-xl">
+      <div className="bg-gradient-to-br from-[#1a3f22] to-[#2e6b3a] rounded-3xl p-8 mb-6 text-white relative overflow-hidden shadow-xl">
         <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-white/5 -translate-y-12 translate-x-12" />
         <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-white/5 translate-y-10 -translate-x-8" />
         <div className="relative z-10 flex items-center gap-5">
@@ -82,7 +86,7 @@ export default function ParentContactSchoolView() {
           <div>
             <h2 className="text-2xl font-bold">{settings?.schoolName || "Our School"}</h2>
             {settings?.principalName && (
-              <p className="text-violet-200 text-sm mt-1">Principal: {settings.principalName}</p>
+              <p className="text-green-100/80 text-sm mt-1">Principal: {settings.principalName}</p>
             )}
           </div>
         </div>
@@ -94,11 +98,11 @@ export default function ParentContactSchoolView() {
         {contactItems.map((item) => (
           <div
             key={item.label}
-            className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center justify-between ${item.action ? "hover:border-${item.color}-200 hover:shadow-md transition-all" : ""}`}
+            className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center justify-between ${item.action ? "hover:border-[#1a3f22]/20 hover:shadow-md transition-all" : ""}`}
           >
             <div className="flex items-center gap-4">
-              <div className={`w-12 h-12 rounded-xl bg-${item.color}-50 flex items-center justify-center flex-shrink-0`}>
-                <item.icon className={`w-6 h-6 text-${item.color}-600`} />
+              <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
+                <item.icon className="w-6 h-6" style={{ color: (item as any).themeColor || "#1a3f22" }} />
               </div>
               <div>
                 <p className="text-xs text-gray-400 font-medium">{item.label}</p>
@@ -110,7 +114,8 @@ export default function ParentContactSchoolView() {
                 href={item.action}
                 target={item.external ? "_blank" : undefined}
                 rel={item.external ? "noopener noreferrer" : undefined}
-                className={`flex items-center gap-2 px-4 py-2.5 bg-${item.color}-500 hover:bg-${item.color}-600 text-white rounded-xl text-sm font-medium transition-colors whitespace-nowrap`}
+                className="flex items-center gap-2 px-4 py-2.5 text-white rounded-xl text-sm font-medium transition-colors whitespace-nowrap"
+                style={{ backgroundColor: (item as any).themeColor || "#1a3f22" }}
               >
                 {item.actionLabel}
               </a>

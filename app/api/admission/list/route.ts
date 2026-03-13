@@ -8,8 +8,9 @@ export async function GET(req: Request) {
   await connectDB();
   const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
-  if (!user || user.role !== "admin") return NextResponse.json({ success:false, error:"Unauthorized" }, { status:403 });
+  if (!user || (user.role && (user.role && user.role !== "admin"))) return NextResponse.json({ success:false, error:"Unauthorized" }, { status:403 });
 
   const admissions = await Admission.find().sort({ createdAt: -1 }).lean();
   return NextResponse.json({ success: true, admissions });
 }
+

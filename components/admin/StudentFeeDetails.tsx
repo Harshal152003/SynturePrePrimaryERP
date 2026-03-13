@@ -325,7 +325,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
         doc.rect(0, 0, pageWidth, 297, "F");
 
         // ── Header Band ──
-        doc.setFillColor(37, 99, 235); // blue-600
+        doc.setFillColor(26, 63, 34); // #1a3f22 (Deep Forest Green)
         doc.rect(0, 0, pageWidth, 38, "F");
 
         // School name
@@ -419,7 +419,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                 lineWidth: 0.2,
             },
             headStyles: {
-                fillColor: [37, 99, 235],
+                fillColor: [26, 63, 34],
                 textColor: [255, 255, 255],
                 fontStyle: "bold",
                 fontSize: 9,
@@ -493,7 +493,6 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
 
         // ── Footer strip ──
         const footerY = 280;
-        doc.setFillColor(37, 99, 235);
         doc.setFillColor(241, 245, 249);
         doc.rect(0, footerY, pageWidth, 17, "F");
         doc.setFontSize(7.5);
@@ -509,7 +508,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a3f22]"></div>
             </div>
         );
     }
@@ -542,7 +541,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
             </div>
 
             {/* ── Profile Banner ── */}
-            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl shadow-sm mb-6 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#1a3f22] via-[#2e6b3a] to-[#4a9c5d] rounded-2xl shadow-sm mb-6 overflow-hidden">
                 {/* Name + badges row inside the gradient */}
                 <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -595,7 +594,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
 
             {/* ── Fee Stats Row ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-5 text-white shadow-md">
+                <div className="bg-gradient-to-br from-[#1a3f22] to-[#2e6b3a] rounded-2xl p-5 text-white shadow-md">
                     <p className="text-blue-100 text-xs font-medium uppercase tracking-wide mb-1">Total Fees Due</p>
                     <h3 className="text-3xl font-bold">{formatCurrency(studentData.totalDue)}</h3>
                     <p className="text-blue-200 text-xs mt-2">Across all transactions</p>
@@ -619,8 +618,8 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                 {/* Parents */}
                 <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
                     <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                        <span className="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center">
-                            <User className="w-4 h-4 text-blue-500" />
+                        <span className="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center">
+                            <User className="w-4 h-4 text-[#1a3f22]" />
                         </span>
                         Parent Details
                     </h3>
@@ -749,7 +748,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                                                 {t.status !== 'paid' && (
                                                     <button
                                                         onClick={() => handleOpenPaymentModal(t._id, t.amountDue, t.amountPaid)}
-                                                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                        className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                                         title="Record Payment"
                                                     >
                                                         <CreditCard className="w-4 h-4" />
@@ -811,7 +810,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                                     const val = e.target.value.replace(/[^0-9]/g, "");
                                     setPaymentData({ ...paymentData, amountPaid: val ? Number(val) : 0 });
                                 }}
-                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             />
                         </div>
                     </div>
@@ -823,7 +822,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                         <select
                             value={paymentData.paymentMethod}
                             onChange={(e) => setPaymentData({ ...paymentData, paymentMethod: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] bg-white"
                         >
                             <option value="cash">Cash</option>
                             <option value="online">Online Transfer</option>
@@ -840,7 +839,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                             type="date"
                             value={paymentData.paymentDate}
                             onChange={(e) => setPaymentData({ ...paymentData, paymentDate: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                         />
                     </div>
 
@@ -851,7 +850,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                         <textarea
                             value={paymentData.note}
                             onChange={(e) => setPaymentData({ ...paymentData, note: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             rows={3}
                             placeholder="Optional notes..."
                         />
@@ -887,7 +886,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                             value={transactionData.head}
                             onChange={(e) => setTransactionData({ ...transactionData, head: e.target.value })}
                             placeholder="e.g. Tuition Fee, Transport Fee"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                         />
                     </div>
 
@@ -905,7 +904,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                                     const val = e.target.value.replace(/[^0-9]/g, "");
                                     setTransactionData({ ...transactionData, amount: val ? Number(val) : 0 });
                                 }}
-                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             />
                         </div>
                     </div>
@@ -918,7 +917,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                             type="date"
                             value={transactionData.dueDate}
                             onChange={(e) => setTransactionData({ ...transactionData, dueDate: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                         />
                     </div>
 
@@ -929,7 +928,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                         <textarea
                             value={transactionData.note}
                             onChange={(e) => setTransactionData({ ...transactionData, note: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             rows={3}
                             placeholder="Optional notes..."
                         />
@@ -995,7 +994,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                             type="date"
                             value={editTransactionData.dueDate}
                             onChange={(e) => setEditTransactionData({ ...editTransactionData, dueDate: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                         />
                     </div>
 
@@ -1006,7 +1005,7 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
                         <textarea
                             value={editTransactionData.note}
                             onChange={(e) => setEditTransactionData({ ...editTransactionData, note: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                             rows={3}
                             placeholder="Optional notes..."
                         />

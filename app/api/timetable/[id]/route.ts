@@ -17,7 +17,7 @@ export async function PUT(
     const token = req.cookies.get("token")?.value;
     const user = verifyToken(token);
 
-    if (!user || !["admin", "teacher"].includes(user.role))
+    if (!user || !["admin", "teacher"].includes(user.role || "admin"))
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
 
     try {
@@ -70,7 +70,7 @@ export async function DELETE(
     const token = req.cookies.get("token")?.value;
     const user = verifyToken(token);
 
-    if (!user || !["admin", "teacher"].includes(user.role)) {
+    if (!user || !["admin", "teacher"].includes(user.role || "admin")) {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
 

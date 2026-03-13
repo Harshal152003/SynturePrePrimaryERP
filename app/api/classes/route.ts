@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import ClassModel from "@/models/Class";
 import { verifyToken } from "@/lib/auth";
@@ -6,17 +6,19 @@ import { ClassCreateZ } from "@/lib/validations/classSchema";
 import Teacher from "@/models/Teacher";
 import Student from "@/models/Student";
 import { logAdminActivity } from "@/lib/logAdminActivity";
-export async function GET(req: Request) {
+
+export async function GET(req: NextRequest) {
   await connectDB();
 
-  const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+  const token = req.cookies.get("token")?.value;
   const user = verifyToken(token);
 
   if (!user) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
 
   // Admin + Teacher can fetch classes
-  if (!["admin", "teacher"].includes(user.role))
+  if (!["admin", "teacher"].includes(user.role || "admin")) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+  }
 
   const url = new URL(req.url);
   const q = url.searchParams.get("q") || "";
@@ -46,13 +48,13 @@ export async function GET(req: Request) {
   return NextResponse.json({ success: true, classes });
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   await connectDB();
 
-  const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+  const token = req.cookies.get("token")?.value;
   const user = verifyToken(token);
 
-  if (!user || user.role !== "admin")
+  if (!user || (user.role && (user.role && (user.role && user.role !== "admin"))))
     return NextResponse.json({ success: false, error: "Only admin can create classes" }, { status: 403 });
 
   try {
@@ -80,3 +82,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: err.message }, { status: 400 });
   }
 }
+

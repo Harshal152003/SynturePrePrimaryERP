@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   const token = cookie.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
 
-  if (!user || !["admin", "teacher"].includes(user.role)) {
+  if (!user || !["admin", "teacher"].includes(user.role || "admin")) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   }
 
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   const token = cookie.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
 
-  if (!user || user.role !== "admin") {
+  if (!user || (user.role && (user.role && user.role !== "admin"))) {
     return NextResponse.json({ success: false, error: "Only admin can create teachers" }, { status: 403 });
   }
 
@@ -73,3 +73,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: err.message || "Invalid" }, { status: 400 });
   }
 }
+

@@ -72,14 +72,14 @@ export default function ParentTimetableView() {
     .filter(p => p.day === activeDay)
     .sort((a, b) => (a.startTime || "").localeCompare(b.startTime || ""));
 
-  const subjectColors = ["violet", "blue", "emerald", "amber", "rose", "cyan", "orange", "pink"];
+  const subjectColors = ["emerald", "green", "teal", "amber", "cyan", "orange", "pink"];
   const getSubjectColor = (subject: string) => {
     const idx = subject?.charCodeAt(0) % subjectColors.length || 0;
     return subjectColors[idx];
   };
 
   if (loading) {
-    return <div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-violet-600" /></div>;
+    return <div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a3f22]" /></div>;
   }
 
   return (
@@ -97,7 +97,7 @@ export default function ParentTimetableView() {
             <select
               value={selectedChild?._id || ""}
               onChange={e => setSelectedChild(children.find(c => c._id === e.target.value) || null)}
-              className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white font-medium"
+              className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3f22] bg-white font-medium"
             >
               {children.map(c => (
                 <option key={c._id} value={c._id}>{c.name} ({c.className || "—"})</option>
@@ -116,12 +116,12 @@ export default function ParentTimetableView() {
               key={day}
               onClick={() => setActiveDay(day)}
               className={`flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all relative ${
-                activeDay === day ? "bg-violet-600 text-white shadow-md" : "text-gray-500 hover:bg-gray-50"
+                activeDay === day ? "bg-[#1a3f22] text-white shadow-md" : "text-gray-500 hover:bg-gray-50"
               }`}
             >
               {day.slice(0, 3)}
               {isToday && (
-                <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${activeDay === day ? "bg-white" : "bg-violet-500"}`} />
+                <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${activeDay === day ? "bg-white" : "bg-[#1a3f22]"}`} />
               )}
             </button>
           );
@@ -130,11 +130,11 @@ export default function ParentTimetableView() {
 
       {/* Periods */}
       {periodLoading ? (
-        <div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600" /></div>
+        <div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a3f22]" /></div>
       ) : dayPeriods.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
-          <div className="w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <CalendarDays className="w-8 h-8 text-violet-400" />
+          <div className="w-16 h-16 bg-[#f0f5f1] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <CalendarDays className="w-8 h-8 text-[#1a3f22]/40" />
           </div>
           <h3 className="text-lg font-semibold text-gray-700 mb-2">Free Day!</h3>
           <p className="text-gray-400 text-sm">No classes scheduled for {activeDay}.</p>

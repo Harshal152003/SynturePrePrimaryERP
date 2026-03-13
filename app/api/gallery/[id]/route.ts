@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import Gallery from "@/models/Gallery";
 import { verifyToken } from "@/lib/auth";
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
 
-    const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+    const token = req.cookies.get("token")?.value;
     const user = verifyToken(token);
 
     if (!user) {

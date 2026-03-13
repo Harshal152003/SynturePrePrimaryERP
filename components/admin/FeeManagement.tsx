@@ -338,13 +338,13 @@ export default function FeeStructureManagement() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f0f5f1] to-[#e1efe3] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-700 text-sm font-medium mb-2">Total Fee Heads</p>
-              <p className="text-4xl font-bold text-blue-600">{totalFeeHeads}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">Total Fee Heads</p>
+              <p className="text-4xl font-bold text-[#1a3f22]">{totalFeeHeads}</p>
             </div>
-            <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 bg-[#1a3f22] rounded-xl flex items-center justify-center">
               <DollarSign className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -366,7 +366,7 @@ export default function FeeStructureManagement() {
               setFormData({ name: "", classId: "", heads: [], finePerDay: 0, description: "", active: true });
               setModalOpen(true);
             }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-lg font-medium transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#1a3f22] to-[#2e6b3a] hover:opacity-90 text-white rounded-lg font-medium transition-all"
           >
             <Plus className="w-4 h-4" />
             Create Structure
@@ -381,7 +381,7 @@ export default function FeeStructureManagement() {
               placeholder="Search by name or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all"
             />
           </div>
         </div>
@@ -403,14 +403,14 @@ export default function FeeStructureManagement() {
                   });
                   setAssignModalOpen(true);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 rounded-lg hover:bg-purple-100 transition-all text-sm font-medium"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#f0f5f1] border border-[#1a3f22]/20 text-[#1a3f22] rounded-lg hover:bg-green-100 transition-all text-sm font-medium"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 Assign
               </button>
               <button
                 onClick={() => handleEditStructure(row as FeeStructure)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-all text-sm font-medium"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 border border-green-200 text-[#1a3f22] rounded-lg hover:bg-green-100 transition-all text-sm font-medium"
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 Edit
@@ -455,7 +455,7 @@ export default function FeeStructureManagement() {
       >
         <div className="space-y-5 mt-4 max-h-[60vh] overflow-y-auto pr-2">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#1a3f22] to-[#2e6b3a] rounded-lg flex items-center justify-center">
               {editingStructure ? (
                 <Edit2 className="w-5 h-5 text-white" />
               ) : (
@@ -482,7 +482,7 @@ export default function FeeStructureManagement() {
               name="classId"
               value={formData.classId}
               onChange={handleInputChange}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all appearance-none bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all appearance-none bg-white"
             >
               <option value="">All Classes</option>
               {classes.map((cls) => (
@@ -501,7 +501,7 @@ export default function FeeStructureManagement() {
               onChange={handleInputChange}
               placeholder="Add description for this fee structure..."
               rows={2}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all resize-none"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all resize-none"
             />
           </div>
 
@@ -527,21 +527,21 @@ export default function FeeStructureManagement() {
                       placeholder="Fee Name (e.g. Tuition Fee) *"
                       value={head.title}
                       onChange={(e) => handleFeeHeadChange(idx, "title", e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] text-sm"
                     />
                     <input
                       type="number"
                       placeholder="Amount *"
                       value={head.amount || ""}
                       onChange={(e) => handleFeeHeadChange(idx, "amount", parseFloat(e.target.value) || 0)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] text-sm"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <select
                       value={head.frequency}
                       onChange={(e) => handleFeeHeadChange(idx, "frequency", e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm appearance-none bg-white"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] text-sm appearance-none bg-white"
                     >
                       <option value="monthly">Monthly</option>
                       <option value="quarterly">Quarterly</option>
@@ -555,7 +555,7 @@ export default function FeeStructureManagement() {
                       onChange={(e) => handleFeeHeadChange(idx, "dueDateDay", parseInt(e.target.value) || 1)}
                       min="1"
                       max="31"
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] text-sm"
                     />
                   </div>
                 </div>
@@ -582,7 +582,7 @@ export default function FeeStructureManagement() {
                   value={formData.finePerDay || ""}
                   onChange={handleInputChange}
                   placeholder="0"
-                  className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all"
+                  className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -594,7 +594,7 @@ export default function FeeStructureManagement() {
                   name="active"
                   checked={formData.active}
                   onChange={handleInputChange}
-                  className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-400"
+                  className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-[#1a3f22]"
                 />
                 <span className="text-sm font-medium text-gray-700">Active Structure</span>
               </label>
@@ -638,7 +638,7 @@ export default function FeeStructureManagement() {
         }
       >
         <div className="space-y-4">
-          <div className="p-4 bg-purple-50 border border-purple-200 text-purple-800 rounded-lg text-sm">
+          <div className="p-4 bg-green-50 border border-green-200 text-[#1a3f22] rounded-lg text-sm">
             Generating fee transactions for: <strong>{assigningStructure?.name}</strong>
           </div>
           <div>
@@ -646,7 +646,7 @@ export default function FeeStructureManagement() {
             <select
               value={assignData.classId}
               onChange={(e) => setAssignData({ ...assignData, classId: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 bg-white"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a3f22] bg-white"
             >
               <option value="">-- Select Class --</option>
               {classes.map((c) => (
@@ -660,7 +660,7 @@ export default function FeeStructureManagement() {
               <select
                 value={assignData.month}
                 onChange={(e) => setAssignData({ ...assignData, month: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 bg-white"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a3f22] bg-white"
               >
                 {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m, i) => (
                   <option key={i} value={i}>{m}</option>
@@ -673,7 +673,7 @@ export default function FeeStructureManagement() {
                 type="number"
                 value={assignData.year}
                 onChange={(e) => setAssignData({ ...assignData, year: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a3f22]"
               />
             </div>
           </div>
@@ -683,7 +683,7 @@ export default function FeeStructureManagement() {
               type="date"
               value={assignData.dueDate}
               onChange={(e) => setAssignData({ ...assignData, dueDate: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1a3f22]"
             />
           </div>
         </div>

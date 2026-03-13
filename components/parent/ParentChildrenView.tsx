@@ -53,18 +53,18 @@ export default function ParentChildrenView() {
   };
 
   const avatarColors = [
-    "from-violet-500 to-purple-600",
-    "from-blue-500 to-indigo-600",
-    "from-emerald-500 to-teal-600",
-    "from-rose-500 to-pink-600",
-    "from-amber-500 to-orange-600",
+    "from-[#1a3f22] to-[#2e6b3a]",
+    "from-[#2e6b3a] to-[#4a9c5d]",
+    "from-[#4a9c5d] to-[#8DC63F]",
+    "from-[#112a17] to-[#1a3f22]",
+    "from-[#2e6b3a] to-[#1a3f22]",
   ];
 
   if (loading) {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-violet-600"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a3f22]"></div>
         </div>
       </div>
     );
@@ -77,7 +77,7 @@ export default function ParentChildrenView() {
       {/* Header */}
       <div className="mt-6 mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+          <div className="w-10 h-10 bg-gradient-to-br from-[#1a3f22] to-[#2e6b3a] rounded-xl flex items-center justify-center shadow-lg">
             <Users className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -101,7 +101,7 @@ export default function ParentChildrenView() {
             <div
               key={child._id}
               onClick={() => router.push(`/parent-dashboard/children/${child._id}`)}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-violet-200 transition-all cursor-pointer group overflow-hidden"
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-[#1a3f22]/20 transition-all cursor-pointer group overflow-hidden"
             >
               {/* Card Top Accent */}
               <div className={`h-2 bg-gradient-to-r ${avatarColors[index % avatarColors.length]}`} />
@@ -116,21 +116,21 @@ export default function ParentChildrenView() {
                     <h2 className="text-lg font-bold text-gray-800 truncate">{child.name}</h2>
                     <p className="text-sm text-gray-500 mt-0.5">Adm: {child.admissionNo || "—"}</p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-violet-500 transition-colors flex-shrink-0" />
+                  <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#1a3f22] transition-colors flex-shrink-0" />
                 </div>
 
                 {/* Info Row */}
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                    <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0">
-                      <GraduationCap className="w-4 h-4 text-violet-600" />
+                    <div className="w-7 h-7 rounded-lg bg-[#f0f5f1] flex items-center justify-center flex-shrink-0">
+                      <GraduationCap className="w-4 h-4 text-[#1a3f22]" />
                     </div>
                     <span>Class: <span className="font-medium text-gray-800">{child.className || "—"}</span></span>
                   </div>
                   {child.rollNumber && (
                     <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                      <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <BookOpen className="w-4 h-4 text-blue-600" />
+                      <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <BookOpen className="w-4 h-4 text-[#2e6b3a]" />
                       </div>
                       <span>Roll No: <span className="font-medium text-gray-800">{child.rollNumber}</span></span>
                     </div>
@@ -149,14 +149,14 @@ export default function ParentChildrenView() {
                 <div className="mt-5 pt-4 border-t border-gray-100 flex gap-2">
                   <button
                     onClick={(e) => { e.stopPropagation(); router.push(`/parent-dashboard/attendance?childId=${child._id}`); }}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-violet-50 hover:bg-violet-100 text-violet-700 rounded-xl text-xs font-medium transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#f0f5f1] hover:bg-green-100 text-[#1a3f22] rounded-xl text-xs font-medium transition-colors"
                   >
                     <CalendarCheck className="w-3.5 h-3.5" />
                     Attendance
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); router.push(`/parent-dashboard/timetable?classId=${child.classId}`); }}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-medium transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-green-50 hover:bg-green-100 text-[#2e6b3a] rounded-xl text-xs font-medium transition-colors"
                   >
                     <Clock className="w-3.5 h-3.5" />
                     Timetable

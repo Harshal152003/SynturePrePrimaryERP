@@ -26,9 +26,8 @@ export default function Input({
         {icon && <span className="absolute left-3 top-2.5 text-gray-500">{icon}</span>}
         <input
           {...props}
-          className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-            icon ? "pl-10" : ""
-          } ${endIcon ? "pr-10" : ""} ${error ? "border-red-500 focus:ring-red-500" : ""} ${className}`}
+          className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all ${icon ? "pl-10" : ""
+            } ${endIcon ? "pr-10" : ""} ${error ? "border-red-500 focus:ring-red-500" : ""} ${className}`}
         />
         {endIcon && <div className="absolute right-3 top-2.5 text-gray-500 flex items-center justify-center">{endIcon}</div>}
       </div>

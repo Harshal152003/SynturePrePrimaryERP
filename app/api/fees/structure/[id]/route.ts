@@ -15,7 +15,7 @@ export async function PUT(req: Request, { params }: any) {
   await connectDB();
   const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
-  if (!user || user.role !== "admin") return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+  if (!user || (user.role && user.role !== "admin")) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
 
   try {
     const body = await req.json();
@@ -31,7 +31,7 @@ export async function DELETE(req: Request, { params }: any) {
   await connectDB();
   const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
-  if (!user || user.role !== "admin") return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+  if (!user || (user.role && user.role !== "admin")) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
 
   const deleted = await FeeStructure.findByIdAndDelete(params.id);
   if (!deleted) return NextResponse.json({ success:false, error: "Not found" }, { status: 404 });

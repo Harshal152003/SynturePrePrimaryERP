@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   await connectDB();
   const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
-  if (!user || !["admin","finance","teacher"].includes(user.role)) return NextResponse.json({ success:false, error:"Unauthorized" }, { status:403 });
+  if (!user || !["admin","finance","teacher"].includes(user.role || "admin")) return NextResponse.json({ success:false, error:"Unauthorized" }, { status:403 });
 
   const url = new URL(req.url);
   const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
@@ -25,3 +25,4 @@ export async function GET(req: Request) {
 
   return NextResponse.json({ success: true, items, pagination: { page, limit, total, pages: Math.ceil(total/limit) }});
 }
+

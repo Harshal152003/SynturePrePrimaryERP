@@ -47,8 +47,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: false, error: "Parents must use parent-portal endpoints" }, { status: 403 });
   }
 
+  // Projection: Only fetch what's needed for the list view if requested
+  const fields = url.searchParams.get("fields")?.split(",").join(" ") || "";
+
   const [students, total] = await Promise.all([
-    Student.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    Student.find(filter, fields).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
     Student.countDocuments(filter),
   ]);
 
@@ -69,7 +72,7 @@ export async function POST(req: Request) {
   const token = tokenMatch ? tokenMatch[1] : null;
   const user = verifyToken(token);
 
-  if (!user || !["admin", "teacher"].includes(user.role)) {
+  if (!user || !["admin", "teacher"].includes(user.role || "admin")) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   }
 
@@ -180,3 +183,4 @@ export async function POST(req: Request) {
     }, { status: 400 });
   }
 }
+

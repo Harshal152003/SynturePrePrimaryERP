@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   const token = cookie.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
 
-  if (!user || !["teacher", "admin"].includes(user.role)) {
+  if (!user || !["teacher", "admin"].includes(user.role || "admin")) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   }
 
@@ -28,3 +28,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: err.message || "Invalid" }, { status: 400 });
   }
 }
+

@@ -1,20 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FF6B00;
-  /* Vibrant Orange */
-  --color-primary-light: #FF8533;
-  --color-primary-dark: #E66000;
+  /* Little Steps — Forest Green Identity */
+  --color-primary: #1a3f22;         /* Deep Forest Green (main brand) */
+  --color-primary-light: #2e6b3a;   /* Medium Forest Green */
+  --color-primary-dark: #112a17;    /* Very Dark Green */
 
-  --color-secondary: #A855F7;
-  /* Purple */
-  --color-secondary-light: #C084FC;
+  --color-secondary: #4a9c5d;       /* Leaf Green (accent CTA) */
+  --color-secondary-light: #6dbf7e; /* Mint Green */
 
-  --color-accent: #F43F5E;
-  /* Rose/Pink for logo */
+  --color-accent: #8DC63F;          /* Bright Lime Green (highlight) */
 
   --color-surface: #FFFFFF;
-  --color-surface-dark: #F8FAFC;
+  --color-surface-dark: #F4F8F5;    /* Soft Greenish White background */
 }
 
 /* Hide native scrollbars while preserving scroll functionality */

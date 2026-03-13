@@ -10,7 +10,7 @@ export async function GET(req: Request) {
 
   const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
-  if (!user || !["admin","finance","teacher"].includes(user.role)) {
+  if (!user || !["admin","finance","teacher"].includes(user.role || "admin")) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
   }
 
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   await connectDB();
   const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
   const user = verifyToken(token);
-  if (!user || user.role !== "admin") return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+  if (!user || (user.role && (user.role && user.role !== "admin"))) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
 
   try {
     const body = await req.json();
@@ -55,3 +55,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: err.message }, { status: 400 });
   }
 }
+

@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
     const user = verifyToken(token);
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role && (user.role && user.role !== "admin"))) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 403 }
@@ -119,7 +119,7 @@ export async function PUT(req: Request) {
     const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
     const user = verifyToken(token);
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role && (user.role && user.role !== "admin"))) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 403 }
@@ -165,7 +165,7 @@ export async function DELETE(req: Request) {
     const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
     const user = verifyToken(token);
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role && (user.role && user.role !== "admin"))) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 403 }
@@ -200,3 +200,4 @@ export async function DELETE(req: Request) {
     );
   }
 }
+

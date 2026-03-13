@@ -82,6 +82,12 @@ const studentSchema = new mongoose.Schema<IStudentDoc>(
   },
   { timestamps: true }
 );
+
+// Performance Indexes
+studentSchema.index({ firstName: 1, lastName: 1 });
+studentSchema.index({ classId: 1 });
+studentSchema.index({ createdAt: -1 });
+
 delete mongoose.models.Student;
 export default mongoose.models.Student ||
   mongoose.model<IStudentDoc>("Student", studentSchema);

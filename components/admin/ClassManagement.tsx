@@ -279,52 +279,52 @@ export default function ClassManagement() {
       {/* Stats Cards */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* Total Classes */}
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-700 text-sm font-medium mb-2">Total Classes</p>
-              <p className="text-4xl font-bold text-orange-600">{classes.length}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">Total Classes</p>
+              <p className="text-4xl font-bold text-[#1a3f22]">{classes.length}</p>
             </div>
-            <div className="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
               <School className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
         {/* Total Students */}
-        <div className="bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#edf4ee] to-[#d4e8d5] border border-[#2e6b3a]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-pink-700 text-sm font-medium mb-2">Total Students</p>
-              <p className="text-4xl font-bold text-pink-600">{totalStudents}</p>
+              <p className="text-[#2e6b3a] text-sm font-medium mb-2">Total Students</p>
+              <p className="text-4xl font-bold text-[#2e6b3a]">{totalStudents}</p>
             </div>
-            <div className="w-14 h-14 bg-pink-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#2e6b3a" }}>
               <Users className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
         {/* Total Teachers */}
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f0f5e9] to-[#daeac0] border border-[#537B2F]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-700 text-sm font-medium mb-2">Total Teachers</p>
-              <p className="text-4xl font-bold text-purple-600">{totalTeachers}</p>
+              <p className="text-[#477023] text-sm font-medium mb-2">Total Teachers</p>
+              <p className="text-4xl font-bold text-[#477023]">{totalTeachers}</p>
             </div>
-            <div className="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#477023" }}>
               <GraduationCap className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
         {/* Assigned Rooms */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f5f9ec] to-[#e4efc9] border border-[#8DA750]/30 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-700 text-sm font-medium mb-2">Assigned Rooms</p>
-              <p className="text-4xl font-bold text-blue-600">{totalRooms}</p>
+              <p className="text-[#537B2F] text-sm font-medium mb-2">Assigned Rooms</p>
+              <p className="text-4xl font-bold text-[#537B2F]">{totalRooms}</p>
             </div>
-            <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#537B2F" }}>
               <DoorOpen className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -347,7 +347,8 @@ export default function ClassManagement() {
               setFormData({ name: "", section: "A", roomNumber: "", teachers: [], students: [] });
               setModalOpen(true);
             }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-lg font-medium transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 text-white rounded-lg font-medium transition-all"
+            style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
           >
             <Plus className="w-4 h-4" />
             Add Class
@@ -363,7 +364,7 @@ export default function ClassManagement() {
               placeholder="Search by class name, section, or room number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all"
             />
           </div>
         </div>

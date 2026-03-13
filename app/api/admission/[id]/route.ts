@@ -115,7 +115,7 @@ export async function DELETE(
   const token = req.cookies.get("token")?.value;
   const user = verifyToken(token);
 
-  if (!user || user.role !== "admin") {
+  if (!user || (user.role && user.role !== "admin")) {
     return NextResponse.json(
       { success: false, error: "Only admin may delete" },
       { status: 403 }

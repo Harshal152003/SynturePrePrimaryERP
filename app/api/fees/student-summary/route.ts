@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
             user = await User.findById(decoded.id);
         }
 
-        if (!user || !["admin", "teacher"].includes(user.role)) {
+        if (!user || !["admin", "teacher"].includes(user.role || "admin")) {
             return NextResponse.json(
                 { success: false, error: "Access denied. Admin or Teacher only." },
                 { status: 403 }

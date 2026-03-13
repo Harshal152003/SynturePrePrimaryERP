@@ -23,15 +23,15 @@ export default function Button({
   fullWidth = false,
   className = "",
 }: ButtonProps) {
-  const baseStyles = "font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2";
+  const baseStyles = "font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2";
 
   const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400",
-    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:bg-gray-100",
+    primary: "text-white hover:opacity-90 disabled:opacity-60",
+    secondary: "bg-gray-100 text-gray-800 hover:bg-gray-200 disabled:bg-gray-50 border border-gray-200",
     danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-400",
-    success: "bg-green-600 text-white hover:bg-green-700 disabled:bg-green-400",
-    warning: "bg-amber-600 text-white hover:bg-amber-700 disabled:bg-amber-400",
-    outline: "border-2 border-blue-600 text-blue-600 hover:bg-blue-50 disabled:border-blue-400 disabled:text-blue-400",
+    success: "bg-emerald-600 text-white hover:bg-emerald-700 disabled:bg-emerald-400",
+    warning: "bg-amber-500 text-white hover:bg-amber-600 disabled:bg-amber-400",
+    outline: "border-2 text-[#1a3f22] hover:bg-green-50 disabled:opacity-50",
   };
 
   const sizes = {
@@ -45,9 +45,13 @@ export default function Button({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className} ${
-        disabled || loading ? "cursor-not-allowed opacity-60" : "cursor-pointer"
-      }`}
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className} ${disabled || loading ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+        }`}
+      style={
+        variant === "primary" ? { background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" } :
+          variant === "outline" ? { borderColor: "#1a3f22" } :
+            undefined
+      }
     >
       {loading && <span className="inline-block animate-spin">⟳</span>}
       {children}

@@ -45,42 +45,14 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-        const today = now.toISOString().split('T')[0];
+        const res = await fetch("/api/dashboard/stats");
+        const data = await res.json();
 
-        const [students, teachers, classes, feeSummary, attendance, admissionsList] = await Promise.all([
-          fetch("/api/students?limit=500").then((r) => r.json()),
-          fetch("/api/teachers").then((r) => r.json()),
-          fetch("/api/classes").then((r) => r.json()),
-          fetch("/api/fees/summary").then((r) => r.json()),
-          fetch(`/api/attendance?startDate=${startOfMonth}&endDate=${today}&limit=1`).then((r) => r.json()),
-          fetch("/api/admission/list").then((r) => r.json()),
-        ]);
-
-        // Calculate new student admissions (joined in current month)
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-
-        const newAdmissions = students?.students?.filter((s: any) => {
-          if (!s.admissionDate && !s.createdAt) return false;
-          const date = new Date(s.admissionDate || s.createdAt);
-          return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-        }).length || 0;
-
-        // Pending applications awaiting approval
-        const allAdmissionsArr = admissionsList?.admissions || [];
-        const pendingCount = allAdmissionsArr.filter((a: any) => a.status === 'submitted' || a.status === 'pending').length;
-
-        setStats({
-          totalStudents: students?.students?.length ?? students?.total ?? 0,
-          totalTeachers: teachers?.teachers?.length ?? teachers?.data?.length ?? 0,
-          totalClasses: classes?.classes?.length ?? 0,
-          totalAdmissions: allAdmissionsArr.length, // Display total active applications
-          pendingAdmissions: pendingCount, // Real dynamic value
-          totalAttendance: attendance?.pagination?.total ?? 0,
-          totalFees: feeSummary?.totalCollected ?? 0, // Real revenue
-        });
+        if (data.success) {
+          setStats(data.stats);
+        } else {
+          console.error("Dashboard Stats Error:", data.error);
+        }
       } catch (error) {
         console.error("Failed to fetch stats:", error);
       } finally {
@@ -96,9 +68,9 @@ export default function AdminDashboard() {
       title: "Students",
       icon: Users,
       count: stats.totalStudents,
-      bgColor: "bg-pink-50",
-      iconBg: "bg-pink-500",
-      textColor: "text-pink-700",
+      bgColor: "bg-[#edf4ee]",
+      iconBg: "bg-[#2e6b3a]",
+      textColor: "text-[#1a3f22]",
       href: "/students",
       description: "Total enrolled students",
     },
@@ -106,9 +78,9 @@ export default function AdminDashboard() {
       title: "Teachers",
       icon: GraduationCap,
       count: stats.totalTeachers,
-      bgColor: "bg-purple-50",
-      iconBg: "bg-purple-500",
-      textColor: "text-purple-700",
+      bgColor: "bg-[#e6f0e8]",
+      iconBg: "bg-[#1a3f22]",
+      textColor: "text-[#1a3f22]",
       href: "/teachers",
       description: "Teaching staff members",
     },
@@ -116,9 +88,9 @@ export default function AdminDashboard() {
       title: "Classes",
       icon: School,
       count: stats.totalClasses,
-      bgColor: "bg-orange-50",
-      iconBg: "bg-orange-500",
-      textColor: "text-orange-700",
+      bgColor: "bg-[#f0f5e9]",
+      iconBg: "bg-[#477023]",
+      textColor: "text-[#477023]",
       href: "/classes",
       description: "Total classes",
     },
@@ -126,9 +98,9 @@ export default function AdminDashboard() {
       title: "Admissions",
       icon: FileText,
       count: stats.totalAdmissions,
-      bgColor: "bg-green-50",
-      iconBg: "bg-green-500",
-      textColor: "text-green-700",
+      bgColor: "bg-[#f5f9ec]",
+      iconBg: "bg-[#537B2F]",
+      textColor: "text-[#537B2F]",
       href: "/admission",
       description: `${stats.pendingAdmissions} pending review`,
     },
@@ -136,9 +108,9 @@ export default function AdminDashboard() {
       title: "Attendance",
       icon: ClipboardCheck,
       count: stats.totalAttendance,
-      bgColor: "bg-cyan-50",
-      iconBg: "bg-cyan-500",
-      textColor: "text-cyan-700",
+      bgColor: "bg-[#e8f3ea]",
+      iconBg: "bg-[#2D531A]",
+      textColor: "text-[#2D531A]",
       href: "/attendance",
       description: "Records this month",
     },
@@ -146,9 +118,9 @@ export default function AdminDashboard() {
       title: "Fees",
       icon: DollarSign,
       count: `₹${stats.totalFees.toLocaleString()}`,
-      bgColor: "bg-emerald-50",
-      iconBg: "bg-emerald-500",
-      textColor: "text-emerald-700",
+      bgColor: "bg-[#f2f7ee]",
+      iconBg: "bg-[#8DA750]",
+      textColor: "text-[#477023]",
       href: "/fees",
       description: "Revenue this year",
     },
@@ -165,7 +137,8 @@ export default function AdminDashboard() {
             <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
             <p className="text-gray-600 mt-1">Welcome to Pre-Primary ERP System</p>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-lg">
+          <div className="flex items-center gap-2 px-4 py-2 text-white rounded-xl"
+            style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}>
             <Clock className="w-4 h-4" />
             <span className="text-sm font-medium" suppressHydrationWarning>{new Date().toLocaleDateString('en-US', {
               weekday: 'long',
@@ -255,7 +228,7 @@ export default function AdminDashboard() {
           <div className="space-y-2">
             <Link
               href="/dashboard/students"
-              className="flex items-center gap-3 px-4 py-3 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-lg text-pink-700 font-medium transition-all group"
+              className="flex items-center gap-3 px-4 py-3 bg-[#edf4ee] hover:bg-[#d4e8d5] border border-[#2e6b3a]/20 rounded-xl text-[#1a3f22] font-medium transition-all group"
             >
               <Users className="w-5 h-5" />
               <span className="flex-1">Add New Student</span>
@@ -263,7 +236,7 @@ export default function AdminDashboard() {
             </Link>
             <Link
               href="/dashboard/teachers"
-              className="flex items-center gap-3 px-4 py-3 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg text-purple-700 font-medium transition-all group"
+              className="flex items-center gap-3 px-4 py-3 bg-[#f0f5e9] hover:bg-[#daeac0] border border-[#477023]/20 rounded-xl text-[#477023] font-medium transition-all group"
             >
               <GraduationCap className="w-5 h-5" />
               <span className="flex-1">Add New Teacher</span>
@@ -271,7 +244,7 @@ export default function AdminDashboard() {
             </Link>
             <Link
               href="/dashboard/classes"
-              className="flex items-center gap-3 px-4 py-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg text-orange-700 font-medium transition-all group"
+              className="flex items-center gap-3 px-4 py-3 bg-[#e8f3ea] hover:bg-[#c8ddc9] border border-[#2D531A]/20 rounded-xl text-[#2D531A] font-medium transition-all group"
             >
               <School className="w-5 h-5" />
               <span className="flex-1">Create New Class</span>
@@ -279,7 +252,7 @@ export default function AdminDashboard() {
             </Link>
             <Link
               href="/dashboard/attendance"
-              className="flex items-center gap-3 px-4 py-3 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-lg text-cyan-700 font-medium transition-all group"
+              className="flex items-center gap-3 px-4 py-3 bg-[#f5f9ec] hover:bg-[#e4efc9] border border-[#8DA750]/20 rounded-xl text-[#537B2F] font-medium transition-all group"
             >
               <ClipboardCheck className="w-5 h-5" />
               <span className="flex-1">Mark Attendance</span>

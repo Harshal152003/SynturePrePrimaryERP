@@ -15,4 +15,9 @@ const LogActivitySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Performance Indexes
+LogActivitySchema.index({ createdAt: -1 });
+LogActivitySchema.index({ actorId: 1 });
+LogActivitySchema.index({ action: 1 });
+
 export default mongoose.models.LogActivity || mongoose.model("LogActivity", LogActivitySchema);

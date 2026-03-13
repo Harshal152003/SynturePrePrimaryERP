@@ -10,7 +10,8 @@ import {
   LogOut,
   User,
   ChevronDown,
-  Menu
+  Menu,
+  Footprints,
 } from "lucide-react";
 
 export default function Navbar({
@@ -32,13 +33,8 @@ export default function Navbar({
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Check if search should be visible (only on admin dashboard)
-  const isAdminDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
-
-  // Only show search on the main dashboard screens, not inside specific modules
   const showSearch = pathname === "/dashboard" || pathname === "/teacher-dashboard" || pathname === "/student-dashboard" || pathname === "/parent-dashboard";
 
-  // Handle click outside dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -58,7 +54,6 @@ export default function Navbar({
     }
   }, [showSearchResults, dropdownOpen, notificationOpen]);
 
-  // Fetch real notifications
   useEffect(() => {
     fetchNotifications();
   }, []);
@@ -78,48 +73,26 @@ export default function Navbar({
 
   const handleSearch = async (value: string) => {
     setSearchTerm(value);
-
     if (!value.trim()) {
       setSearchResults([]);
       setShowSearchResults(false);
       return;
     }
-
     try {
-      // Fetch students
       const studentsRes = await fetch(`/api/students?q=${encodeURIComponent(value)}&limit=3`);
       const studentsData = studentsRes.ok ? await studentsRes.json() : { data: [] };
-
-      // Fetch teachers
       const teachersRes = await fetch(`/api/teachers?q=${encodeURIComponent(value)}&limit=3`);
       const teachersData = teachersRes.ok ? await teachersRes.json() : { data: [] };
-
-      // Fetch classes
       const classesRes = await fetch(`/api/classes?q=${encodeURIComponent(value)}&limit=3`);
       const classesData = classesRes.ok ? await classesRes.json() : { data: [] };
-
       const combined = [
-        ...(studentsData.data || []).map((student: any) => ({
-          ...student,
-          type: "student",
-          displayName: `${student.firstName} ${student.lastName || ""}`,
-        })),
-        ...(teachersData.data || []).map((teacher: any) => ({
-          ...teacher,
-          type: "teacher",
-          displayName: teacher.name,
-        })),
-        ...(classesData.classes || classesData.data || []).map((cls: any) => ({
-          ...cls,
-          type: "class",
-          displayName: `${cls.name} - ${cls.section}`,
-        })),
+        ...(studentsData.data || []).map((student: any) => ({ ...student, type: "student", displayName: `${student.firstName} ${student.lastName || ""}` })),
+        ...(teachersData.data || []).map((teacher: any) => ({ ...teacher, type: "teacher", displayName: teacher.name })),
+        ...(classesData.classes || classesData.data || []).map((cls: any) => ({ ...cls, type: "class", displayName: `${cls.name} - ${cls.section}` })),
       ];
-
       setSearchResults(combined);
       setShowSearchResults(combined.length > 0);
     } catch (error) {
-      console.error("Search error:", error);
       setSearchResults([]);
     }
   };
@@ -128,22 +101,13 @@ export default function Navbar({
     setSearchTerm("");
     setShowSearchResults(false);
     setSearchResults([]);
-
-    const basePath = pathname?.startsWith("/teacher-dashboard")
-      ? "/teacher-dashboard"
-      : pathname?.startsWith("/student-dashboard")
-        ? "/student-dashboard"
-        : pathname?.startsWith("/parent-dashboard")
-          ? "/parent-dashboard"
+    const basePath = pathname?.startsWith("/teacher-dashboard") ? "/teacher-dashboard"
+      : pathname?.startsWith("/student-dashboard") ? "/student-dashboard"
+        : pathname?.startsWith("/parent-dashboard") ? "/parent-dashboard"
           : "/dashboard";
-
-    if (result.type === "student") {
-      router.push(`${basePath}/students/${result._id}`);
-    } else if (result.type === "teacher") {
-      router.push(`${basePath}/teachers/${result._id}`);
-    } else if (result.type === "class") {
-      router.push(`${basePath}/classes/${result._id}`);
-    }
+    if (result.type === "student") router.push(`${basePath}/students/${result._id}`);
+    else if (result.type === "teacher") router.push(`${basePath}/teachers/${result._id}`);
+    else if (result.type === "class") router.push(`${basePath}/classes/${result._id}`);
   };
 
   const handleLogout = async () => {
@@ -152,15 +116,15 @@ export default function Navbar({
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <nav className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
       <div className="px-6 py-3.5 flex justify-between items-center">
-        {/* Left Section - Search */}
+        {/* Left Section */}
         <div className="flex items-center gap-4 flex-1 max-w-xl">
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+            className="lg:hidden p-2 hover:bg-green-50 rounded-lg transition-colors"
           >
-            <Menu className="w-5 h-5 text-gray-600" />
+            <Menu className="w-5 h-5 text-[#1a3f22]" />
           </button>
 
           {showSearch && (
@@ -168,80 +132,47 @@ export default function Navbar({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search students..."
+                placeholder="Search students, teachers..."
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
                 onFocus={() => searchTerm && setShowSearchResults(true)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
+                style={{ "--tw-ring-color": "#1a3f22" } as any}
               />
 
-              {/* Search Results Dropdown */}
               {showSearchResults && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
-                  {/* Students Section */}
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-96 overflow-y-auto z-50">
                   {searchResults.some((r) => r.type === "student") && (
                     <>
-                      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-600">
-                        Students
-                      </div>
-                      {searchResults
-                        .filter((r) => r.type === "student")
-                        .map((result) => (
-                          <button
-                            key={result._id}
-                            onClick={() => handleSearchResultClick(result)}
-                            className="w-full text-left px-4 py-2.5 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
-                          >
-                            <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              {result.admissionNo && `Admission: ${result.admissionNo}`}
-                            </p>
-                          </button>
-                        ))}
+                      <div className="px-4 py-2 bg-green-50 border-b border-gray-100 text-xs font-semibold text-[#1a3f22]">Students</div>
+                      {searchResults.filter((r) => r.type === "student").map((result) => (
+                        <button key={result._id} onClick={() => handleSearchResultClick(result)} className="w-full text-left px-4 py-2.5 hover:bg-green-50/50 border-b border-gray-100 last:border-b-0 transition-colors">
+                          <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{result.admissionNo && `Admission: ${result.admissionNo}`}</p>
+                        </button>
+                      ))}
                     </>
                   )}
-
-                  {/* Teachers Section */}
                   {searchResults.some((r) => r.type === "teacher") && (
                     <>
-                      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-600">
-                        Teachers
-                      </div>
-                      {searchResults
-                        .filter((r) => r.type === "teacher")
-                        .map((result) => (
-                          <button
-                            key={result._id}
-                            onClick={() => handleSearchResultClick(result)}
-                            className="w-full text-left px-4 py-2.5 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
-                          >
-                            <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">{result.email}</p>
-                          </button>
-                        ))}
+                      <div className="px-4 py-2 bg-green-50 border-b border-gray-100 text-xs font-semibold text-[#1a3f22]">Teachers</div>
+                      {searchResults.filter((r) => r.type === "teacher").map((result) => (
+                        <button key={result._id} onClick={() => handleSearchResultClick(result)} className="w-full text-left px-4 py-2.5 hover:bg-green-50/50 border-b border-gray-100 last:border-b-0 transition-colors">
+                          <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{result.email}</p>
+                        </button>
+                      ))}
                     </>
                   )}
-
-                  {/* Classes Section */}
                   {searchResults.some((r) => r.type === "class") && (
                     <>
-                      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-600">
-                        Classes
-                      </div>
-                      {searchResults
-                        .filter((r) => r.type === "class")
-                        .map((result) => (
-                          <button
-                            key={result._id}
-                            onClick={() => handleSearchResultClick(result)}
-                            className="w-full text-left px-4 py-2.5 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
-                          >
-                            <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              Room: {result.roomNumber || "N/A"}
-                            </p>
-                          </button>
-                        ))}
+                      <div className="px-4 py-2 bg-green-50 border-b border-gray-100 text-xs font-semibold text-[#1a3f22]">Classes</div>
+                      {searchResults.filter((r) => r.type === "class").map((result) => (
+                        <button key={result._id} onClick={() => handleSearchResultClick(result)} className="w-full text-left px-4 py-2.5 hover:bg-green-50/50 border-b border-gray-100 last:border-b-0 transition-colors">
+                          <p className="text-sm font-medium text-gray-800">{result.displayName}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">Room: {result.roomNumber || "N/A"}</p>
+                        </button>
+                      ))}
                     </>
                   )}
                 </div>
@@ -250,20 +181,17 @@ export default function Navbar({
           )}
         </div>
 
-        {/* Right Section - Actions & Profile */}
+        {/* Right Section */}
         <div className="flex items-center gap-3">
           {/* Notifications */}
           {user?.role !== "admin" && user?.role !== "teacher" && (
             <div className="relative" ref={notificationRef}>
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setNotificationOpen(!notificationOpen);
-                }}
-                className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors group"
+                onClick={(e) => { e.stopPropagation(); setNotificationOpen(!notificationOpen); }}
+                className="relative p-2 hover:bg-green-50 rounded-xl transition-colors group"
               >
-                <Bell className="w-5 h-5 text-gray-600 group-hover:text-orange-500 transition-colors" />
+                <Bell className="w-5 h-5 text-gray-500 group-hover:text-[#1a3f22] transition-colors" />
                 {unreadCount > 0 && (
                   <span className="absolute top-1.5 right-1.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white -translate-y-1 translate-x-1">
                     {unreadCount > 9 ? "9+" : unreadCount}
@@ -273,38 +201,27 @@ export default function Navbar({
 
               {notificationOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-                  <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-pink-50 border-b border-gray-200">
-                    <p className="text-sm font-semibold text-gray-800">Notifications</p>
-                    <p className="text-xs text-gray-600 mt-0.5">
-                      {unreadCount > 0
-                        ? `You have ${unreadCount} unread notifications`
-                        : "You're all caught up!"}
+                  <div className="px-4 py-3 border-b border-gray-200" style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}>
+                    <p className="text-sm font-semibold text-white">Notifications</p>
+                    <p className="text-xs text-green-200 mt-0.5">
+                      {unreadCount > 0 ? `You have ${unreadCount} unread notifications` : "You're all caught up!"}
                     </p>
                   </div>
                   <div className="max-h-80 overflow-y-auto">
-                    {notifications.length > 0 ? (
-                      notifications.map((notif) => (
-                        <div
-                          key={notif._id}
-                          className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 transition-colors ${!notif.isRead ? "bg-orange-50/30" : ""}`}
-                          onClick={() => {
-                            router.push("/dashboard/notifications");
-                            setNotificationOpen(false);
-                          }}
-                        >
-                          <div className="flex justify-between items-start">
-                            <p className={`text-xs font-semibold ${!notif.isRead ? "text-orange-600" : "text-gray-800"}`}>
-                              {notif.title}
-                            </p>
-                            {!notif.isRead && <div className="w-2 h-2 bg-orange-500 rounded-full"></div>}
-                          </div>
-                          <p className="text-[11px] text-gray-600 mt-1 line-clamp-6 whitespace-pre-wrap">{notif.message}</p>
-                          <p className="text-[10px] text-gray-400 mt-1">
-                            {new Date(notif.createdAt).toLocaleDateString()}
-                          </p>
+                    {notifications.length > 0 ? notifications.map((notif) => (
+                      <div
+                        key={notif._id}
+                        className={`px-4 py-3 hover:bg-green-50/50 cursor-pointer border-b border-gray-100 transition-colors ${!notif.isRead ? "bg-green-50/30" : ""}`}
+                        onClick={() => { router.push("/dashboard/notifications"); setNotificationOpen(false); }}
+                      >
+                        <div className="flex justify-between items-start">
+                          <p className={`text-xs font-semibold ${!notif.isRead ? "text-[#1a3f22]" : "text-gray-800"}`}>{notif.title}</p>
+                          {!notif.isRead && <div className="w-2 h-2 bg-[#8DC63F] rounded-full"></div>}
                         </div>
-                      ))
-                    ) : (
+                        <p className="text-[11px] text-gray-600 mt-1 line-clamp-6 whitespace-pre-wrap">{notif.message}</p>
+                        <p className="text-[10px] text-gray-400 mt-1">{new Date(notif.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    )) : (
                       <div className="px-4 py-8 text-center">
                         <Bell className="w-8 h-8 text-gray-300 mx-auto mb-2" />
                         <p className="text-xs text-gray-500">No notifications yet</p>
@@ -314,7 +231,7 @@ export default function Navbar({
                   <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex justify-center">
                     <Link
                       href="/dashboard/notifications"
-                      className="text-xs font-medium text-orange-600 hover:text-orange-700"
+                      className="text-xs font-medium text-[#1a3f22] hover:text-[#2e6b3a]"
                       onClick={() => setNotificationOpen(false)}
                     >
                       View all notifications
@@ -328,25 +245,24 @@ export default function Navbar({
           {/* Quick Settings */}
           <Link
             href="/dashboard/settings"
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors group"
+            className="p-2 hover:bg-green-50 rounded-xl transition-colors group"
           >
-            <Settings className="w-5 h-5 text-gray-600 group-hover:text-orange-500 transition-colors" />
+            <Settings className="w-5 h-5 text-gray-500 group-hover:text-[#1a3f22] transition-colors" />
           </Link>
 
-          {/* Divider */}
-          <div className="w-px h-8 bg-gray-200"></div>
+          <div className="w-px h-8 bg-gray-100"></div>
 
           {/* User Profile Dropdown */}
           <div className="relative" ref={profileRef}>
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setDropdownOpen(!dropdownOpen);
-              }}
-              className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-lg transition-all group"
+              onClick={(e) => { e.stopPropagation(); setDropdownOpen(!dropdownOpen); }}
+              className="flex items-center gap-3 px-3 py-2 hover:bg-green-50 rounded-xl transition-all group"
             >
-              <div className="w-9 h-9 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-sm border-2 border-white">
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm border-2"
+                style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)", borderColor: "#8DC63F" }}
+              >
                 {user?.name?.charAt(0).toUpperCase() || "U"}
               </div>
               <div className="hidden md:block text-left">
@@ -359,18 +275,21 @@ export default function Navbar({
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
                 {/* Profile Header */}
-                <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-pink-50 border-b border-gray-200">
+                <div className="px-4 py-3 border-b border-gray-200" style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-accent via-primary to-primary-dark rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold border-2"
+                      style={{ background: "#4a9c5d", borderColor: "#8DC63F" }}
+                    >
                       {user?.name?.charAt(0).toUpperCase() || "U"}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800">{user?.name || "User"}</p>
-                      <p className="text-xs text-gray-600">{user?.email || "user@example.com"}</p>
+                      <p className="text-sm font-semibold text-white">{user?.name || "User"}</p>
+                      <p className="text-xs text-green-200">{user?.email || "user@example.com"}</p>
                     </div>
                   </div>
-                  <div className="mt-2 inline-flex items-center px-2 py-1 bg-white rounded-md">
-                    <span className="text-xs font-medium text-orange-600 capitalize">{user?.role || "Role"}</span>
+                  <div className="mt-2">
+                    <span className="text-xs font-medium text-[#8DC63F] capitalize">{user?.role || "Role"}</span>
                   </div>
                 </div>
 
@@ -378,22 +297,22 @@ export default function Navbar({
                 <div className="py-1">
                   <Link
                     href="/dashboard/profile"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 transition-colors"
                     onClick={() => setDropdownOpen(false)}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
-                      <User className="w-4 h-4 text-purple-600" />
+                    <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                      <User className="w-4 h-4 text-[#1a3f22]" />
                     </div>
                     <span className="font-medium">My Profile</span>
                   </Link>
 
                   <Link
                     href="/dashboard/settings"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 transition-colors"
                     onClick={() => setDropdownOpen(false)}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                      <Settings className="w-4 h-4 text-blue-600" />
+                    <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                      <Settings className="w-4 h-4 text-[#2e6b3a]" />
                     </div>
                     <span className="font-medium">Settings</span>
                   </Link>

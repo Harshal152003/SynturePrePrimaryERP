@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Badge from "@/components/common/Badge";
 import { showToast } from "@/lib/toast";
-import { ArrowLeft, Calendar, MapPin, ImageIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, ImageIcon, Loader2, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface GalleryItem {
     _id: string;
@@ -23,6 +23,23 @@ export default function ParentGalleryDetailPage() {
     const router = useRouter();
     const [gallery, setGallery] = useState<GalleryItem | null>(null);
     const [loading, setLoading] = useState(true);
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+
+    // Handle keyboard navigation for Lightbox
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (selectedImageIndex === null || !gallery?.images) return;
+            if (e.key === "Escape") setSelectedImageIndex(null);
+            if (e.key === "ArrowLeft") {
+                setSelectedImageIndex(prev => prev === 0 ? gallery.images.length - 1 : prev! - 1);
+            }
+            if (e.key === "ArrowRight") {
+                setSelectedImageIndex(prev => prev === gallery.images.length - 1 ? 0 : prev! + 1);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [selectedImageIndex, gallery]);
 
     useEffect(() => {
         const fetchGallery = async () => {
@@ -133,7 +150,10 @@ export default function ParentGalleryDetailPage() {
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             {gallery.images.map((img, index) => (
                                 <div key={index} className="group relative break-inside-avoid">
-                                    <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 aspect-square cursor-pointer hover:shadow-md transition-all">
+                                    <div
+                                        className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 aspect-square cursor-pointer hover:shadow-md transition-all"
+                                        onClick={() => setSelectedImageIndex(index)}
+                                    >
                                         <img
                                             src={img.url}
                                             alt={img.caption || `Photo ${index + 1}`}
@@ -157,6 +177,65 @@ export default function ParentGalleryDetailPage() {
                     )}
                 </div>
             </div>
+
+            {/* Lightbox Modal */}
+            {selectedImageIndex !== null && gallery.images && (
+                <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
+                    <button
+                        onClick={() => setSelectedImageIndex(null)}
+                        className="absolute top-4 right-4 text-white/70 hover:text-white p-2 transition-colors z-50"
+                        title="Close"
+                    >
+                        <X className="w-8 h-8" />
+                    </button>
+
+                    {gallery.images.length > 1 && (
+                        <>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedImageIndex(prev => prev === 0 ? gallery.images.length - 1 : prev! - 1);
+                                }}
+                                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 transition-colors z-50"
+                                title="Previous"
+                            >
+                                <ChevronLeft className="w-12 h-12" />
+                            </button>
+
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedImageIndex(prev => prev === gallery.images.length - 1 ? 0 : prev! + 1);
+                                }}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 transition-colors z-50"
+                                title="Next"
+                            >
+                                <ChevronRight className="w-12 h-12" />
+                            </button>
+                        </>
+                    )}
+
+                    <div className="w-full flex flex-col items-center justify-center max-w-5xl" onClick={(e) => e.stopPropagation()}>
+                        <div className="relative w-full flex justify-center h-[75vh]">
+                            <img
+                                src={gallery.images[selectedImageIndex].url}
+                                alt={gallery.images[selectedImageIndex].caption || `Photo ${selectedImageIndex + 1}`}
+                                className="max-w-full max-h-full object-contain select-none"
+                            />
+                        </div>
+                        <div className="mt-6 text-center">
+                            {gallery.images[selectedImageIndex].caption && (
+                                <p className="text-white text-lg font-medium mb-2">
+                                    {gallery.images[selectedImageIndex].caption}
+                                </p>
+                            )}
+                            <p className="text-white/50 text-sm tracking-wider">
+                                {selectedImageIndex + 1} / {gallery.images.length}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

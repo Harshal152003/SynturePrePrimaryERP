@@ -115,7 +115,7 @@ export default function ProfileManagement() {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
-                <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
+                <Loader2 className="w-10 h-10 text-[#1a3f22] animate-spin mb-4" />
                 <p className="text-gray-500 font-medium">Loading your profile...</p>
             </div>
         );
@@ -130,11 +130,11 @@ export default function ProfileManagement() {
                     {/* Left Side - Profile Summary */}
                     <div className="w-full md:w-1/3">
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="h-32 bg-gradient-to-r from-blue-400 to-indigo-500 relative">
+                            <div className="h-32 bg-gradient-to-r from-[#1a3f22] to-[#4a9c5d] relative">
                                 <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
                                     <div className="w-24 h-24 rounded-full border-4 border-white bg-white shadow-lg flex items-center justify-center overflow-hidden">
-                                        <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                            <User className="w-12 h-12 text-blue-500" />
+                                        <div className="w-full h-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                                            <User className="w-12 h-12 text-[#1a3f22]" />
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +143,7 @@ export default function ProfileManagement() {
                                 <h2 className="text-xl font-bold text-gray-800">
                                     {userProfile?.name || `${userProfile?.firstName} ${userProfile?.lastName}` || "User Name"}
                                 </h2>
-                                <div className="flex items-center justify-center gap-1.5 mt-1 text-blue-600 font-medium text-sm">
+                                <div className="flex items-center justify-center gap-1.5 mt-1 text-[#2e6b3a] font-medium text-sm">
                                     <Shield className="w-4 h-4" />
                                     <span className="capitalize">{userProfile?.role}</span>
                                 </div>
@@ -171,7 +171,7 @@ export default function ProfileManagement() {
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                             <div className="p-6 border-b border-gray-50">
                                 <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                    <User className="w-5 h-5 text-blue-500" />
+                                    <User className="w-5 h-5 text-[#1a3f22]" />
                                     Profile Information
                                 </h3>
                                 <p className="text-sm text-gray-500 mt-1">Update your personal information and contact details</p>
@@ -230,7 +230,7 @@ export default function ProfileManagement() {
 
                                 <div className="pt-6 border-t border-gray-100">
                                     <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-1">
-                                        <Key className="w-5 h-5 text-indigo-500" />
+                                        <Key className="w-5 h-5 text-[#4a9c5d]" />
                                         Security Settings
                                     </h3>
                                     <p className="text-sm text-gray-500 mb-6">Change your password to keep your account secure</p>

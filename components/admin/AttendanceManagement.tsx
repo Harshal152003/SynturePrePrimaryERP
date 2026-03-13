@@ -351,24 +351,24 @@ export default function AttendanceManagement() {
           {/* Overall Stats Cards */}
           {/* Overall Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
-            <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+            <div className="p-5 rounded-2xl border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden" style={{ background: "linear-gradient(135deg, #e6f0e8, #c8ddc9)", borderColor: "rgba(26,63,34,0.15)" }}>
               <div className="flex justify-between items-start mb-2">
-                <p className="text-emerald-700 text-xs font-bold uppercase tracking-wider">Present Today</p>
+                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "#1a3f22" }}>Present Today</p>
                 <div className="w-10 h-10 bg-white/60 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <UserCheck className="w-5 h-5 text-emerald-600" />
+                  <UserCheck className="w-5 h-5" style={{ color: "#1a3f22" }} />
                 </div>
               </div>
-              <p className="text-3xl font-extrabold text-emerald-900">{stats.present}</p>
+              <p className="text-3xl font-extrabold" style={{ color: "#112a17" }}>{stats.present}</p>
             </div>
 
-            <div className="bg-pink-50 p-5 rounded-2xl border border-pink-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+            <div className="bg-red-50 p-5 rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
               <div className="flex justify-between items-start mb-2">
-                <p className="text-pink-700 text-xs font-bold uppercase tracking-wider">Absent Today</p>
+                <p className="text-red-700 text-xs font-bold uppercase tracking-wider">Absent Today</p>
                 <div className="w-10 h-10 bg-white/60 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <UserX className="w-5 h-5 text-pink-600" />
+                  <UserX className="w-5 h-5 text-red-600" />
                 </div>
               </div>
-              <p className="text-3xl font-extrabold text-pink-900">{stats.absent}</p>
+              <p className="text-3xl font-extrabold text-red-900">{stats.absent}</p>
             </div>
 
             <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
@@ -381,14 +381,14 @@ export default function AttendanceManagement() {
               <p className="text-3xl font-extrabold text-amber-900">{stats.late}</p>
             </div>
 
-            <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+            <div className="p-5 rounded-2xl border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden" style={{ background: "linear-gradient(135deg, #f0f5e9, #daeac0)", borderColor: "rgba(83,123,47,0.2)" }}>
               <div className="flex justify-between items-start mb-2">
-                <p className="text-blue-700 text-xs font-bold uppercase tracking-wider">Attendance Rate</p>
+                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "#477023" }}>Attendance Rate</p>
                 <div className="w-10 h-10 bg-white/60 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <ClipboardCheck className="w-5 h-5 text-blue-600" />
+                  <ClipboardCheck className="w-5 h-5" style={{ color: "#477023" }} />
                 </div>
               </div>
-              <p className="text-3xl font-extrabold text-blue-900">{stats.rate}%</p>
+              <p className="text-3xl font-extrabold" style={{ color: "#2D531A" }}>{stats.rate}%</p>
             </div>
           </div>
 
@@ -428,7 +428,8 @@ export default function AttendanceManagement() {
                       </button>
                       <button
                         onClick={saveAttendance}
-                        className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-xl hover:shadow-lg hover:from-orange-600 hover:to-red-600 transition-all active:scale-95 whitespace-nowrap"
+                        className="flex items-center gap-2 px-5 py-2 text-white font-bold rounded-xl hover:shadow-lg transition-all active:scale-95 whitespace-nowrap"
+                        style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
                       >
                         <Save className="w-4 h-4" />
                         Save Changes
@@ -503,7 +504,7 @@ export default function AttendanceManagement() {
                       <div className="mb-6 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                         <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
                           <span className="font-bold text-gray-800 flex items-center gap-2 text-sm">
-                            <div className="w-1.5 h-5 bg-orange-500 rounded-full"></div>
+                            <div className="w-1.5 h-5 rounded-full" style={{ background: "#1a3f22" }}></div>
                             Class Summary
                           </span>
                           <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-3 py-1 rounded-full">

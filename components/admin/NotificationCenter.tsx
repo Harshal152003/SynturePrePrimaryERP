@@ -251,7 +251,8 @@ export default function NotificationCenter() {
             )}
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-lg font-medium transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-medium transition-all"
+              style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
             >
               <Plus className="w-4 h-4" />
               Send Notification
@@ -262,25 +263,25 @@ export default function NotificationCenter() {
 
       {/* Stats Cards */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-700 text-sm font-medium mb-2">Total Notifications</p>
-              <p className="text-4xl font-bold text-orange-600">{totalCount}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">Total Notifications</p>
+              <p className="text-4xl font-bold text-[#1a3f22]">{totalCount}</p>
             </div>
-            <div className="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
               <Bell className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f0f5e9] to-[#daeac0] border border-[#477023]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-pink-700 text-sm font-medium mb-2">Unread</p>
-              <p className="text-4xl font-bold text-pink-600">{unreadCount}</p>
+              <p className="text-[#477023] text-sm font-medium mb-2">Unread</p>
+              <p className="text-4xl font-bold text-[#477023]">{unreadCount}</p>
             </div>
-            <div className="w-14 h-14 bg-pink-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#477023" }}>
               <Mail className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -337,8 +338,8 @@ export default function NotificationCenter() {
               <div
                 key={notif._id}
                 className={`border rounded-xl p-4 transition-all cursor-pointer group ${!notif.isRead
-                    ? "border-l-4 border-l-orange-500 bg-orange-50/50 hover:bg-orange-100/70"
-                    : "border-gray-200 hover:bg-gray-50 bg-white"
+                  ? "border-l-4 bg-[#e6f0e8]/50 hover:bg-[#c8ddc9]/70"
+                  : "border-gray-200 hover:bg-gray-50 bg-white"
                   }`}
                 onClick={() => !notif.isRead && handleMarkAsRead(notif._id)}
               >
@@ -346,7 +347,7 @@ export default function NotificationCenter() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       {!notif.isRead && (
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <div className="w-2 h-2 rounded-full" style={{ background: "#1a3f22" }}></div>
                       )}
                       <h3 className="font-semibold text-gray-800 truncate">{notif.title}</h3>
                       <Badge variant={getPriorityColor(notif.priority)} size="sm">
@@ -401,7 +402,7 @@ export default function NotificationCenter() {
                             <span className="font-bold text-gray-900">Total Marks:</span> {(notif.metadata as any).marks}
                           </div>
                         )}
-                        
+
                         {/* Attachments Display */}
                         {(notif.metadata as any).attachments && Array.isArray((notif.metadata as any).attachments) && (notif.metadata as any).attachments.length > 0 && (
                           <div className="col-span-1 sm:col-span-2 mt-2 pt-2 border-t border-orange-100 flex flex-wrap gap-2">

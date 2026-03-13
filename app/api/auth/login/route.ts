@@ -52,8 +52,8 @@ export async function POST(req: Request) {
       }
     } else if (role === "parent") {
       // First try to find a parent user in the User model
-      user = await User.findOne({ email: trimmedEmail });
-      if (user && user.role === "parent") {
+      user = await User.findOne({ email: trimmedEmail, role: "parent" });
+      if (user) {
         detectedRole = "parent";
       } else {
         // If not found in User, try Student as parent login (legacy/alternate way)
@@ -63,56 +63,20 @@ export async function POST(req: Request) {
         }
       }
     } else if (role === "admin" || !role) {
-      // Try User model first (admin/parent)
+      // Admin should exclusively be a User with role admin (or undefined/legacy)
       user = await User.findOne({ email: trimmedEmail });
       if (user) {
-        detectedRole = user.role || "admin";
-      }
-    }
-
-    // If user not found with specified role, try other models as fallback
-    if (!user) {
-      console.log("[api/auth/login] User not found with primary role search, trying fallbacks...");
-      // Try User model
-      user = await User.findOne({ email: trimmedEmail });
-      if (user) {
-        detectedRole = user.role || "admin";
+        if (user.role && user.role !== "admin") {
+          // This user exists but is NOT an admin. Don't log them in as admin.
+          user = null;
+        } else {
+          detectedRole = "admin";
+        }
       }
     }
 
     if (!user) {
-      // Try Teacher model
-      user = await Teacher.findOne({ email: trimmedEmail });
-      if (user) {
-        detectedRole = "teacher";
-      }
-    }
-
-    if (!user) {
-      // Try Student model
-      user = await Student.findOne({ email: trimmedEmail });
-      if (user) {
-        detectedRole = "student";
-      }
-    }
-
-    // If still not found in any model, return error
-    if (!user) {
-      console.log(`[api/auth/login] User not found: ${trimmedEmail}`);
-      try {
-        await LogActivity.create({
-          actorEmail: trimmedEmail,
-          actorRole: role || "unknown",
-          action: "login",
-          result: "failure",
-          message: "Invalid email",
-          ip: req.headers.get("x-forwarded-for") || undefined,
-          userAgent: req.headers.get("user-agent") || undefined,
-        });
-      } catch (e) {
-        console.error("Failed to save log activity (invalid email):", e);
-      }
-      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+      return NextResponse.json({ error: "Select correct role" }, { status: 400 });
     }
 
     console.log(`[api/auth/login] User found: ${user.email} (${user._id}) in model: ${user.constructor.modelName}, Role: ${detectedRole}`);

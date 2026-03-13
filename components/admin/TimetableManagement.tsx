@@ -275,7 +275,7 @@ export default function TimetableManagement() {
       label: "Teacher",
       render: (value: unknown) => {
         const teacher = value as any as Teacher | null;
-        return (teacher && (teacher.name || (teacher.firstName ? `${(teacher as any).firstName} ${(teacher as any).lastName || ''}` : ''))) || "-";
+        return (teacher && (teacher.name || ((teacher as any).firstName ? `${(teacher as any).firstName} ${(teacher as any).lastName || ''}` : ''))) || "-";
       },
     },
     {
@@ -298,6 +298,24 @@ export default function TimetableManagement() {
     },
   ];
 
+  const handleExport = () => {
+    if (timetables.length === 0) {
+      showToast.error("No data to export");
+      return;
+    }
+    const exportData = timetables.map(t => ({
+      Class: t.classId?.name || "N/A",
+      Section: t.classId?.section || "N/A",
+      Day: t.day,
+      Subject: t.subject,
+      Teacher: t.teacherId?.name || "N/A",
+      StartTime: t.startTime,
+      EndTime: t.endTime,
+      Room: t.roomNumber || "N/A"
+    }));
+    exportToCSV(exportData, "timetables.csv");
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <Breadcrumbs items={[{ label: "Dashboard", href: "/dashboard" }, { label: "Timetable" }]} />
@@ -310,7 +328,7 @@ export default function TimetableManagement() {
             <p className="text-gray-600 mt-1">Manage class schedules and time slots</p>
           </div>
           <div className="flex gap-3">
-            <button onClick={() => exportToCSV([], "timetables.csv")} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
+            <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all">
               <Download className="w-4 h-4" />
               <span className="text-sm font-medium">Export</span>
             </button>
@@ -320,37 +338,37 @@ export default function TimetableManagement() {
 
       {/* Header */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#e6f0e8] to-[#c8ddc9] border border-[#1a3f22]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-indigo-700 text-sm font-medium mb-2">Total Entries</p>
-              <p className="text-4xl font-bold text-indigo-600">{totalEntries}</p>
+              <p className="text-[#1a3f22] text-sm font-medium mb-2">Total Entries</p>
+              <p className="text-4xl font-bold text-[#1a3f22]">{totalEntries}</p>
             </div>
-            <div className="w-14 h-14 bg-indigo-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#1a3f22" }}>
               <Calendar className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#edf4ee] to-[#d4e8d5] border border-[#2e6b3a]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-700 text-sm font-medium mb-2">Subjects</p>
-              <p className="text-4xl font-bold text-purple-600">{uniqueSubjects}</p>
+              <p className="text-[#2e6b3a] text-sm font-medium mb-2">Subjects</p>
+              <p className="text-4xl font-bold text-[#2e6b3a]">{uniqueSubjects}</p>
             </div>
-            <div className="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#2e6b3a" }}>
               <BookOpen className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-[#f0f5e9] to-[#daeac0] border border-[#477023]/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-pink-700 text-sm font-medium mb-2">Teachers</p>
-              <p className="text-4xl font-bold text-pink-600">{uniqueTeachers}</p>
+              <p className="text-[#477023] text-sm font-medium mb-2">Teachers</p>
+              <p className="text-4xl font-bold text-[#477023]">{uniqueTeachers}</p>
             </div>
-            <div className="w-14 h-14 bg-pink-500 rounded-xl flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: "#477023" }}>
               <GraduationCap className="w-7 h-7 text-white" />
             </div>
           </div>
@@ -416,7 +434,8 @@ export default function TimetableManagement() {
               });
               setModalOpen(true);
             }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-400 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-lg font-medium transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-medium transition-all"
+            style={{ background: "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
           >
             <Plus className="w-4 h-4" />
             Add Entry
@@ -431,7 +450,7 @@ export default function TimetableManagement() {
               return (
                 <div key={day} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm min-w-0">
                   {/* Day Header */}
-                  <div className="px-3 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 flex items-center justify-between">
+                  <div className="px-3 py-2 flex items-center justify-between" style={{ background: "linear-gradient(90deg, #1a3f22, #2e6b3a)" }}>
                     <h3 className="font-bold text-white text-xs tracking-wide">{day}</h3>
                     <span className="text-[10px] font-semibold bg-white/20 text-white px-1.5 py-0.5 rounded-full">
                       {entries.length}
