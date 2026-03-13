@@ -72,7 +72,7 @@ export default function ParentExamResultsView() {
     ? Math.round(results.reduce((sum, r) => sum + ((r.marksObtained || 0) / (r.totalMarks || 1)) * 100, 0) / results.length)
     : 0;
 
-  if (loading) return <div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-violet-600" /></div>;
+  if (loading) return <div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a3f22]" /></div>;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -89,7 +89,7 @@ export default function ParentExamResultsView() {
             <select
               value={selectedChildId}
               onChange={e => setSelectedChildId(e.target.value)}
-              className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white font-medium"
+              className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3f22]/40 bg-white font-medium"
             >
               {children.map(c => (
                 <option key={c._id} value={c._id}>{c.name} ({c.className || "—"})</option>
@@ -112,7 +112,7 @@ export default function ParentExamResultsView() {
           </div>
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
             <p className="text-xs text-gray-400 font-medium mb-2">Best Subject</p>
-            <p className="text-lg font-bold text-violet-700 truncate">
+            <p className="text-lg font-bold text-[#1a3f22] truncate">
               {results.reduce((best, r) => {
                 const pct = ((r.marksObtained || 0) / (r.totalMarks || 1)) * 100;
                 const bestPct = ((best.marksObtained || 0) / (best.totalMarks || 1)) * 100;
@@ -125,7 +125,7 @@ export default function ParentExamResultsView() {
 
       {/* Results */}
       {resultsLoading ? (
-        <div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600" /></div>
+        <div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a3f22]" /></div>
       ) : results.length === 0 ? (
         <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
           <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
