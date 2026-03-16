@@ -82,7 +82,7 @@ export default function StudentForm({ initial = {}, onSuccess }: Props) {
       </div>
       <div>
         <label>Upload document / image</label>
-        <input type="file" onChange={handleFile} />
+        <input type="file" multiple accept="image/*,video/*" onChange={handleFile} />
         {uploading && <div>Uploading...</div>}
         <div>
           {(form.documents || []).map((d: any, idx: number) => (

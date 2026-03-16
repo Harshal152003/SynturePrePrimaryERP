@@ -643,7 +643,7 @@ export default function GalleryManagement() {
             <input
               type="file"
               multiple
-              accept="image/*"
+              accept="image/*,video/*"
               onChange={handleFileSelect}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               disabled={uploading}
@@ -660,8 +660,8 @@ export default function GalleryManagement() {
                     <ImagePlus className="w-6 h-6 text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Click or Drag photos here</p>
-                    <p className="text-xs text-gray-500">Supports JPG, PNG (Max 5MB)</p>
+                    <p className="text-sm font-medium text-gray-700">Click or Drag photos/videos here</p>
+                    <p className="text-xs text-gray-500">Supports JPG, PNG, MP4 (Max 50MB)</p>
                   </div>
                 </>
               )}

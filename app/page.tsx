@@ -36,8 +36,8 @@ export default function LandingPage() {
     const formData = new FormData(form);
 
     try {
-      // Using FormSubmit AJAX to bypass page reloads & safely attach files to sales@xpertance.in
-      const response = await fetch("https://formsubmit.co/ajax/sales@xpertance.in", {
+      // Using FormSubmit AJAX to bypass page reloads & safely attach files to support@littlesteps.com
+      const response = await fetch("https://formsubmit.co/ajax/support@littlesteps.com", {
         method: "POST",
         body: formData,
       });
@@ -67,7 +67,7 @@ export default function LandingPage() {
     const formData = new FormData(form);
 
     try {
-      const response = await fetch("https://formsubmit.co/ajax/sales@xpertance.in", {
+      const response = await fetch("https://formsubmit.co/ajax/support@littlesteps.com", {
         method: "POST",
         body: formData,
       });
@@ -132,43 +132,43 @@ export default function LandingPage() {
       icon: Users,
       title: "Student Management",
       description: "Comprehensive student profiles, enrollment tracking, and parent communication tools",
-      color: "bg-pink-500",
-      lightBg: "bg-pink-50"
+      color: "bg-[#1a3f22]",
+      lightBg: "bg-emerald-50"
     },
     {
       icon: GraduationCap,
       title: "Teacher Management",
       description: "Manage teaching staff, assign classes, track performance and schedules efficiently",
-      color: "bg-purple-500",
-      lightBg: "bg-purple-50"
+      color: "bg-[#2e6b3a]",
+      lightBg: "bg-emerald-50"
     },
     {
       icon: ClipboardList,
       title: "Class Organization",
       description: "Create and manage classes, sections, and student groups with ease",
-      color: "bg-orange-500",
-      lightBg: "bg-orange-50"
+      color: "bg-[#4a9c5d]",
+      lightBg: "bg-emerald-50"
     },
     {
       icon: Calendar,
       title: "Attendance Tracking",
       description: "Real-time attendance monitoring with automated reports and notifications",
-      color: "bg-cyan-500",
-      lightBg: "bg-cyan-50"
+      color: "bg-[#2e6b3a]",
+      lightBg: "bg-emerald-50"
     },
     {
       icon: DollarSign,
       title: "Fee Management",
       description: "Streamlined fee collection, payment tracking, and financial reporting",
-      color: "bg-green-500",
-      lightBg: "bg-green-50"
+      color: "bg-[#1a3f22]",
+      lightBg: "bg-emerald-50"
     },
     {
       icon: Clock,
       title: "Timetable Scheduling",
       description: "Create and manage timetables, class schedules, and event planning",
-      color: "bg-blue-500",
-      lightBg: "bg-blue-50"
+      color: "bg-[#4a9c5d]",
+      lightBg: "bg-emerald-50"
     }
   ];
 
@@ -191,8 +191,8 @@ export default function LandingPage() {
   const testimonials = [
     {
       name: "Priya Sharma",
-      role: "Principal, Little Stars Academy",
-      content: "Pre-Primary ERP has transformed how we manage our school. The intuitive interface makes it easy for all staff members to use.",
+      role: "Principal, Little Steps Academy",
+      content: "Little Steps ERP has transformed how we manage our school. The intuitive interface makes it easy for all staff members to use.",
       rating: 5
     },
     {
@@ -209,57 +209,7 @@ export default function LandingPage() {
     }
   ];
 
-  const pricingPlans = [
-    {
-      name: "Starter",
-      price: "₹4,999",
-      period: "per month",
-      description: "Perfect for small preschools",
-      features: [
-        "Up to 100 students",
-        "Basic student management",
-        "Attendance tracking",
-        "Fee management",
-        "Email support",
-        "Mobile app access"
-      ],
-      popular: false
-    },
-    {
-      name: "Professional",
-      price: "₹9,999",
-      period: "per month",
-      description: "Most popular for growing schools",
-      features: [
-        "Up to 500 students",
-        "All Starter features",
-        "Teacher management",
-        "Advanced reporting",
-        "Parent portal",
-        "Priority support",
-        "Custom timetables",
-        "SMS notifications"
-      ],
-      popular: true
-    },
-    {
-      name: "Enterprise",
-      price: "Custom",
-      period: "contact us",
-      description: "For large institutions",
-      features: [
-        "Unlimited students",
-        "All Professional features",
-        "Multi-branch support",
-        "Custom integrations",
-        "Dedicated account manager",
-        "On-premise deployment",
-        "Training sessions",
-        "24/7 phone support"
-      ],
-      popular: false
-    }
-  ];
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -267,13 +217,12 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-400 rounded-xl flex items-center justify-center shadow-md">
-                <GraduationCap className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-emerald-100 p-1">
+                <Image src="/logo.png" alt="Little Steps Logo" width={40} height={40} className="object-contain" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Pre-Primary ERP</h1>
-                <p className="text-xs text-gray-500">School Management</p>
+                <h1 className="text-xl font-bold text-[#1a3f22] tracking-tight">Little Steps</h1>
               </div>
             </div>
 
@@ -283,21 +232,20 @@ export default function LandingPage() {
                 { id: "features", label: "Features" },
                 { id: "benefits", label: "Benefits" },
                 { id: "testimonials", label: "Testimonials" },
-                { id: "pricing", label: "Pricing" },
                 { id: "contact", label: "Contact" }
               ].map((item) => (
                 <a
                   key={item.id}
                   href={`#${item.id}`}
-                  className={`text-sm font-medium transition-all duration-300 relative py-1 group ${activeSection === item.id ? "text-primary scale-105" : "text-gray-600 hover:text-gray-900"
+                  className={`text-sm font-medium transition-all duration-300 relative py-1 group ${activeSection === item.id ? "text-[#1a3f22] scale-105" : "text-gray-600 hover:text-gray-900"
                     }`}
                 >
                   {item.label}
-                  <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-primary rounded-full transition-all duration-300 ${activeSection === item.id ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-1/2 group-hover:opacity-50"
+                  <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-[#1a3f22] rounded-full transition-all duration-300 ${activeSection === item.id ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-1/2 group-hover:opacity-50"
                     }`} />
                 </a>
               ))}
-              <Link href="/login" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-medium">
+              <Link href="/login" className="px-6 py-2 bg-[#1a3f22] text-white rounded-lg hover:bg-[#2e6b3a] transition-colors font-medium">
                 Get Started
               </Link>
             </div>
@@ -319,21 +267,20 @@ export default function LandingPage() {
                   { id: "features", label: "Features" },
                   { id: "benefits", label: "Benefits" },
                   { id: "testimonials", label: "Testimonials" },
-                  { id: "pricing", label: "Pricing" },
                   { id: "contact", label: "Contact" }
                 ].map((item) => (
                   <a
                     key={item.id}
                     href={`#${item.id}`}
-                    className={`text-base font-medium transition-all duration-300 flex items-center gap-2 ${activeSection === item.id ? "text-primary translate-x-2" : "text-gray-600"
+                    className={`text-base font-medium transition-all duration-300 flex items-center gap-2 ${activeSection === item.id ? "text-[#1a3f22] translate-x-2" : "text-gray-600"
                       }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {activeSection === item.id && <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />}
+                    {activeSection === item.id && <div className="w-1.5 h-1.5 bg-[#1a3f22] rounded-full animate-pulse" />}
                     {item.label}
                   </a>
                 ))}
-                <Link href="/login" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark text-center">
+                <Link href="/login" className="px-6 py-2 bg-[#1a3f22] text-white rounded-lg hover:bg-[#2e6b3a] text-center">
                   Get Started
                 </Link>
               </div>
@@ -346,8 +293,8 @@ export default function LandingPage() {
       <section id="demo" className="relative pt-28 pb-20 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
         {/* Subtle background blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-orange-50 blur-3xl opacity-60" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-purple-50 blur-3xl opacity-40" />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-emerald-50 blur-3xl opacity-60" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-[#1a3f22]/5 blur-3xl opacity-40" />
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
@@ -356,8 +303,8 @@ export default function LandingPage() {
             {/* Left Content */}
             <div>
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full border border-orange-100 mb-8">
-                <Zap className="w-4 h-4 text-primary" />
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100 mb-8">
+                <Zap className="w-4 h-4 text-[#1a3f22]" />
                 <span className="text-sm font-semibold text-slate-700">Trusted by 500+ schools</span>
               </div>
 
@@ -365,7 +312,7 @@ export default function LandingPage() {
               <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold mb-6 leading-[1.2] tracking-tight text-slate-900">
                 Complete School<br />
                 Management System for<br />
-                Pre-Primary Education
+                Little Steps
               </h1>
 
               {/* Description */}
@@ -377,7 +324,7 @@ export default function LandingPage() {
               <div className="flex flex-wrap gap-4">
                 <a
                   href="#contact"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all hover:-translate-y-0.5 group"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1a3f22] text-white font-bold rounded-xl shadow-lg shadow-[#1a3f22]/30 hover:bg-[#2e6b3a] transition-all hover:-translate-y-0.5 group"
                 >
                   Start Free Trial
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -391,7 +338,7 @@ export default function LandingPage() {
               <div className="relative rounded-2xl bg-white shadow-[0_8px_40px_rgba(0,0,0,0.12)] border border-slate-100 overflow-hidden">
                 <Image
                   src="/dashboard.png"
-                  alt="Pre-Primary ERP Dashboard"
+                  alt="Little Steps Dashboard"
                   width={900}
                   height={620}
                   className="w-full h-auto block"
@@ -401,7 +348,7 @@ export default function LandingPage() {
 
               {/* Floating Card — 50K+ Students (top-right, OUTSIDE the image card) */}
               <div
-                className="absolute -top-5 -right-5 bg-secondary rounded-2xl px-6 py-5 shadow-2xl flex flex-col items-center justify-center animate-bounce cursor-default z-10"
+                className="absolute -top-5 -right-5 bg-[#2e6b3a] rounded-2xl px-6 py-5 shadow-2xl flex flex-col items-center justify-center animate-bounce cursor-default z-10"
                 style={{ animationDuration: '4s', minWidth: '110px' }}
               >
                 <span className="text-2xl font-black text-white leading-none">50K+</span>
@@ -410,7 +357,7 @@ export default function LandingPage() {
 
               {/* Floating Card — 99.9% Uptime (bottom-left, overlapping corner) */}
               <div
-                className="absolute -bottom-5 left-8 bg-primary rounded-2xl px-7 py-5 shadow-2xl flex flex-col items-center justify-center animate-bounce cursor-default z-10"
+                className="absolute -bottom-5 left-8 bg-[#1a3f22] rounded-2xl px-7 py-5 shadow-2xl flex flex-col items-center justify-center animate-bounce cursor-default z-10"
                 style={{ animationDuration: '5s', minWidth: '120px' }}
               >
                 <span className="text-2xl font-black text-white leading-none">99.9%</span>
@@ -470,7 +417,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Why Schools Choose Pre-Primary ERP
+                Why Schools Choose Little Steps
               </h2>
               <p className="text-xl text-gray-600 mb-8">
                 Join hundreds of schools that have transformed their operations with our intelligent management system
@@ -478,7 +425,7 @@ export default function LandingPage() {
               <div className="space-y-4">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#2e6b3a] flex-shrink-0 mt-1" />
                     <span className="text-lg text-gray-700">{benefit}</span>
                   </div>
                 ))}
@@ -486,23 +433,23 @@ export default function LandingPage() {
 
             </div>
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-primary/10 rounded-xl p-6 border border-primary/20">
-                <Shield className="w-10 h-10 text-primary mb-4" />
+              <div className="bg-[#1a3f22]/10 rounded-xl p-6 border border-[#1a3f22]/20">
+                <Shield className="w-10 h-10 text-[#1a3f22] mb-4" />
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Secure & Reliable</h3>
                 <p className="text-gray-600">Bank-level security with daily backups</p>
               </div>
-              <div className="bg-secondary/10 rounded-xl p-6 border border-secondary/20 mt-8">
-                <Zap className="w-10 h-10 text-secondary mb-4" />
+              <div className="bg-[#2e6b3a]/10 rounded-xl p-6 border border-[#2e6b3a]/20 mt-8">
+                <Zap className="w-10 h-10 text-[#2e6b3a] mb-4" />
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Lightning Fast</h3>
                 <p className="text-gray-600">Optimized for speed and performance</p>
               </div>
-              <div className="bg-accent/10 rounded-xl p-6 border border-accent/20">
-                <BarChart3 className="w-10 h-10 text-accent mb-4" />
+              <div className="bg-[#4a9c5d]/10 rounded-xl p-6 border border-[#4a9c5d]/20">
+                <BarChart3 className="w-10 h-10 text-[#4a9c5d] mb-4" />
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Smart Analytics</h3>
                 <p className="text-gray-600">Data-driven insights and reports</p>
               </div>
-              <div className="bg-green-50 rounded-xl p-6 border border-green-200 mt-8">
-                <Users className="w-10 h-10 text-green-500 mb-4" />
+              <div className="bg-emerald-50 rounded-xl p-6 border border-emerald-200 mt-8">
+                <Users className="w-10 h-10 text-[#2e6b3a] mb-4" />
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Easy to Use</h3>
                 <p className="text-gray-600">Intuitive interface for everyone</p>
               </div>
@@ -519,7 +466,7 @@ export default function LandingPage() {
               Loved by School Administrators
             </h2>
             <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              See what our customers have to say about Pre-Primary ERP
+              See what our customers have to say about Little Steps
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -546,68 +493,16 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-xl text-gray-600">
-              Choose the perfect plan for your school's needs
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={index}
-                className={`rounded-xl p-8 border-2 ${plan.popular
-                  ? 'border-orange-500 bg-orange-50 relative'
-                  : 'border-gray-200 bg-white'
-                  }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-orange-500 text-white text-sm font-medium rounded-full">
-                    Most Popular
-                  </div>
-                )}
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                <p className="text-gray-600 mb-6">{plan.description}</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                  <span className="text-gray-600 ml-2">{plan.period}</span>
-                </div>
-                <Link
-                  href="/login"
-                  className={`w-full py-3 rounded-lg font-medium transition-colors mb-8 block text-center ${plan.popular
-                    ? 'bg-orange-500 text-white hover:bg-orange-600'
-                    : 'bg-gray-900 text-white hover:bg-gray-800'
-                    }`}
-                >
-                  Get Started
-                </Link>
-                <div className="space-y-3">
-                  {plan.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#1a3f22] via-[#2e6b3a] to-[#4a9c5d]">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
             Ready to Transform Your School Management?
           </h2>
           <p className="text-xl text-white/90 mb-8">
-            Join hundreds of schools using Pre-Primary ERP to streamline their operations
+            Join hundreds of schools using Little Steps to streamline their operations
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="#contact" className="px-8 py-4 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors text-lg font-medium inline-block text-center whitespace-nowrap">
@@ -618,7 +513,7 @@ export default function LandingPage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-accent/5 via-primary/5 to-primary-dark/5">
+      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-50 via-[#1a3f22]/5 to-[#2e6b3a]/5">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Get in Touch</h2>
@@ -631,7 +526,7 @@ export default function LandingPage() {
               <form className="space-y-6" onSubmit={handleContactSubmit}>
                 {/* Prevent Captcha from FormSubmit when using AJAX */}
                 <input type="hidden" name="_captcha" value="false" />
-                <input type="hidden" name="_subject" value="New Inquiry from Pre-Primary ERP Website!" />
+                <input type="hidden" name="_subject" value="New Inquiry from Little Steps Website!" />
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
@@ -639,7 +534,7 @@ export default function LandingPage() {
                     type="text"
                     name="Name"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                     placeholder="Your name"
                   />
                 </div>
@@ -649,7 +544,7 @@ export default function LandingPage() {
                     type="email"
                     name="Email"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -659,7 +554,7 @@ export default function LandingPage() {
                     type="text"
                     name="School Name"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22]"
                     placeholder="Your school name"
                   />
                 </div>
@@ -669,14 +564,14 @@ export default function LandingPage() {
                     rows={4}
                     name="Message"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary min-h-[120px]"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3f22] min-h-[120px]"
                     placeholder="Tell us about your requirements"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isSubmittingContact}
-                  className="w-full flex items-center justify-center py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-medium text-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center py-3 bg-[#1a3f22] text-white rounded-lg hover:bg-[#2e6b3a] transition-colors font-medium text-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmittingContact ? "Sending..." : "Send Message"}
                 </button>
@@ -688,7 +583,7 @@ export default function LandingPage() {
                 <div className="space-y-4">
                   <div>
                     <div className="text-sm text-gray-500 mb-1">Email</div>
-                    <div className="text-gray-900">sales@xpertance.in</div>
+                    <div className="text-gray-900">support@littlesteps.com</div>
                   </div>
                   <div>
                     <div className="text-sm text-gray-500 mb-1">Phone</div>
@@ -700,7 +595,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="bg-primary/5 rounded-xl p-6 border border-primary/10">
+              <div className="bg-[#1a3f22]/5 rounded-xl p-6 border border-[#1a3f22]/10">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Need Help?</h3>
                 <p className="text-gray-600 mb-4">
                   Our support team is available 24/7 to assist you with any questions
@@ -718,12 +613,12 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {/* Brand */}
             <div className="lg:col-span-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-400 rounded-xl flex items-center justify-center shadow-md">
-                  <GraduationCap className="w-6 h-6 text-white" />
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md border border-emerald-100 p-1">
+                  <Image src="/logo.png" alt="Little Steps Logo" width={40} height={40} className="object-contain" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">Pre-Primary ERP</h3>
+                  <h3 className="text-xl font-bold text-white tracking-tight">Little Steps</h3>
                 </div>
               </div>
               <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
@@ -736,7 +631,7 @@ export default function LandingPage() {
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">Product</h4>
               <ul className="space-y-2 text-slate-400 text-sm">
                 <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
+
                 <li><a href="#demo" className="hover:text-white transition-colors">Live Demo</a></li>
                 <li><a href="#benefits" className="hover:text-white transition-colors">Product Roadmap</a></li>
               </ul>
@@ -765,7 +660,7 @@ export default function LandingPage() {
           {/* Bottom Footer: Legal & Social */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-slate-800">
             <div className="flex flex-col md:flex-row items-center gap-6 text-sm text-slate-500">
-              <span>© {new Date().getFullYear()} Pre-Primary ERP. All rights reserved.</span>
+              <span>© {new Date().getFullYear()} Little Steps. All rights reserved.</span>
               <div className="hidden md:block w-1 h-1 bg-slate-700 rounded-full" />
               <div className="flex gap-4">
                 <a href="#" className="hover:text-white transition-colors">Privacy</a>
