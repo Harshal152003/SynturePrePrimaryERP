@@ -14,7 +14,9 @@ import {
     Loader2,
     AlertCircle,
     BadgeCheck,
-    Building
+    Building,
+    Eye,
+    EyeOff
 } from "lucide-react";
 
 interface UserProfile {
@@ -33,6 +35,9 @@ export default function ProfileManagement() {
     const [oldPassword, setOldPassword] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -76,8 +81,60 @@ export default function ProfileManagement() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (password && password !== confirmPassword) {
-            showToast.error("Passwords do not match");
+        // 1. Validation for empty fields
+        if (userProfile?.role === 'admin' || userProfile?.role === 'parent' || userProfile?.role === 'teacher') {
+            if (!formData.name.trim()) {
+                showToast.error("Full Name cannot be empty.");
+                return;
+            }
+        } else if (userProfile?.role === 'student') {
+            if (!formData.firstName.trim() || !formData.lastName.trim()) {
+                showToast.error("First Name and Last Name cannot be empty.");
+                return;
+            }
+        }
+
+        if (!formData.email.trim()) {
+            showToast.error("Email address cannot be empty.");
+            return;
+        }
+
+        // 2. Passwords validation
+        if (password || oldPassword || confirmPassword) {
+            if (!oldPassword) {
+                showToast.error("Please enter your old password to set a new one.");
+                return;
+            }
+            if (password !== confirmPassword) {
+                showToast.error("New passwords do not match.");
+                return;
+            }
+            if (!password || password.length < 6) {
+                showToast.error("New password must be at least 6 characters.");
+                return;
+            }
+        }
+
+        // 3. Prevent save if no changes
+        const currentRole = userProfile?.role || "";
+        const isIdentity = () => {
+            if (currentRole === 'admin' || currentRole === 'parent' || currentRole === 'teacher') {
+                const sameName = formData.name.trim() === (userProfile?.name || "").trim();
+                const sameEmail = formData.email.trim() === (userProfile?.email || "").trim();
+                const samePassword = password.length === 0;
+                return sameName && sameEmail && samePassword;
+            } else if (currentRole === 'student') {
+                const sameFirst = formData.firstName.trim() === (userProfile?.firstName || "").trim();
+                const sameLast = formData.lastName.trim() === (userProfile?.lastName || "").trim();
+                const sameEmail = formData.email.trim() === (userProfile?.email || "").trim();
+                const samePassword = password.length === 0;
+                return sameFirst && sameLast && sameEmail && samePassword;
+            }
+            return false;
+        };
+
+        if (isIdentity()) {
+            showToast.error("No changes detected. Nothing to save.");
             return;
         }
 
@@ -109,6 +166,20 @@ export default function ProfileManagement() {
             showToast.error("Error updating profile");
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleCancel = () => {
+        if (userProfile) {
+            setFormData({
+                name: userProfile.name || "",
+                firstName: userProfile.firstName || "",
+                lastName: userProfile.lastName || "",
+                email: userProfile.email || "",
+            });
+            setOldPassword("");
+            setPassword("");
+            setConfirmPassword("");
         }
     };
 
@@ -179,7 +250,7 @@ export default function ProfileManagement() {
 
                             <form onSubmit={handleSubmit} className="p-6 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    {(userProfile?.role === 'admin' || userProfile?.role === 'parent') ? (
+                                    {(userProfile?.role === 'admin' || userProfile?.role === 'parent' || userProfile?.role === 'teacher') ? (
                                         <div className="md:col-span-2">
                                             <Input
                                                 label="Full Name"
@@ -189,6 +260,7 @@ export default function ProfileManagement() {
                                                 placeholder="Your full name"
                                                 icon={<User className="w-4 h-4" />}
                                                 fullWidth
+                                                required
                                             />
                                         </div>
                                     ) : (
@@ -201,6 +273,7 @@ export default function ProfileManagement() {
                                                 placeholder="First name"
                                                 icon={<User className="w-4 h-4" />}
                                                 fullWidth
+                                                required
                                             />
                                             <Input
                                                 label="Last Name"
@@ -210,6 +283,7 @@ export default function ProfileManagement() {
                                                 placeholder="Last name"
                                                 icon={<User className="w-4 h-4" />}
                                                 fullWidth
+                                                required
                                             />
                                         </>
                                     )}
@@ -224,6 +298,7 @@ export default function ProfileManagement() {
                                             placeholder="email@example.com"
                                             icon={<Mail className="w-4 h-4" />}
                                             fullWidth
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -239,48 +314,72 @@ export default function ProfileManagement() {
                                         <div className="w-full md:w-1/2">
                                             <Input
                                                 label="Old Password"
-                                                type="password"
+                                                type={showOldPassword ? "text" : "password"}
                                                 value={oldPassword}
                                                 onChange={(e) => setOldPassword(e.target.value)}
                                                 placeholder="••••••••"
                                                 icon={<Key className="w-4 h-4" />}
+                                                endIcon={
+                                                    <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className="text-gray-400 hover:text-green-600 focus:outline-none p-1 flex items-center justify-center transition-colors">
+                                                        {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                    </button>
+                                                }
                                                 fullWidth
                                             />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                             <Input
                                                 label="New Password"
-                                                type="password"
+                                                type={showPassword ? "text" : "password"}
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="••••••••"
                                                 icon={<Key className="w-4 h-4" />}
+                                                endIcon={
+                                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-gray-400 hover:text-green-600 focus:outline-none p-1 flex items-center justify-center transition-colors">
+                                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                    </button>
+                                                }
                                                 fullWidth
                                             />
                                             <Input
                                                 label="Confirm New Password"
-                                                type="password"
+                                                type={showConfirmPassword ? "text" : "password"}
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                                 placeholder="••••••••"
                                                 icon={<Key className="w-4 h-4" />}
+                                                endIcon={
+                                                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="text-gray-400 hover:text-green-600 focus:outline-none p-1 flex items-center justify-center transition-colors">
+                                                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                    </button>
+                                                }
                                                 fullWidth
                                             />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="pt-6 flex justify-end">
+                                <div className="pt-6 flex justify-end gap-4 border-t border-gray-100">
+                                    <Button
+                                        type="button"
+                                        onClick={handleCancel}
+                                        variant="secondary"
+                                        disabled={saving}
+                                        className="px-8 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold"
+                                    >
+                                        Cancel
+                                    </Button>
                                     <Button
                                         type="submit"
                                         variant="primary"
-                                        disabled={saving}
-                                        className="px-8"
+                                        disabled={saving || !userProfile}
+                                        className="px-8 font-bold shadow-md hover:shadow-lg transition-all"
                                     >
                                         {saving ? (
                                             <>
                                                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                                                Saving Changes...
+                                                Saving...
                                             </>
                                         ) : (
                                             <>

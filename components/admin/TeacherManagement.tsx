@@ -183,14 +183,40 @@ export default function TeacherManagement() {
   };
 
   const handleAddTeacher = async () => {
-    if (!formData.name || !formData.email) {
-      showToast.error("Name and email are required");
+    if (!formData.name || !formData.email || !formData.phone) {
+      showToast.error("Name, email and phone are required");
+      return;
+    }
+
+    if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+      showToast.error("Invalid phone number. Must be 10 digits starting with 6-9.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      showToast.error("Invalid email format");
       return;
     }
 
     if (!editingTeacher && !formData.password) {
       showToast.error("Password is required for new teacher");
       return;
+    }
+
+    if (editingTeacher) {
+      const hasChanges =
+        formData.name !== editingTeacher.name ||
+        formData.email !== editingTeacher.email ||
+        formData.phone !== (editingTeacher.phone || "") ||
+        formData.password !== "" ||
+        JSON.stringify(formData.subjects) !== JSON.stringify(editingTeacher.subjects || []) ||
+        JSON.stringify(formData.qualifications) !== JSON.stringify(editingTeacher.qualifications || []) ||
+        JSON.stringify(formData.classes) !== JSON.stringify(editingTeacher.classes || []);
+
+      if (!hasChanges) {
+        showToast.error("No changes detected. Nothing to save.");
+        return;
+      }
     }
 
     try {
@@ -575,8 +601,11 @@ export default function TeacherManagement() {
             label="Phone"
             name="phone"
             value={formData.phone}
-            onChange={handleInputChange}
-            placeholder="Enter phone number"
+            onChange={(e) => {
+              const val = e.target.value.replace(/[^\d]/g, "").slice(0, 10);
+              setFormData((prev) => ({ ...prev, phone: val }));
+            }}
+            placeholder="10-digit mobile number"
             fullWidth
           />
 

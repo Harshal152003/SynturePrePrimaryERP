@@ -187,6 +187,16 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
     const handleRecordPayment = async () => {
         if (!selectedTransactionId) return;
 
+        if (!paymentData.amountPaid || Number(paymentData.amountPaid) <= 0) {
+            showToast.error("Payment amount must be greater than zero.");
+            return;
+        }
+
+        if (!paymentData.paymentMethod) {
+            showToast.error("Please select a valid payment method.");
+            return;
+        }
+
         try {
             const res = await fetch(`/api/fees/transactions/${selectedTransactionId}/payment`, {
                 method: "POST",
@@ -210,6 +220,21 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
 
     const handleCreateTransaction = async () => {
         if (!studentData) return;
+
+        if (!transactionData.head || transactionData.head.trim() === "") {
+            showToast.error("Fee Head (description) is required.");
+            return;
+        }
+
+        if (Number(transactionData.amount) <= 0) {
+            showToast.error("Transaction amount must be greater than zero.");
+            return;
+        }
+
+        if (!transactionData.dueDate) {
+            showToast.error("Due Date is required.");
+            return;
+        }
 
         try {
             const res = await fetch("/api/fees/transactions/create", {
@@ -280,6 +305,19 @@ export default function StudentFeeDetails({ studentId }: { studentId: string }) 
 
     const handleUpdateTransaction = async () => {
         if (!editingTransactionId) return;
+
+        const originalTransaction = studentData?.transactions.find(t => t._id === editingTransactionId);
+        if (originalTransaction) {
+            const originalDueDate = originalTransaction.dueDate 
+                ? new Date(originalTransaction.dueDate).toISOString().split("T")[0] 
+                : new Date(originalTransaction.createdAt).toISOString().split("T")[0];
+            const originalNote = originalTransaction.note || "";
+
+            if (editTransactionData.dueDate === originalDueDate && editTransactionData.note === originalNote) {
+                showToast.error("No changes detected. Nothing to save.");
+                return;
+            }
+        }
 
         try {
             const res = await fetch(`/api/fees/transactions/${editingTransactionId}`, {

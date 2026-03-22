@@ -216,6 +216,28 @@ export default function ExamManagement() {
       return;
     }
 
+    if (editingExam) {
+      const safeDate = (d: any) => d ? new Date(d).toISOString().split("T")[0] : "";
+      const hasChanges =
+        formData.name !== editingExam.name ||
+        formData.description !== (editingExam.description || "") ||
+        formData.classId !== editingExam.classId._id ||
+        JSON.stringify(formData.subjects) !== JSON.stringify(editingExam.subjects || []) ||
+        formData.startDate !== safeDate(editingExam.startDate) ||
+        formData.endDate !== safeDate(editingExam.endDate) ||
+        formData.totalMarks !== editingExam.totalMarks ||
+        formData.passingMarks !== editingExam.passingMarks ||
+        formData.examType !== editingExam.examType ||
+        formData.status !== editingExam.status ||
+        formData.isPublished !== editingExam.isPublished ||
+        JSON.stringify(formData.schedule) !== JSON.stringify((editingExam.schedule || []).map(s => ({ ...s, date: safeDate(s.date) })));
+
+      if (!hasChanges) {
+        showToast.error("No changes detected. Nothing to save.");
+        return;
+      }
+    }
+
     if (isSaving) return;
     setIsSaving(true);
 

@@ -184,6 +184,27 @@ export default function GalleryManagement() {
       return;
     }
 
+    if (editingId) {
+      const original = galleries.find(g => g._id === editingId);
+      if (original) {
+        const hasChanges = 
+          formData.title !== original.title ||
+          formData.albumName !== original.albumName ||
+          formData.description !== (original.description || "") ||
+          formData.category !== original.category ||
+          formData.eventDate !== (original.eventDate?.split("T")[0] || "") ||
+          formData.eventLocation !== (original.eventLocation || "") ||
+          formData.isPublished !== original.isPublished ||
+          formData.featured !== original.featured ||
+          JSON.stringify(formData.images) !== JSON.stringify(original.images || []);
+
+        if (!hasChanges) {
+          showToast.error("No changes detected. Nothing to save.");
+          return;
+        }
+      }
+    }
+
     try {
       const url = "/api/gallery";
       const method = editingId ? "PUT" : "POST";

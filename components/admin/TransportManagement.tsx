@@ -232,6 +232,28 @@ export default function TransportManagement() {
       return;
     }
 
+    if (editingRoute) {
+      const hasChanges =
+        formData.routeName !== editingRoute.routeName ||
+        formData.routeCode !== (editingRoute.routeCode || "") ||
+        formData.description !== (editingRoute.description || "") ||
+        formData.driverId !== (editingRoute.driverId?._id || "") ||
+        formData.driverName !== (editingRoute.driverName || "") ||
+        formData.driverPhone !== (editingRoute.driverPhone || "") ||
+        formData.vehicleNumber !== (editingRoute.vehicleNumber || "") ||
+        formData.vehicleType !== editingRoute.vehicleType ||
+        formData.capacity !== (editingRoute.capacity || 0) ||
+        JSON.stringify(formData.stops) !== JSON.stringify(editingRoute.stops) ||
+        JSON.stringify([...formData.students].sort()) !== JSON.stringify(editingRoute.students.map((s: any) => s._id).sort()) ||
+        formData.status !== editingRoute.status ||
+        formData.isActive !== editingRoute.isActive;
+
+      if (!hasChanges) {
+        showToast.error("No changes detected. Nothing to save.");
+        return;
+      }
+    }
+
     try {
       const method = editingRoute ? "PUT" : "POST";
       const url = "/api/transport";
@@ -887,10 +909,16 @@ export default function TransportManagement() {
                     className="sr-only"
                   />
                   <div
-                    onClick={() => setFormData(prev => ({ ...prev, isActive: !prev.isActive }))}
-                    className={`w-11 h-6 rounded-full cursor-pointer transition-colors ${formData.isActive ? "bg-green-500" : "bg-gray-300"}`}
+                    onClick={() => setFormData((prev) => ({ ...prev, isActive: !prev.isActive }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors ${
+                      formData.isActive ? "bg-green-500" : "bg-gray-300"
+                    }`}
                   >
-                    <div className={`w-4 h-4 bg-white rounded-full shadow mt-1 transition-transform ${formData.isActive ? "translate-x-6" : "translate-x-1"}`} />
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out ${
+                        formData.isActive ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
                   </div>
                 </div>
                 <div>

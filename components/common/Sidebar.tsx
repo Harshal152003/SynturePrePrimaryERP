@@ -171,8 +171,10 @@ export default function Sidebar({
         <ul className={isCollapsed ? "space-y-1 py-4 px-2" : "space-y-0.5 px-3 py-4"}>
           {filteredMenu.map((item) => {
             const Icon = item.icon;
-            const isActive =
-              pathname === item.path || pathname?.startsWith(item.path + "/");
+            const isBasePath = item.path === basePath;
+            const isActive = isBasePath 
+              ? pathname === item.path 
+              : pathname === item.path || pathname?.startsWith(item.path + "/");
 
             return (
               <li key={item.path}>
@@ -254,7 +256,6 @@ export default function Sidebar({
           onClick={async () => {
             try {
               await logout();
-              router.push("/login");
             } catch (err) {
               console.error("Logout failed", err);
             }

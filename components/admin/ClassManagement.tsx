@@ -248,7 +248,7 @@ export default function ClassManagement() {
               <span className="font-medium text-gray-700">{students?.length || 0}</span>
             </div>
             {students && students.length > 0 && (
-              <div className="text-xs text-gray-500">{students.length} enrolled</div>
+              <div className="text-xs text-gray-500">enrolled</div>
             )}
           </div>
         );

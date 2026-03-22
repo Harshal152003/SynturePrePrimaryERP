@@ -80,28 +80,30 @@ const FEATURE_CONFIG = [
   },
 ];
 
+const DEFAULT_SETTINGS: SchoolSettings = {
+  schoolName: "",
+  schoolLogo: "",
+  schoolAddress: "",
+  schoolPhone: "",
+  schoolEmail: "",
+  principalName: "",
+  academicYear: "",
+  featureFlags: {
+    enableTransport: true,
+    enableMealPlan: true,
+    enableGallery: true,
+    enableEvents: true,
+    enableOnlinePayment: true,
+    enableClaudeHaiku45: true,
+  },
+};
+
 export default function SettingsManagement() {
   const [settings, setSettings] = useState<SchoolSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const [formData, setFormData] = useState<SchoolSettings>({
-    schoolName: "",
-    schoolLogo: "",
-    schoolAddress: "",
-    schoolPhone: "",
-    schoolEmail: "",
-    principalName: "",
-    academicYear: "",
-    featureFlags: {
-      enableTransport: true,
-      enableMealPlan: true,
-      enableGallery: true,
-      enableEvents: true,
-      enableOnlinePayment: true,
-      enableClaudeHaiku45: true,
-    },
-  });
+  const [formData, setFormData] = useState<SchoolSettings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
     fetchSettings();
@@ -142,6 +144,16 @@ export default function SettingsManagement() {
       showToast.error("Error saving settings");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleResetToDefault = () => {
+    if (window.confirm("Are you sure you want to revert all settings to factory defaults? You will still need to click 'Save Changes' to permanently apply this.")) {
+      setFormData({
+        ...DEFAULT_SETTINGS,
+        _id: settings?._id
+      });
+      showToast.success("Restored to defaults. Click 'Save Changes' to apply.");
     }
   };
 
@@ -395,7 +407,8 @@ export default function SettingsManagement() {
           <div className="bg-white border border-gray-200 rounded-xl p-6">
             <div className="flex justify-end gap-3">
               <button
-                onClick={() => fetchSettings()}
+                type="button"
+                onClick={handleResetToDefault}
                 disabled={saving}
                 className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >

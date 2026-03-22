@@ -199,6 +199,35 @@ export default function EventManagement() {
       return;
     }
 
+    if (editingEvent) {
+      const safeDate = (d: any) => d ? new Date(d).toISOString().split("T")[0] : "";
+      
+      const originalClassIds = [...(editingEvent.classIds?.map(c => c._id || c) || [])].sort();
+      const currentClassIds = [...(formData.classIds || [])].sort();
+
+      const hasChanges =
+        formData.title.trim() !== (editingEvent.title || "").trim() ||
+        (formData.description || "").trim() !== (editingEvent.description || "").trim() ||
+        formData.eventType !== editingEvent.eventType ||
+        formData.startDate !== safeDate(editingEvent.startDate) ||
+        formData.endDate !== safeDate(editingEvent.endDate) ||
+        formData.startTime !== (editingEvent.startTime || "09:00") ||
+        formData.endTime !== (editingEvent.endTime || "11:00") ||
+        (formData.location || "").trim() !== (editingEvent.location || "").trim() ||
+        (formData.image || "").trim() !== (editingEvent.image || "").trim() ||
+        formData.targetAudience !== editingEvent.targetAudience ||
+        JSON.stringify(currentClassIds) !== JSON.stringify(originalClassIds) ||
+        JSON.stringify(formData.attachments || []) !== JSON.stringify(editingEvent.attachments || []) ||
+        formData.status !== editingEvent.status ||
+        formData.notify !== editingEvent.notify ||
+        formData.notificationType !== editingEvent.notificationType;
+
+      if (!hasChanges) {
+        showToast.error("No changes detected. Nothing to save.");
+        return;
+      }
+    }
+
     if (isSaving) return;
     setIsSaving(true);
 
@@ -541,8 +570,9 @@ export default function EventManagement() {
               disabled={isSaving}
               className={`px-6 py-2 rounded-lg font-bold shadow-md transition-all ${isSaving
                   ? "bg-gray-400 text-white cursor-not-allowed"
-                  : "bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white hover:shadow-lg"
+                  : "text-white hover:shadow-lg opacity-90 hover:opacity-100"
                 }`}
+              style={{ background: isSaving ? undefined : "linear-gradient(135deg, #1a3f22, #2e6b3a)" }}
             >
               {isSaving ? "Saving..." : editingEvent ? "Save Changes" : "Create Event"}
             </button>
@@ -553,7 +583,7 @@ export default function EventManagement() {
           {/* Section: Basic Information */}
           <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
             <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2 uppercase tracking-wider">
-              <FileText className="w-4 h-4 text-yellow-500" />
+              <FileText className="w-4 h-4 text-[#1a3f22]" />
               Basic Information
             </h3>
             <div className="space-y-5">
@@ -564,7 +594,7 @@ export default function EventManagement() {
                 onChange={handleInputChange}
                 placeholder="e.g., Annual Sports Day, Parent-Teacher Meeting"
                 fullWidth
-                className="focus:ring-yellow-400"
+                className="focus:ring-[#1a3f22]"
               />
 
               <div>
@@ -577,7 +607,7 @@ export default function EventManagement() {
                   onChange={handleInputChange}
                   placeholder="Describe the event details, agenda, or important notes..."
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all resize-none shadow-sm bg-white"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all resize-none shadow-sm bg-white"
                 />
               </div>
 
@@ -589,7 +619,7 @@ export default function EventManagement() {
                       name="eventType"
                       value={formData.eventType}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all appearance-none bg-white shadow-sm"
                     >
                       {EVENT_TYPES.map((type) => (
                         <option key={type.value} value={type.value}>
@@ -610,7 +640,7 @@ export default function EventManagement() {
                       name="targetAudience"
                       value={formData.targetAudience}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all appearance-none bg-white shadow-sm"
                     >
                       {TARGET_AUDIENCE.map((audience) => (
                         <option key={audience.value} value={audience.value}>
@@ -628,7 +658,7 @@ export default function EventManagement() {
           {/* Section: Date & Time */}
           <div className="bg-white p-5 rounded-xl border border-gray-200">
             <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
-              <Calendar className="w-4 h-4 text-yellow-500" />
+              <Calendar className="w-4 h-4 text-[#1a3f22]" />
               Date & Schedule
             </h3>
             <div className="space-y-5">
@@ -642,7 +672,7 @@ export default function EventManagement() {
                   onChange={handleInputChange}
                   onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
-                  className="focus:ring-yellow-400 cursor-pointer"
+                  className="focus:ring-[#1a3f22] cursor-pointer"
                 />
                 <Input
                   label="End Date"
@@ -653,7 +683,7 @@ export default function EventManagement() {
                   onChange={handleInputChange}
                   onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
-                  className="focus:ring-yellow-400 cursor-pointer"
+                  className="focus:ring-[#1a3f22] cursor-pointer"
                 />
               </div>
 
@@ -667,7 +697,7 @@ export default function EventManagement() {
                   onChange={handleInputChange}
                   onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
-                  className="focus:ring-yellow-400 cursor-pointer"
+                  className="focus:ring-[#1a3f22] cursor-pointer"
                 />
                 <Input
                   label="End Time"
@@ -678,7 +708,7 @@ export default function EventManagement() {
                   onChange={handleInputChange}
                   onClick={(e) => (e.target as any).showPicker?.()}
                   fullWidth
-                  className="focus:ring-yellow-400 cursor-pointer"
+                  className="focus:ring-[#1a3f22] cursor-pointer"
                 />
               </div>
             </div>
@@ -687,7 +717,7 @@ export default function EventManagement() {
           {/* Section: Multimedia & Location */}
           <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
             <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2 uppercase tracking-wider">
-              <MapPin className="w-4 h-4 text-yellow-500" />
+              <MapPin className="w-4 h-4 text-[#1a3f22]" />
               Location & Media
             </h3>
             <div className="space-y-5">
@@ -699,7 +729,7 @@ export default function EventManagement() {
                 icon={<MapPin className="w-4 h-4 text-gray-400 transition-colors" />}
                 placeholder="e.g., School Auditorium, Sports Ground"
                 fullWidth
-                className="focus:ring-yellow-400"
+                className="focus:ring-[#1a3f22]"
               />
 
               <Input
@@ -710,7 +740,7 @@ export default function EventManagement() {
                 icon={<ImageIcon className="w-4 h-4 text-gray-400" />}
                 placeholder="https://example.com/image.jpg"
                 fullWidth
-                className="focus:ring-yellow-400"
+                className="focus:ring-[#1a3f22]"
               />
             </div>
           </div>
@@ -719,7 +749,7 @@ export default function EventManagement() {
           {formData.targetAudience === "students" && (
             <div className="bg-white p-5 rounded-xl border border-gray-200">
               <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
-                <Users className="w-4 h-4 text-yellow-500" />
+                <Users className="w-4 h-4 text-[#1a3f22]" />
                 Select Target Classes
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-48 overflow-y-auto custom-scrollbar p-1">
@@ -727,15 +757,15 @@ export default function EventManagement() {
                   <label
                     key={cls._id}
                     className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${formData.classIds.includes(cls._id)
-                      ? "bg-yellow-50 border-yellow-200 shadow-sm"
-                      : "bg-white border-gray-200 hover:border-yellow-200"
+                      ? "bg-green-50 border-green-200 shadow-sm"
+                      : "bg-white border-gray-200 hover:border-green-200"
                       }`}
                   >
                     <input
                       type="checkbox"
                       checked={formData.classIds.includes(cls._id)}
                       onChange={() => handleClassToggle(cls._id)}
-                      className="w-5 h-5 text-yellow-500 rounded-md focus:ring-yellow-400 border-gray-300 transition-all"
+                      className="w-5 h-5 text-[#1a3f22] rounded-md focus:ring-green-400 border-gray-300 transition-all"
                     />
                     <div className="flex flex-col">
                       <span className="text-sm font-bold text-gray-800">{cls.name}</span>
@@ -752,7 +782,7 @@ export default function EventManagement() {
           {/* Section: Publication Settings */}
           <div className="bg-white p-5 rounded-xl border border-gray-200">
             <h3 className="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2 uppercase tracking-wider">
-              <Bell className="w-4 h-4 text-yellow-500" />
+              <Bell className="w-4 h-4 text-[#1a3f22]" />
               Publication & Notifications
             </h3>
             <div className="space-y-6">
@@ -764,7 +794,7 @@ export default function EventManagement() {
                       name="status"
                       value={formData.status}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm font-medium"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all appearance-none bg-white shadow-sm font-medium"
                     >
                       <option value="draft">Draft - Keep it private</option>
                       <option value="published">Published - Live for everyone</option>
@@ -783,7 +813,7 @@ export default function EventManagement() {
                       name="notificationType"
                       value={formData.notificationType}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a3f22] focus:border-transparent transition-all appearance-none bg-white shadow-sm"
                     >
                       <option value="all">All Channels (Email, SMS, App)</option>
                       <option value="email">Email Only</option>
@@ -795,7 +825,7 @@ export default function EventManagement() {
                 </div>
               </div>
 
-              <div className="p-4 bg-yellow-50 border border-yellow-100 rounded-xl">
+              <div className="p-4 bg-green-50 border border-green-100 rounded-xl">
                 <label className="flex items-center gap-3 cursor-pointer group">
                   <div className="relative">
                     <input
@@ -805,7 +835,7 @@ export default function EventManagement() {
                       onChange={handleInputChange}
                       className="peer sr-only"
                     />
-                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                   </div>
                   <div>
                     <span className="text-sm font-bold text-gray-800">Send instant notification</span>

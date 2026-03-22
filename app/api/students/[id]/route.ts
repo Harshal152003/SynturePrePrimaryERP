@@ -93,7 +93,7 @@ export async function PUT(
           if (p.phone === "" || p.phone === undefined) delete p.phone;
         }
         return p;
-      });
+      }).filter((p: any) => p && (p.name || p.phone || p.email || p.relation));
     }
 
     const parsed = StudentCreateZ.partial().parse(cleanBody);
@@ -151,7 +151,38 @@ export async function PUT(
 
     return NextResponse.json({ success: true, student: updated });
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message || "Update failed" }, { status: 400 });
+    let errorMessage = err.message || "Update failed";
+    
+    // Handle MongoDB Duplicate Key errors explicitly
+    if (errorMessage.includes("E11000 duplicate key error") || errorMessage.includes("duplicate key")) {
+      if (errorMessage.includes("admissionNo")) {
+        errorMessage = "This Admission Number is already assigned to another student.";
+      } else if (errorMessage.includes("email")) {
+        errorMessage = "This Email Address is already registered to another user.";
+      } else {
+        errorMessage = "Duplicate record found. Please ensure unique details.";
+      }
+    } else {
+      // Convert stringified Zod errors into readable format
+      if (err.name === "ZodError" || (typeof errorMessage === 'string' && errorMessage.startsWith('['))) {
+        try {
+          const parsedIssues = JSON.parse(err.message);
+          errorMessage = parsedIssues.map((i: any) => {
+            const fieldName = i.path.length > 0 ? Array.from(i.path).pop() : "Field";
+            return `${fieldName}: ${i.message}`;
+          }).join(', ');
+        } catch (e) {
+          // format fallback
+        }
+      } else if (err.issues) {
+        errorMessage = err.issues.map((i: any) => {
+          const fieldName = i.path.length > 0 ? Array.from(i.path).pop() : "Field";
+          return `${fieldName}: ${i.message}`;
+        }).join(', ');
+      }
+    }
+
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 400 });
   }
 }
 

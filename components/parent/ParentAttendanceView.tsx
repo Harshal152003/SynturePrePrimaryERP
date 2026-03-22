@@ -80,7 +80,7 @@ export default function ParentAttendanceView() {
     if (s === "present" || s === "p") return { label: "Present", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50", dot: "bg-emerald-500" };
     if (s === "absent" || s === "a") return { label: "Absent", icon: XCircle, color: "text-red-500", bg: "bg-red-50", dot: "bg-red-500" };
     if (s === "late" || s === "l") return { label: "Late", icon: Clock, color: "text-amber-600", bg: "bg-amber-50", dot: "bg-amber-500" };
-    return { label: "Excused", icon: AlertCircle, color: "text-[#4a9c5d]", bg: "bg-green-50", dot: "bg-[#4a9c5d]" };
+    return { label: "Excused", icon: AlertCircle, color: "text-blue-600", bg: "bg-blue-50", dot: "bg-blue-500" };
   };
 
   const monthStr = currentMonth.toISOString().slice(0, 7);
@@ -149,7 +149,7 @@ export default function ParentAttendanceView() {
           { label: "Present", value: presentCount, color: "emerald", dot: "bg-emerald-500" },
           { label: "Absent", value: absentCount, color: "red", dot: "bg-red-500" },
           { label: "Late", value: lateCount, color: "amber", dot: "bg-amber-500" },
-          { label: "Attendance %", value: `${percentage}%`, color: "[#1a3f22]", dot: "bg-[#1a3f22]" },
+          { label: "Attendance %", value: `${percentage}%`, color: "blue-600", dot: "bg-blue-600" },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
@@ -203,7 +203,7 @@ export default function ParentAttendanceView() {
                   if (cfg.dot === "bg-emerald-500") { cellStyle = "bg-emerald-50 text-emerald-700"; dotColor = "bg-emerald-500"; }
                   else if (cfg.dot === "bg-red-500") { cellStyle = "bg-red-50 text-red-700"; dotColor = "bg-red-500"; }
                   else if (cfg.dot === "bg-amber-500") { cellStyle = "bg-amber-50 text-amber-700"; dotColor = "bg-amber-500"; }
-                  else { cellStyle = "bg-green-50 text-[#1a3f22]"; dotColor = "bg-[#4a9c5d]"; }
+                  else { cellStyle = "bg-blue-50 text-blue-700"; dotColor = "bg-blue-500"; }
                 }
 
                 return (
@@ -225,7 +225,7 @@ export default function ParentAttendanceView() {
               { label: "Present", dot: "bg-emerald-500" },
               { label: "Absent", dot: "bg-red-500" },
               { label: "Late", dot: "bg-amber-500" },
-              { label: "Excused", dot: "bg-[#4a9c5d]" },
+              { label: "Excused", dot: "bg-blue-500" },
             ].map(l => (
               <div key={l.label} className="flex items-center gap-1.5 text-xs text-gray-500">
                 <div className={`w-2.5 h-2.5 rounded-full ${l.dot}`} />

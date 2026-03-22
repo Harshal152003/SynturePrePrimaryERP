@@ -112,7 +112,6 @@ export default function Navbar({
 
   const handleLogout = async () => {
     await logout();
-    router.push("/login");
   };
 
   return (
@@ -242,13 +241,7 @@ export default function Navbar({
             </div>
           )}
 
-          {/* Quick Settings */}
-          <Link
-            href="/dashboard/settings"
-            className="p-2 hover:bg-green-50 rounded-xl transition-colors group"
-          >
-            <Settings className="w-5 h-5 text-gray-500 group-hover:text-[#1a3f22] transition-colors" />
-          </Link>
+
 
           <div className="w-px h-8 bg-gray-100"></div>
 

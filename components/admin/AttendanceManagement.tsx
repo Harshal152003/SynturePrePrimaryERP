@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { ReactNode } from "react";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
@@ -90,6 +91,16 @@ export default function AttendanceManagement() {
     excused: 0,
     rate: 0,
   });
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const query = searchParams.get("q");
+    if (query) {
+      setHistorySearch(query);
+      setViewMode("history");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchClasses();
@@ -235,6 +246,22 @@ export default function AttendanceManagement() {
     setStudentStatus(prev => ({ ...prev, [studentId]: status }));
   };
 
+  // Instant stats calculated from the current selections in mark mode
+  const currentRegisterStats = {
+    present: Object.values(studentStatus).filter(s => s === "present").length,
+    absent: Object.values(studentStatus).filter(s => s === "absent").length,
+    late: Object.values(studentStatus).filter(s => s === "late").length,
+    excused: Object.values(studentStatus).filter(s => s === "excused").length,
+    total: classStudents.length,
+    marked: Object.keys(studentStatus).length,
+    get percentage() {
+      return this.total > 0 ? Math.round((this.present / this.total) * 100) : 0;
+    },
+    get completion() {
+      return this.total > 0 ? Math.round((this.marked / this.total) * 100) : 0;
+    }
+  };
+
   const markAll = (status: "present" | "absent") => {
     const newStatus: Record<string, "present" | "absent" | "late" | "excused"> = {};
     classStudents.forEach(s => {
@@ -276,14 +303,6 @@ export default function AttendanceManagement() {
     }
   };
 
-  // Stats for the current register view being edited
-  const currentRegisterStats = {
-    present: Object.values(studentStatus).filter(s => s === "present").length,
-    absent: Object.values(studentStatus).filter(s => s === "absent").length,
-    late: Object.values(studentStatus).filter(s => s === "late").length,
-    excused: Object.values(studentStatus).filter(s => s === "excused").length,
-    total: classStudents.length
-  };
 
   const columns: Column[] = [
     {
@@ -500,33 +519,54 @@ export default function AttendanceManagement() {
                     </div>
                   ) : (
                     <>
-                      {/* Register Stats Bar */}
-                      <div className="mb-6 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                        <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                          <span className="font-bold text-gray-800 flex items-center gap-2 text-sm">
-                            <div className="w-1.5 h-5 rounded-full" style={{ background: "#1a3f22" }}></div>
-                            Class Summary
-                          </span>
-                          <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-                            {currentRegisterStats.total} Students Total
-                          </span>
+                      {/* Register Stats Bar - Dynamic */}
+                      <div className="mb-6 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden transform transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
+                          <div className="flex items-center gap-3">
+                            <div className="w-2 h-6 rounded-full" style={{ background: "linear-gradient(to bottom, #1a3f22, #2e6b3a)" }}></div>
+                            <div>
+                                <h3 className="font-bold text-gray-800 text-sm">Class Statistics (Live)</h3>
+                                <p className="text-[10px] text-gray-400 font-medium uppercase tracking-tight italic">Updates as you mark</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="flex flex-col items-end">
+                                <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Completion</span>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full bg-blue-500 transition-all duration-500 ease-out" 
+                                            style={{ width: `${currentRegisterStats.completion}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-xs font-black text-blue-600">{currentRegisterStats.completion}%</span>
+                                </div>
+                            </div>
+                            <span className="text-xs font-bold bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full border border-gray-200">
+                              {currentRegisterStats.total} Students
+                            </span>
+                          </div>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-gray-100">
-                          <div className="flex flex-col items-center justify-center gap-1 py-4 px-3 bg-green-50/50">
-                            <span className="text-2xl font-extrabold text-green-700">{currentRegisterStats.present}</span>
-                            <span className="text-xs font-semibold text-green-600 uppercase tracking-wide">Present</span>
+                          <div className="flex flex-col items-center justify-center gap-1 py-5 px-3 bg-green-50/30 hover:bg-green-50 transition-colors group">
+                            <span className="text-3xl font-black text-green-700 transition-transform group-hover:scale-110">{currentRegisterStats.present}</span>
+                            <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Present</span>
+                            <div className="w-8 h-1 bg-green-200 rounded-full mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
-                          <div className="flex flex-col items-center justify-center gap-1 py-4 px-3 bg-red-50/50">
-                            <span className="text-2xl font-extrabold text-red-700">{currentRegisterStats.absent}</span>
-                            <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">Absent</span>
+                          <div className="flex flex-col items-center justify-center gap-1 py-5 px-3 bg-red-50/30 hover:bg-red-50 transition-colors group">
+                            <span className="text-3xl font-black text-red-700 transition-transform group-hover:scale-110">{currentRegisterStats.absent}</span>
+                            <span className="text-[10px] font-bold text-red-600 uppercase tracking-widest">Absent</span>
+                            <div className="w-8 h-1 bg-red-200 rounded-full mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
-                          <div className="flex flex-col items-center justify-center gap-1 py-4 px-3 bg-amber-50/50">
-                            <span className="text-2xl font-extrabold text-amber-700">{currentRegisterStats.late}</span>
-                            <span className="text-xs font-semibold text-amber-600 uppercase tracking-wide">Late</span>
+                          <div className="flex flex-col items-center justify-center gap-1 py-5 px-3 bg-amber-50/30 hover:bg-amber-50 transition-colors group">
+                            <span className="text-3xl font-black text-amber-700 transition-transform group-hover:scale-110">{currentRegisterStats.late}</span>
+                            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Late Arrival</span>
+                            <div className="w-8 h-1 bg-amber-200 rounded-full mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
-                          <div className="flex flex-col items-center justify-center gap-1 py-4 px-3 bg-blue-50/50">
-                            <span className="text-2xl font-extrabold text-blue-700">{currentRegisterStats.excused}</span>
-                            <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide">Excused</span>
+                          <div className="flex flex-col items-center justify-center gap-1 py-5 px-3 bg-blue-50/30 hover:bg-blue-50 transition-colors group">
+                            <span className="text-3xl font-black text-blue-700 transition-transform group-hover:scale-110">{currentRegisterStats.percentage}%</span>
+                            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Presence %</span>
+                            <div className="w-8 h-1 bg-blue-200 rounded-full mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                         </div>
                       </div>
