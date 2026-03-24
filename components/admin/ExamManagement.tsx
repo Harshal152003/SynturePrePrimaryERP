@@ -221,7 +221,7 @@ export default function ExamManagement() {
       const hasChanges =
         formData.name !== editingExam.name ||
         formData.description !== (editingExam.description || "") ||
-        formData.classId !== editingExam.classId._id ||
+        formData.classId !== (editingExam.classId?._id || "") ||
         JSON.stringify(formData.subjects) !== JSON.stringify(editingExam.subjects || []) ||
         formData.startDate !== safeDate(editingExam.startDate) ||
         formData.endDate !== safeDate(editingExam.endDate) ||
@@ -293,7 +293,7 @@ export default function ExamManagement() {
     setFormData({
       name: exam.name,
       description: exam.description || "",
-      classId: exam.classId._id,
+      classId: exam.classId?._id || "",
       subjects: exam.subjects,
       startDate: new Date(exam.startDate).toISOString().split("T")[0],
       endDate: new Date(exam.endDate).toISOString().split("T")[0],
@@ -370,7 +370,7 @@ export default function ExamManagement() {
       label: "Class",
       render: (value: unknown) => {
         const classData = value as Class;
-        return `${classData.name} - ${classData.section}`;
+        return classData ? `${classData.name} - ${classData.section}` : "N/A";
       },
     },
     {
