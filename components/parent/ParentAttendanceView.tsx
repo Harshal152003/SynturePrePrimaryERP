@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   CalendarCheck, CheckCircle2, XCircle, Clock,
@@ -21,7 +21,7 @@ interface Child {
   classId?: string;
 }
 
-export default function ParentAttendanceView() {
+function ParentAttendanceViewContent() {
   const searchParams = useSearchParams();
   const preselectedChildId = searchParams.get("childId");
 
@@ -269,5 +269,13 @@ export default function ParentAttendanceView() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ParentAttendanceView() {
+  return (
+    <Suspense fallback={<div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a3f22]" /></div>}>
+      <ParentAttendanceViewContent />
+    </Suspense>
   );
 }

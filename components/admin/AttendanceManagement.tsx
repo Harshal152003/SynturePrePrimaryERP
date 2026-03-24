@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ReactNode } from "react";
 import Button from "@/components/common/Button";
@@ -66,7 +66,7 @@ interface Column {
   render?: (value: unknown, row: Record<string, unknown>) => ReactNode;
 }
 
-export default function AttendanceManagement() {
+function AttendanceManagementContent() {
   const [viewMode, setViewMode] = useState<"mark" | "history">("mark");
   const [classes, setClasses] = useState<Class[]>([]);
   const [selectedClass, setSelectedClass] = useState("");
@@ -676,5 +676,18 @@ export default function AttendanceManagement() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AttendanceManagement() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center bg-gray-50 text-gray-500">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1a3f22] mr-3"></div>
+        Loading attendance...
+      </div>
+    }>
+      <AttendanceManagementContent />
+    </Suspense>
   );
 }

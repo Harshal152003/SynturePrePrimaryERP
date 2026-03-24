@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { CreditCard, TrendingDown, TrendingUp, AlertCircle, CheckCircle2, Clock, Users } from "lucide-react";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
@@ -21,7 +21,7 @@ interface Child {
   className?: string;
 }
 
-export default function ParentFeesView() {
+function ParentFeesViewContent() {
   const [children, setChildren] = useState<Child[]>([]);
   const [selectedChildId, setSelectedChildId] = useState<string>("");
   const [fees, setFees] = useState<Fee[]>([]);
@@ -183,5 +183,13 @@ export default function ParentFeesView() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ParentFeesView() {
+  return (
+    <Suspense fallback={<div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-violet-600" /></div>}>
+      <ParentFeesViewContent />
+    </Suspense>
   );
 }

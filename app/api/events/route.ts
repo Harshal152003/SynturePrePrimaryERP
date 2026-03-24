@@ -175,7 +175,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    let { id, ...updateData } = body;
+    const { id, ...updateData } = body;
 
     // Sanitize attachments and image if they exist in updateData
     if (updateData.attachments) {

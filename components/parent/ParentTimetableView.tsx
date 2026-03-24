@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Clock, BookOpen, User, MapPin, Users, CalendarDays } from "lucide-react";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
@@ -23,7 +23,7 @@ interface Child {
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-export default function ParentTimetableView() {
+function ParentTimetableViewContent() {
   const searchParams = useSearchParams();
   const preselectedClassId = searchParams.get("classId");
 
@@ -184,5 +184,13 @@ export default function ParentTimetableView() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ParentTimetableView() {
+  return (
+    <Suspense fallback={<div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a3f22]" /></div>}>
+      <ParentTimetableViewContent />
+    </Suspense>
   );
 }

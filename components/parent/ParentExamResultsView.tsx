@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { BookOpen, Award, Users, TrendingUp, FileText } from "lucide-react";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
@@ -21,7 +21,7 @@ interface Child {
   className?: string;
 }
 
-export default function ParentExamResultsView() {
+function ParentExamResultsViewContent() {
   const searchParams = useSearchParams();
   const preselectedChildId = searchParams.get("childId");
 
@@ -168,5 +168,13 @@ export default function ParentExamResultsView() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ParentExamResultsView() {
+  return (
+    <Suspense fallback={<div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a3f22]" /></div>}>
+      <ParentExamResultsViewContent />
+    </Suspense>
   );
 }

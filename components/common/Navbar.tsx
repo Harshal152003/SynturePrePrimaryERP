@@ -54,10 +54,6 @@ export default function Navbar({
     }
   }, [showSearchResults, dropdownOpen, notificationOpen]);
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
   const fetchNotifications = async () => {
     try {
       const res = await fetch("/api/notifications?limit=5");
@@ -70,6 +66,10 @@ export default function Navbar({
       console.error("Error fetching notifications", err);
     }
   };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   const handleSearch = async (value: string) => {
     setSearchTerm(value);

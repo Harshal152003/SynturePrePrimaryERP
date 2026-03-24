@@ -16,7 +16,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        let user = null;
+        let user: any = null;
         if (decoded.role === "admin" || decoded.role === "parent") {
             user = await User.findById(decoded.id).select("-password").lean();
             if (!user && decoded.role === "parent") {
@@ -70,7 +70,7 @@ export async function PUT(req: Request) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        let updateData: any = {};
+        const updateData: any = {};
         if (name) updateData.name = name;
         if (firstName) updateData.firstName = firstName;
         if (lastName) updateData.lastName = lastName;

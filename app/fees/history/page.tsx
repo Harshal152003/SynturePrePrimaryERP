@@ -7,11 +7,6 @@ export default function FeesHistoryPage() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
 
-  // ✅ FIXED useEffect
-  useEffect(() => {
-    fetchPage(1);
-  }, []);
-
   async function fetchPage(p: number) {
     const res = await fetch(`/api/fees/history?page=${p}&limit=12`);
     const d = await res.json();
@@ -22,6 +17,11 @@ export default function FeesHistoryPage() {
       setPages(d.pagination.pages);
     }
   }
+
+  // ✅ FIXED useEffect
+  useEffect(() => {
+    fetchPage(1);
+  }, []);
 
   return (
     <div className="p-4">
